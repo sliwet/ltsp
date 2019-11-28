@@ -79,24 +79,33 @@ except:
             self.volume = volume
             self.wdate = wdate
 
-def gettabledescriptions(tablename):
+info = ""
+
+def getTableDescriptions(tablename):
     message = f"---------------------------<br>{tablename}<br>---------------------------<br>"
     columns = inspector.get_columns(tablename)
     for column in columns:
         message = message + f"{column['name']}, {column['type']}<br>"
     return message
 
+def getAllTableInfo():
+    tablenames = inspector.get_table_names()
+    message = ""
+    for table in tablenames:
+        message = message + getTableDescriptions(table)
+    return message
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
+@app.route('/showinfo')
+def showinfo():
+    return render_template('showinfo.html',message = info)
+
 @app.route('/showtables')
-def showdescriptions():
-    tablenames = inspector.get_table_names()
-    message = ""
-    for table in tablenames:
-        message = message + gettabledescriptions(table)
-    return render_template('showinfo.html',message = message)
+def showtables():
+    return render_template('showinfo.html',message = getAllTableInfo())
 
 # @app.route('/submit', methods=['POST'])
 # def submit():
