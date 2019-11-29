@@ -12,10 +12,6 @@ from send_mail import send_mail
 
 app = Flask(__name__)
 
-####################################################
-# Database setup
-####################################################
-
 ENV = 'dev'
 # ENV = 'prod'
 
@@ -81,21 +77,14 @@ except:
 tickers = ltsp.getTickers(engine)
 descriptions = ltsp.getDescriptions(engine)
 
-# info = ltsp.infoTables(inspector)
-# info = ltsp.infoArray('Tickers',tickers)
-# info = ltsp.infoDescriptionsHead(descriptions)
-# info = ltsp.cleanTickersInDescriptions(engine,tickers,descriptions)
-# info = ltsp.infoArray('Sectors',ltsp.getSectors(descriptions))
-# info = ltsp.infoArray('Exchanges',ltsp.getExchanges(descriptions))
-# info = ltsp.infoArray('Industries',ltsp.getIndustries(descriptions))
-
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# @app.route('/showinfo')
-# def showinfo():
-#     return render_template('showinfo.html',message = info)
+@app.route('/cleantickersindescriptions')
+def cleantickersindescriptions():
+    info = ltsp.cleanTickersInDescriptions(engine,tickers,descriptions)
+    return render_template('showinfo.html',message = info)
 
 @app.route('/tickers')
 def fillTickers():
@@ -103,41 +92,22 @@ def fillTickers():
 
 @app.route('/infotypes')
 def fillInfotypes():
-    return jsonify(["Tables","Descriptions","Sectors","Exchanges","Industries"])
+    return jsonify(["Tables","tickers","exchange","sector","industry"])
+    # return jsonify(["Tables","Descriptions","sector","exchange","industry"])
 
 @app.route('/showinfo/<infotype>')
 def showinfo(infotype):
     info = ""
     if infotype == "Tables":
         info = ltsp.infoTables(inspector)
-    elif infotype == "Descriptions":
-        info = ltsp.infoDescriptionsHead(descriptions)
+    elif infotype == "tickers":
+        info = ltsp.infoArray(infotype,tickers)
+    # elif infotype == "Descriptions":
+    #     info = ltsp.infoDescriptionsHead(descriptions)
     else:
-        info = ltsp.infoArray(infotype,ltsp.getExchanges(descriptions))
+        info = ltsp.infoArray(infotype,ltsp.getInfo(descriptions,infotype))
 
     return jsonify([{infotype:info}])
-
-# def fillInfo(infotype):
-#     return ltsp.infoArray(infotype,ltsp.getIndustries(descriptions))
-
-
-# @app.route('/submit', methods=['POST'])
-# def submit():
-#     if request.method == 'POST':
-#         customer = request.form['customer']
-#         dealer = request.form['dealer']
-#         rating = request.form['rating']
-#         comments = request.form['comments']
-#         # print(customer, dealer, rating, comments)
-#         if customer == '' or dealer == '':
-#             return render_template('index.html', message='Please enter required fields')
-#         if db.session.query(Feedback).filter(Feedback.customer == customer).count() == 0:
-#             data = Feedback(customer, dealer, rating, comments)
-#             db.session.add(data)
-#             db.session.commit()
-#             send_mail(customer, dealer, rating, comments)
-#             return render_template('success.html')
-#         return render_template('index.html', message='You have already submitted feedback')
 
 if __name__ == '__main__':
     # app.debug = True

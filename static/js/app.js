@@ -120,20 +120,9 @@ let tickerChanged = newTicker => {
 let infoChanged = newInfo => {
     let url = "/showinfo/" + newInfo;
     d3.json(url).then(info => {
-        console.log(info[0][newInfo]);
-        // console.log(info[0].value);
+        infoplace = d3.select("#infoplace");
+        infoplace.html(info[0][newInfo]);
     });
-
-
-    // let url = "/metadata/" + sample;
-    // d3.json(url).then(samples_metadata => {
-    //   smetadata = d3.select("#sample-metadata");
-    //   smetadata.html('');
-    //   Object.entries(samples_metadata).forEach(([key, value]) => {
-    //     smetadata.append('div').html(`${key}: ${value}<br>`);
-    //   });
-    // });
-
 }
 
 init();

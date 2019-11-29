@@ -30,14 +30,8 @@ def getDescriptions(connection):
 def infoDescriptionsHead(descriptions):
     return descriptions.head().to_string().replace('\n',"<br>")
 
-def getSectors(descriptions):
-    return descriptions['sector'].unique()
-
-def getExchanges(descriptions):
-    return descriptions['exchange'].unique()
-
-def getIndustries(descriptions):
-    return descriptions['industry'].unique()
+def getInfo(descriptions,infotype):
+    return descriptions[infotype].unique()
 
 def cleanTickersInDescriptions(connection,tickers,descriptions):
     tickers_desc = descriptions['ticker'].unique()
