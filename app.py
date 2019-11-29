@@ -1,6 +1,5 @@
 import os
-import pandas as pd
-import numpy as np
+import ltsp
 
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
@@ -79,21 +78,16 @@ except:
             self.volume = volume
             self.wdate = wdate
 
-info = ""
+tickers = ltsp.getTickers(engine)
+descriptions = ltsp.getDescriptions(engine)
 
-def getTableDescriptions(tablename):
-    message = f"---------------------------<br>{tablename}<br>---------------------------<br>"
-    columns = inspector.get_columns(tablename)
-    for column in columns:
-        message = message + f"{column['name']}, {column['type']}<br>"
-    return message
-
-def getAllTableInfo():
-    tablenames = inspector.get_table_names()
-    message = ""
-    for table in tablenames:
-        message = message + getTableDescriptions(table)
-    return message
+# info = ltsp.infoTables(inspector)
+# info = ltsp.infoArray('Tickers',tickers)
+# info = ltsp.infoDescriptionsHead(descriptions)
+# info = ltsp.cleanTickersInDescriptions(engine,tickers,descriptions)
+# info = ltsp.infoArray('Sectors',ltsp.getSectors(descriptions))
+# info = ltsp.infoArray('Exchanges',ltsp.getExchanges(descriptions))
+info = ltsp.infoArray('Industries',ltsp.getIndustries(descriptions))
 
 @app.route('/')
 def index():
@@ -102,10 +96,6 @@ def index():
 @app.route('/showinfo')
 def showinfo():
     return render_template('showinfo.html',message = info)
-
-@app.route('/showtables')
-def showtables():
-    return render_template('showinfo.html',message = getAllTableInfo())
 
 # @app.route('/submit', methods=['POST'])
 # def submit():
