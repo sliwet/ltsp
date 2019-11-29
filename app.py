@@ -108,6 +108,10 @@ def showinfo(infotype):
     return jsonify([info])
     # return jsonify([{infotype:info}])
 
+@app.route('/gettickerdata/<ticker>')
+def gettickerdata(ticker):
+    return jsonify(ltsp.getTickerdata(engine,ticker))
+
 if __name__ == '__main__':
     # app.debug = True
     app.run()

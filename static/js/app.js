@@ -87,6 +87,38 @@
 //     });
 //   }
 
+let buildPlot = tickers => {
+    let url = "/gettickerdata/" + tickers[0];
+
+    d3.json(url).then(data => {
+        let trace1 = {
+            type: "scatter",
+            mode: "lines",
+            name: "test",
+            x: data[0].x,
+            y: data[0].y,
+            line: {
+                color: "#17BECF"
+            }
+        };
+
+        let layout = {
+            title: `closing prices`,
+            // xaxis: {
+            //     range: [startDate, endDate],
+            //     type: "date"
+            // },
+            // yaxis: {
+            //     autorange: true,
+            //     type: "linear"
+            // }
+        };
+
+        Plotly.newPlot("infoplace", [trace1], layout);
+    });
+
+}
+
 let init = () => {
     let selector = d3.select("#tickerSel");
     d3.json("/tickers").then((tickers) => {
@@ -107,14 +139,16 @@ let init = () => {
                 .text(infotype);
         });
     });
+
+    let initialmessage = "<p>Use left selectors to explore stock data information</p>";
+    d3.select("#infoplace").html(initialmessage);
 }
 
 let selectedTickers = []
 let tickerChanged = newTicker => {
-    selectedTickers.push(newTicker)
-    console.log(selectedTickers);
-    // buildCharts(newSample);
-    // buildMetadata(newSample);
+    d3.select("#infoplace").html("");
+    selectedTickers.push(newTicker);
+    buildPlot(selectedTickers);
 }
 
 let infoChanged = newInfo => {
