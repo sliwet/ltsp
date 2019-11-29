@@ -97,6 +97,10 @@ def index():
 def showinfo():
     return render_template('showinfo.html',message = info)
 
+@app.route('/tickers')
+def fillTickers():
+    return jsonify(tickers)
+
 # @app.route('/submit', methods=['POST'])
 # def submit():
 #     if request.method == 'POST':
