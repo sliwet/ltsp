@@ -17,7 +17,7 @@ ENV = 'dev'
 
 if ENV == 'dev':
     app.debug = True
-    dbname = 'ltsp'
+    dbname = 'test'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/' + dbname
 else:
     app.debug = False
@@ -37,6 +37,8 @@ Base.prepare(engine, reflect=True)
 try:
     Descriptions = Base.classes.descriptions
     Stocks = Base.classes.stocks
+    tickers = ltsp.getTickers(engine)
+    descriptions = ltsp.getDescriptions(engine)
 except:
     class Descriptions(db.Model):
         __tablename__ = 'descriptions'
@@ -74,9 +76,6 @@ except:
             self.volume = volume
             self.wdate = wdate
 
-tickers = ltsp.getTickers(engine)
-descriptions = ltsp.getDescriptions(engine)
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -107,7 +106,8 @@ def showinfo(infotype):
     else:
         info = ltsp.infoArray(infotype,ltsp.getInfo(descriptions,infotype))
 
-    return jsonify([{infotype:info}])
+    return jsonify([info])
+    # return jsonify([{infotype:info}])
 
 if __name__ == '__main__':
     # app.debug = True

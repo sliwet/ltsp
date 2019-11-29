@@ -121,7 +121,8 @@ let infoChanged = newInfo => {
     let url = "/showinfo/" + newInfo;
     d3.json(url).then(info => {
         infoplace = d3.select("#infoplace");
-        infoplace.html(info[0][newInfo]);
+        infoplace.html(info[0]);
+        // infoplace.html(info[0][newInfo]);
     });
 }
 
