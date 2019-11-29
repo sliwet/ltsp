@@ -8,7 +8,6 @@ from sqlalchemy import create_engine, inspect,func
 
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from send_mail import send_mail
 
 app = Flask(__name__)
 
