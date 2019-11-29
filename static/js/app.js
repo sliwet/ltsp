@@ -88,26 +88,52 @@
 //   }
 
 let init = () => {
-    let selector = d3.select("#selDataset");
-
-    d3.json("/tickers").then((sampleNames) => {
-        sampleNames.forEach(sample => {
+    let selector = d3.select("#tickerSel");
+    d3.json("/tickers").then((tickers) => {
+        tickers.forEach(ticker => {
             selector
                 .append("option")
-                .property("value", sample)
-                .text(sample);
+                .property("value",ticker)
+                .text(ticker);
         });
+    });
 
-        //   const firstSample = sampleNames[0];
-        //   buildCharts(firstSample);
-        //   buildMetadata(firstSample);
+    let selector2 = d3.select("#infoSel");
+    d3.json("/infotypes").then((infotypes) => {
+        infotypes.forEach(infotype => {
+            selector2
+                .append("option")
+                .property("value",infotype)
+                .text(infotype);
+        });
     });
 }
 
-let optionChanged = newSample => {
-    console.log(newSample);
+let selectedTickers = []
+let tickerChanged = newTicker => {
+    selectedTickers.push(newTicker)
+    console.log(selectedTickers);
     // buildCharts(newSample);
     // buildMetadata(newSample);
+}
+
+let infoChanged = newInfo => {
+    let url = "/showinfo/" + newInfo;
+    d3.json(url).then(info => {
+        console.log(info[0][newInfo]);
+        // console.log(info[0].value);
+    });
+
+
+    // let url = "/metadata/" + sample;
+    // d3.json(url).then(samples_metadata => {
+    //   smetadata = d3.select("#sample-metadata");
+    //   smetadata.html('');
+    //   Object.entries(samples_metadata).forEach(([key, value]) => {
+    //     smetadata.append('div').html(`${key}: ${value}<br>`);
+    //   });
+    // });
+
 }
 
 init();

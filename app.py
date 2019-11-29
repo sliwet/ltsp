@@ -87,19 +87,39 @@ descriptions = ltsp.getDescriptions(engine)
 # info = ltsp.cleanTickersInDescriptions(engine,tickers,descriptions)
 # info = ltsp.infoArray('Sectors',ltsp.getSectors(descriptions))
 # info = ltsp.infoArray('Exchanges',ltsp.getExchanges(descriptions))
-info = ltsp.infoArray('Industries',ltsp.getIndustries(descriptions))
+# info = ltsp.infoArray('Industries',ltsp.getIndustries(descriptions))
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/showinfo')
-def showinfo():
-    return render_template('showinfo.html',message = info)
+# @app.route('/showinfo')
+# def showinfo():
+#     return render_template('showinfo.html',message = info)
 
 @app.route('/tickers')
 def fillTickers():
     return jsonify(tickers)
+
+@app.route('/infotypes')
+def fillInfotypes():
+    return jsonify(["Tables","Descriptions","Sectors","Exchanges","Industries"])
+
+@app.route('/showinfo/<infotype>')
+def showinfo(infotype):
+    info = ""
+    if infotype == "Tables":
+        info = ltsp.infoTables(inspector)
+    elif infotype == "Descriptions":
+        info = ltsp.infoDescriptionsHead(descriptions)
+    else:
+        info = ltsp.infoArray(infotype,ltsp.getExchanges(descriptions))
+
+    return jsonify([{infotype:info}])
+
+# def fillInfo(infotype):
+#     return ltsp.infoArray(infotype,ltsp.getIndustries(descriptions))
+
 
 # @app.route('/submit', methods=['POST'])
 # def submit():

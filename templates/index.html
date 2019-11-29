@@ -15,33 +15,25 @@
     <div class="row">
       <div class="col-md-12 jumbotron text-center">
         <h1>Long-Term Stock Predictor</h1>
-        <p>Use the interactive charts below to explore the dataset</p>
       </div>
     </div>
     <div class="row">
-      <div class="col-md-2">
+      <div class="col-md-3">
         <div class="well">
-          <h5>SELECT Ticker:</h5>
-          <select id="selDataset" onchange="optionChanged(this.value)"></select>
+          <b>Ticker</b>&nbsp;&nbsp;&nbsp;
+          <select id="tickerSel" onchange="tickerChanged(this.value)"></select>
         </div>
-        <div class="panel panel-primary">
-          <div class="panel-heading">
-            <h3 class="panel-title">Sample MetaData</h3>
-          </div>
-          <div id="sample-metadata" class="panel-body"></div>
+        <div class="well">
+          <!-- <h5>SELECT Info:</h5> -->
+          <b>Info</b>&nbsp;&nbsp;&nbsp;
+          <select id="infoSel" onchange="infoChanged(this.value)"></select>
         </div>
       </div>
-      <div class="col-md-5">
-        <div id="pie"></div>
+      <div class="col-md-9">
+        <div id="infodiv">
+          <p>Use left selectors to explore stock data information</p>
+        </div>
       </div>
-      <div class="col-md-5">
-        <div id="gauge"></div>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <div id="bubble"></div>
     </div>
   </div>
 
@@ -49,7 +41,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.js"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-  <!-- <script src="{{ url_for('static', filename='js/bonus.js') }}"></script> -->
 </body>
 
 </html>
