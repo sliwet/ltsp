@@ -1,18 +1,27 @@
-
 let buildPlot = tickers => {
-    let url = "/gettickerdata/" + tickers[0];
+    let tickers_str = tickers[0];
+    for (let i = 1; i < tickers.length; i++) {
+        tickers_str = tickers_str + "_" + tickers[i];
+    }
+    
+    let url = "/gettickerdata/" + tickers_str;
 
     d3.json(url).then(data => {
-        let trace1 = {
-            type: "scatter",
-            mode: "lines",
-            name: "test",
-            x: data[0].x,
-            y: data[0].y,
-            line: {
-                color: "#17BECF"
-            }
-        };
+        let traces = []
+        data.forEach(datum => {
+            let trace = {
+                type: "scatter",
+                mode: "lines",
+                name: "test",
+                x: datum.x,
+                y: datum.y,
+                line: {
+                    color: "#17BECF"
+                }
+            };
+
+            traces.push(trace);
+        })
 
         let layout = {
             title: `closing prices`,
@@ -26,9 +35,8 @@ let buildPlot = tickers => {
             // }
         };
 
-        Plotly.newPlot("infoplace", [trace1], layout);
+        Plotly.newPlot("infoplace",traces, layout);
     });
-
 }
 
 let init = () => {
@@ -37,7 +45,7 @@ let init = () => {
         tickers.forEach(ticker => {
             selector
                 .append("option")
-                .property("value",ticker)
+                .property("value", ticker)
                 .text(ticker);
         });
     });
@@ -47,7 +55,7 @@ let init = () => {
         infotypes.forEach(infotype => {
             selector2
                 .append("option")
-                .property("value",infotype)
+                .property("value", infotype)
                 .text(infotype);
         });
     });
@@ -62,7 +70,7 @@ let tickerChanged = newTicker => {
     selectedTickers.push(newTicker);
 
     tickerstr = "";
-    selectedTickers.forEach( ticker => tickerstr = tickerstr + ticker + "<br>");
+    selectedTickers.forEach(ticker => tickerstr = tickerstr + ticker + "<br>");
     d3.select("#selectedtickers").html(tickerstr);
 
     buildPlot(selectedTickers);

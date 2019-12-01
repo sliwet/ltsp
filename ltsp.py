@@ -59,10 +59,15 @@ def cleanTickersInDescriptions(connection, tickers, descriptions):
     #         connection.execute('SELECT * FROM train LIMIT 5').fetchall()
     #         connection.execute("DELETE FROM train WHERE wdate = '2010-03-12'")
 
-def getTickerdata(connection, ticker):
-    oneticker = pd.read_sql_query(
-        f"SELECT * FROM stocks WHERE ticker = '{ticker}'", connection)
-    xdata = [dt.datetime.strptime(d, '%Y-%m-%d').date()
-             for d in oneticker['wdate']]
-    ydata = oneticker['closev'].tolist()
-    return [{"x":xdata,"y":ydata}]
+def getTickerdata(connection, tickers_str):
+    tickers = tickers_str.split('_')
+    data = []
+    for ticker in tickers:
+        oneticker = pd.read_sql_query(
+            f"SELECT * FROM stocks WHERE ticker = '{ticker}'", connection)
+        xdata = [dt.datetime.strptime(d, '%Y-%m-%d').date()
+                for d in oneticker['wdate']]
+        ydata = oneticker['closev'].tolist()
+        data.append({"x":xdata,"y":ydata})
+        
+    return data
