@@ -37,11 +37,11 @@ let buildPlot = tickers => {
             let trace = {
                 type: "scatter",
                 mode: "lines",
-                name: "test",
+                name: tickers[i],
                 x: data[i].x,
                 y: data[i].y,
                 line: {
-                    color: rgb(data.length,i)//"#17BECF"
+                    color: rgb(data.length,i)
                 }
             };
 
