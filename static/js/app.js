@@ -1,4 +1,4 @@
-let rgb = (i, n) => {
+let rgb = (n,i) => {
     let r = 255;
     let g = 0;
     let b = 0;
@@ -41,7 +41,7 @@ let buildPlot = tickers => {
                 x: data[i].x,
                 y: data[i].y,
                 line: {
-                    color: rgb(i, data.length)//"#17BECF"
+                    color: rgb(data.length,i)//"#17BECF"
                 }
             };
 
