@@ -1,3 +1,10 @@
+let rgb = (r, g, b) => {
+    r = Math.floor(r);
+    g = Math.floor(g);
+    b = Math.floor(b);
+    return ["rgb(",r,",",g,",",b,")"].join("");
+}
+
 let buildPlot = tickers => {
     let tickers_str = tickers[0];
     for (let i = 1; i < tickers.length; i++) {
@@ -8,20 +15,39 @@ let buildPlot = tickers => {
 
     d3.json(url).then(data => {
         let traces = []
-        data.forEach(datum => {
+
+        for (let i = 0; i < data.length; i++) {
+            let r = 255;
+            let g = 0;
+            let b = 0;
+
+            if (data.length > 1){
+                let mult = 0;
+
+                if( i == data.length - 1) mult = 1;
+                else mult = i / (data.length - 1);
+    
+                r = 255 - 255 * mult;
+                g = 255 * 2 * mult;
+                b = 255 * mult;
+    
+                if (g > 255) g = g - 2 * (g - 255);
+                if (g < 0) g= 0;
+            }
+
             let trace = {
                 type: "scatter",
                 mode: "lines",
                 name: "test",
-                x: datum.x,
-                y: datum.y,
+                x: data[i].x,
+                y: data[i].y,
                 line: {
-                    color: "#17BECF"
+                    color: rgb(r,g,b)//"#17BECF"
                 }
             };
 
             traces.push(trace);
-        })
+        }
 
         let layout = {
             title: `closing prices`,
