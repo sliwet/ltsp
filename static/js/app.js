@@ -1,8 +1,25 @@
-let rgb = (r, g, b) => {
+let rgb = (i, n) => {
+    let r = 255;
+    let g = 0;
+    let b = 0;
+
+    if (n > 1) {
+        let hn = Math.floor(n / 2);
+        r = Math.floor(255 - 510 * i / n);
+        if (i >= hn) r = 0;
+
+        i = n - 1 - i;
+        b = Math.floor(255 - 510 * i / n);
+        if (i >= hn) b = 0;
+
+        g = 255 - r - b;
+        if (g < 0) g = 0;
+    }
+
     r = Math.floor(r);
     g = Math.floor(g);
     b = Math.floor(b);
-    return ["rgb(",r,",",g,",",b,")"].join("");
+    return ["rgb(", r, ",", g, ",", b, ")"].join("");
 }
 
 let buildPlot = tickers => {
@@ -10,31 +27,13 @@ let buildPlot = tickers => {
     for (let i = 1; i < tickers.length; i++) {
         tickers_str = tickers_str + "_" + tickers[i];
     }
-    
+
     let url = "/gettickerdata/" + tickers_str;
 
     d3.json(url).then(data => {
         let traces = []
 
         for (let i = 0; i < data.length; i++) {
-            let r = 255;
-            let g = 0;
-            let b = 0;
-
-            if (data.length > 1){
-                let mult = 0;
-
-                if( i == data.length - 1) mult = 1;
-                else mult = i / (data.length - 1);
-    
-                r = 255 - 255 * mult;
-                g = 255 * 2 * mult;
-                b = 255 * mult;
-    
-                if (g > 255) g = g - 2 * (g - 255);
-                if (g < 0) g= 0;
-            }
-
             let trace = {
                 type: "scatter",
                 mode: "lines",
@@ -42,7 +41,7 @@ let buildPlot = tickers => {
                 x: data[i].x,
                 y: data[i].y,
                 line: {
-                    color: rgb(r,g,b)//"#17BECF"
+                    color: rgb(i, data.length)//"#17BECF"
                 }
             };
 
@@ -61,7 +60,7 @@ let buildPlot = tickers => {
             // }
         };
 
-        Plotly.newPlot("infoplace",traces, layout);
+        Plotly.newPlot("infoplace", traces, layout);
     });
 }
 
