@@ -36,6 +36,8 @@ Base.prepare(engine, reflect=True)
 try:
     Descriptions = Base.classes.descriptions
     Stocks = Base.classes.stocks
+    Nasdaq = Base.classes.nasdaq
+    Snp500 = Base.classes.snp500
     tickers = ltsp.getTickers(engine)
     descriptions = ltsp.getDescriptions(engine)
 except:
@@ -74,6 +76,44 @@ except:
             self.high = high
             self.volume = volume
             self.wdate = wdate
+
+    class Nasdaq(db.Model):
+        __tablename__ = 'nasdaq'
+        wdate = db.Column(db.String(10), primary_key=True)
+        openv = db.Column(db.Float)
+        high = db.Column(db.Float)
+        low = db.Column(db.Float)
+        closev = db.Column(db.Float)
+        adj_close = db.Column(db.Float)
+        volume = db.Column(db.Float)
+
+        def __init__(self, ticker,openv,closev,adj_close,low,high,volume,wdate):
+            self.wdate = wdate
+            self.openv = openv
+            self.high = high
+            self.low = low
+            self.closev = closev
+            self.adj_close = adj_close
+            self.volume = volume
+
+    class Snp500(db.Model):
+        __tablename__ = 'snp500'
+        wdate = db.Column(db.String(10), primary_key=True)
+        openv = db.Column(db.Float)
+        high = db.Column(db.Float)
+        low = db.Column(db.Float)
+        closev = db.Column(db.Float)
+        adj_close = db.Column(db.Float)
+        volume = db.Column(db.Float)
+
+        def __init__(self, ticker,openv,closev,adj_close,low,high,volume,wdate):
+            self.wdate = wdate
+            self.openv = openv
+            self.high = high
+            self.low = low
+            self.closev = closev
+            self.adj_close = adj_close
+            self.volume = volume
 
 @app.route('/')
 def index():

@@ -19,3 +19,27 @@ CREATE TABLE stocks (
 	FOREIGN KEY (ticker) REFERENCES descriptions(ticker),
 	PRIMARY KEY (ticker,wdate)
 );
+
+CREATE TABLE nasdaq (
+	wdate varchar(10) NOT NULL,
+	openv float NOT NULL,
+	high float NOT NULL,
+	low float NOT NULL,
+	closev float NOT NULL,
+	adj_close float NOT NULL,
+	volume float NOT NULL,
+	
+	PRIMARY KEY (wdate)
+);
+
+CREATE TABLE snp500 (
+	wdate varchar(10) NOT NULL,
+	openv float NOT NULL,
+	high float NOT NULL,
+	low float NOT NULL,
+	closev float NOT NULL,
+	adj_close float NOT NULL,
+	volume float NOT NULL,
+	
+	PRIMARY KEY (wdate)
+);

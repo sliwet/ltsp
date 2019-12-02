@@ -19,8 +19,7 @@ def infoTables(inspector):
 
 
 def getTickers(connection):
-    tickers_stocks = pd.read_sql_query(
-        'SELECT ticker FROM stocks GROUP BY ticker', connection)
+    tickers_stocks = pd.read_sql_query('SELECT ticker FROM stocks GROUP BY ticker', connection)
     return tickers_stocks['ticker'].tolist()
 
 
@@ -63,10 +62,9 @@ def getTickerdata(connection, tickers_str):
     tickers = tickers_str.split('_')
     data = []
     for ticker in tickers:
-        oneticker = pd.read_sql_query(
-            f"SELECT * FROM stocks WHERE ticker = '{ticker}'", connection)
-        xdata = [dt.datetime.strptime(d, '%Y-%m-%d').date()
-                for d in oneticker['wdate']]
+        oneticker = pd.read_sql_query(f"SELECT * FROM stocks WHERE ticker = '{ticker}'", connection)
+        # xdata = [dt.datetime.strptime(d, '%Y-%m-%d').date() for d in oneticker['wdate']]
+        xdata = oneticker['wdate'].tolist()
         ydata = oneticker['closev'].tolist()
         data.append({"x":xdata,"y":ydata})
         

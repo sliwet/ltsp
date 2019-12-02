@@ -33,6 +33,9 @@ let buildPlot = tickers => {
     d3.json(url).then(data => {
         let traces = []
 
+        // let xmin = d3.min(data[0].x);
+        // let xmax = d3.max(data[0].x);
+        // console.log(`Min: ${xmin} , Max: ${xmax}`);
         for (let i = 0; i < data.length; i++) {
             let trace = {
                 type: "scatter",
