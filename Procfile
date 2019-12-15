@@ -1,1 +1,1 @@
-web: gunicorn ltsp.app:app
+web: gunicorn app:app
