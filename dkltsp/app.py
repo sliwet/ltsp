@@ -1,5 +1,5 @@
 import os
-import ltspfunctions
+import dkltsp.ltspfunctions
 
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
