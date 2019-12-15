@@ -1,1 +1,1 @@
-FLASK_APP=ltsp/app.py flask run
+FLASK_APP=dkltsp/app.py flask run
