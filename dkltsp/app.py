@@ -1,5 +1,5 @@
 import os
-import ltsp
+import ltspfunctions
 
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
@@ -11,8 +11,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-ENV = 'dev'
-# ENV = 'prod'
+# ENV = 'dev'
+ENV = 'prod'
 
 if ENV == 'dev':
     app.debug = True
@@ -38,8 +38,8 @@ try:
     Stocks = Base.classes.stocks
     Nasdaq = Base.classes.nasdaq
     Snp500 = Base.classes.snp500
-    tickers = ltsp.getTickers(engine)
-    descriptions = ltsp.getDescriptions(engine)
+    tickers = ltspfunctions.getTickers(engine)
+    descriptions = ltspfunctions.getDescriptions(engine)
 except:
     class Descriptions(db.Model):
         __tablename__ = 'descriptions'
@@ -121,7 +121,7 @@ def index():
 
 @app.route('/cleantickersindescriptions')
 def cleantickersindescriptions():
-    info = ltsp.cleanTickersInDescriptions(engine,tickers,descriptions)
+    info = ltspfunctions.cleanTickersInDescriptions(engine,tickers,descriptions)
     return render_template('showinfo.html',message = info)
 
 @app.route('/tickers')
@@ -137,20 +137,20 @@ def fillInfotypes():
 def showinfo(infotype):
     info = ""
     if infotype == "Tables":
-        info = ltsp.infoTables(inspector)
+        info = ltspfunctions.infoTables(inspector)
     elif infotype == "tickers":
-        info = ltsp.infoArray(infotype,tickers)
+        info = ltspfunctions.infoArray(infotype,tickers)
     # elif infotype == "Descriptions":
-    #     info = ltsp.infoDescriptionsHead(descriptions)
+    #     info = ltspfunctions.infoDescriptionsHead(descriptions)
     else:
-        info = ltsp.infoArray(infotype,ltsp.getInfo(descriptions,infotype))
+        info = ltspfunctions.infoArray(infotype,ltspfunctions.getInfo(descriptions,infotype))
 
     return jsonify([info])
     # return jsonify([{infotype:info}])
 
 @app.route('/gettickerdata/<tickers_str>')
 def gettickerdata(tickers_str):
-    return jsonify(ltsp.getTickerdata(engine,tickers_str))
+    return jsonify(ltspfunctions.getTickerdata(engine,tickers_str))
 
 if __name__ == '__main__':
     # app.debug = True
