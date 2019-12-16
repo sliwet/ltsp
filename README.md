@@ -7,7 +7,10 @@
 
 ## Selection of Datasets
 
-Source: [Daily Historical Stock Prices (1970 - 2018)](https://www.kaggle.com/ehallmar/daily-historical-stock-prices-1970-2018)
+Source: 
+
+1. Most individual stocks are from [Daily Historical Stock Prices (1970 - 2018)](https://www.kaggle.com/ehallmar/daily-historical-stock-prices-1970-2018)
+2. Nasdaq & S&P500 index funds are from Yahoo Finance
 
 [Back to top](#long-term-stock-predictor)
 
@@ -37,6 +40,32 @@ CREATE TABLE stocks (
 	FOREIGN KEY (ticker) REFERENCES descriptions(ticker),
 	PRIMARY KEY (ticker,wdate)
 );
+
+
+CREATE TABLE nasdaq (
+	wdate varchar(10) NOT NULL,
+	openv float NOT NULL,
+	high float NOT NULL,
+	low float NOT NULL,
+	closev float NOT NULL,
+	adj_close float NOT NULL,
+	volume float NOT NULL,
+	
+	PRIMARY KEY (wdate)
+);
+
+CREATE TABLE snp500 (
+	wdate varchar(10) NOT NULL,
+	openv float NOT NULL,
+	high float NOT NULL,
+	low float NOT NULL,
+	closev float NOT NULL,
+	adj_close float NOT NULL,
+	volume float NOT NULL,
+	
+	PRIMARY KEY (wdate)
+);
+
 ```
 
 [Back to top](#long-term-stock-predictor)
