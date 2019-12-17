@@ -1,4 +1,80 @@
-let rgb = (n,i) => {
+let init = () => {
+    let infoNticker = [
+        {
+            menuitem: "Information",
+            menuid: "infoSel",
+            menuonchange: "infoChanged"
+        },
+        {
+            menuitem: "Ticker",
+            menuid: "tickerSel",
+            menuonchange: "tickerChanged"
+        }
+    ]
+
+    let menuplace = d3.select("#menuplace");
+    menuplace.html("");
+
+    infoNticker.forEach(menu => {
+        menuplace.append("div")
+            .attr("class", "well")
+            .html(`<h5>${menu.menuitem}</h5>`)
+            .append("select")
+            .attr("id", menu.menuid)
+            .attr("onchange", `${menu.menuonchange}(this.value)`);
+    });
+    //     <div class="well">
+    //     <h5>Information</h5>
+    //     <select id="infoSel" onchange="infoChanged(this.value)"></select>
+    //   </div>
+
+    menuplace.append("div")
+        .append("button")
+        .attr("id", "clearselection")
+        .attr("type", "submit")
+        .attr("class", "btn btn-default")
+        .text("Clear Selection");
+
+    menuplace.append("div").html("<br>")
+
+    test = menuplace.append("div")
+        .attr("class", "panel panel-primary")
+
+    test.append("div")
+        .attr("class", "panel-heading")
+        .append("h3")
+        .attr("class", "panel-title")
+        .text("Selected Tickers")
+
+    test.append("div")
+        .attr("id", "selectedtickers")
+        .attr("class", "panel-body")
+
+    let selector = d3.select("#tickerSel");
+    d3.json("/tickers").then((tickers) => {
+        tickers.forEach(ticker => {
+            selector
+                .append("option")
+                .property("value", ticker)
+                .text(ticker);
+        });
+    });
+
+    let selector2 = d3.select("#infoSel");
+    d3.json("/infotypes").then((infotypes) => {
+        infotypes.forEach(infotype => {
+            selector2
+                .append("option")
+                .property("value", infotype)
+                .text(infotype);
+        });
+    });
+
+    let initialmessage = "<p>Use left selectors to explore stock data information</p>";
+    d3.select("#infoplace").html(initialmessage);
+}
+
+let rgb = (n, i) => {
     let r = 255;
     let g = 0;
     let b = 0;
@@ -44,7 +120,7 @@ let buildPlot = tickers => {
                 x: data[i].x,
                 y: data[i].y,
                 line: {
-                    color: rgb(data.length,i)
+                    color: rgb(data.length, i)
                 }
             };
 
@@ -67,32 +143,8 @@ let buildPlot = tickers => {
     });
 }
 
-let init = () => {
-    let selector = d3.select("#tickerSel");
-    d3.json("/tickers").then((tickers) => {
-        tickers.forEach(ticker => {
-            selector
-                .append("option")
-                .property("value", ticker)
-                .text(ticker);
-        });
-    });
-
-    let selector2 = d3.select("#infoSel");
-    d3.json("/infotypes").then((infotypes) => {
-        infotypes.forEach(infotype => {
-            selector2
-                .append("option")
-                .property("value", infotype)
-                .text(infotype);
-        });
-    });
-
-    let initialmessage = "<p>Use left selectors to explore stock data information</p>";
-    d3.select("#infoplace").html(initialmessage);
-}
-
 let selectedTickers = []
+
 let tickerChanged = newTicker => {
     d3.select("#infoplace").html("");
     selectedTickers.push(newTicker);
