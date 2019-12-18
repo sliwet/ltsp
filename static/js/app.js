@@ -67,15 +67,27 @@ let buildPlot = tickers => {
     });
 }
 
-let selectedTickers = []
+let leftTickers = []
+let rightTickers = []
 
 let tickerChanged = newTicker => {
     d3.select("#infoplace").html("");
-    selectedTickers.push(newTicker);
 
+    let whichAxis = d3.select("#whichAxis").node().querySelector('input[name="axisradio"]:checked').value;
+
+    if (whichAxis == "leftAxis")
+        selectedTickers = leftTickers;
+    else
+        selectedTickers = rightTickers;
+
+    selectedTickers.push(newTicker);
     tickerstr = "";
     selectedTickers.forEach(ticker => tickerstr = tickerstr + ticker + "<br>");
-    d3.select("#selectedtickers").html(tickerstr);
+
+    if (whichAxis == "leftAxis")
+        d3.select("#leftTickers").html(tickerstr);
+    else
+        d3.select("#rightTickers").html(tickerstr);
 
     buildPlot(selectedTickers);
 }
@@ -89,11 +101,15 @@ let infoChanged = newInfo => {
 }
 
 let handleClear = () => {
-    selectedTickers = []
-    d3.select("#selectedtickers").html("");
+    leftTickers = []
+    rightTickers =[]
+    d3.select("#leftTickers").html("");
+    d3.select("#rightTickers").html("");
 }
 
 let init = () => {
+    let initialmessage = "<p>Use left selectors to explore stock data information</p>";
+
     let infoNticker = [
         {
             menuitem: "Information",
@@ -123,6 +139,59 @@ let init = () => {
     //     <select id="infoSel" onchange="infoChanged(this.value)"></select>
     //   </div>
 
+    let tickerSel = d3.select("#tickerSel");
+    d3.json("/tickers").then((tickers) => {
+        tickers.forEach(ticker => {
+            tickerSel
+                .append("option")
+                .property("value", ticker)
+                .text(ticker);
+        });
+    });
+
+    let infoSel = d3.select("#infoSel");
+    d3.json("/infotypes").then((infotypes) => {
+        infotypes.forEach(infotype => {
+            infoSel
+                .append("option")
+                .property("value", infotype)
+                .text(infotype);
+        });
+    });
+
+    // Radio buttons
+    rbuttonhtmls = [
+        "<input type=\"radio\" name=\"axisradio\" value=\"leftAxis\" checked>Left\&nbsp;",
+        "<input type=\"radio\" name=\"axisradio\" value=\"rightAxis\">Right "
+    ]
+
+    axisChoice = menuplace.append("form").text("Axis: ").attr("id", "whichAxis");
+    rbuttonhtmls.forEach(d => {
+        axisChoice.append("label").html(d);
+    });
+
+    // Selected tickers for left and right axis
+    leftRight = [
+        { text: "Left Tickers", id: "leftTickers" },
+        { text: "Right Tickers", id: "rightTickers" }
+    ];
+
+    leftRight.forEach(d => {
+        seltmp = menuplace.append("div")
+            .attr("class", "panel panel-primary")
+
+        seltmp.append("div")
+            .attr("class", "panel-heading")
+            .append("h3")
+            .attr("class", "panel-title")
+            .text(d.text)
+
+        seltmp.append("div")
+            .attr("id", d.id)
+            .attr("class", "panel-body")
+    })
+
+    // Clear Selection
     menuplace.append("div")
         .append("button")
         .attr("id", "clearselection")
@@ -132,46 +201,13 @@ let init = () => {
 
     menuplace.append("div").html("<br>")
 
-    test = menuplace.append("div")
-        .attr("class", "panel panel-primary")
-
-    test.append("div")
-        .attr("class", "panel-heading")
-        .append("h3")
-        .attr("class", "panel-title")
-        .text("Selected Tickers")
-
-    test.append("div")
-        .attr("id", "selectedtickers")
-        .attr("class", "panel-body")
-
-    let selector = d3.select("#tickerSel");
-    d3.json("/tickers").then((tickers) => {
-        tickers.forEach(ticker => {
-            selector
-                .append("option")
-                .property("value", ticker)
-                .text(ticker);
-        });
-    });
-
-    let selector2 = d3.select("#infoSel");
-    d3.json("/infotypes").then((infotypes) => {
-        infotypes.forEach(infotype => {
-            selector2
-                .append("option")
-                .property("value", infotype)
-                .text(infotype);
-        });
-    });
-
-    let initialmessage = "<p>Use left selectors to explore stock data information</p>";
+    // Initial message
     d3.select("#infoplace").html(initialmessage);
-}
 
-// Start of execution routines
+    // Event handler
+    d3.select("#clearselection").on("click", handleClear);
+}
 
 init();
 
-d3.select("#clearselection").on("click", handleClear);
 
