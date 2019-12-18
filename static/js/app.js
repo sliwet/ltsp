@@ -22,10 +22,10 @@ let rgb = (n, i) => {
     return ["rgb(", r, ",", g, ",", b, ")"].join("");
 }
 
-let buildPlot = tickers => {
-    let tickers_str = tickers[0];
-    for (let i = 1; i < tickers.length; i++) {
-        tickers_str = tickers_str + "_" + tickers[i];
+let buildPlot = (lt,rt) => {
+    let tickers_str = lt[0];
+    for (let i = 1; i < lt.length; i++) {
+        tickers_str = tickers_str + "_" + lt[i];
     }
 
     let url = "/gettickerdata/" + tickers_str;
@@ -40,7 +40,7 @@ let buildPlot = tickers => {
             let trace = {
                 type: "scatter",
                 mode: "lines",
-                name: tickers[i],
+                name: lt[i],
                 x: data[i].x,
                 y: data[i].y,
                 line: {
@@ -89,7 +89,7 @@ let tickerChanged = newTicker => {
     else
         d3.select("#rightTickers").html(tickerstr);
 
-    buildPlot(selectedTickers);
+    buildPlot(leftTickers,rightTickers);
 }
 
 let infoChanged = newInfo => {
