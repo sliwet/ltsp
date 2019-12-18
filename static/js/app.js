@@ -70,7 +70,7 @@ let buildPlot = (lt,rt) => {
 let leftTickers = []
 let rightTickers = []
 
-let tickerChanged = newTicker => {
+let handleTickerChange = newTicker => {
     d3.select("#infoplace").html("");
 
     let whichAxis = d3.select("#whichAxis").node().querySelector('input[name="axisradio"]:checked').value;
@@ -92,7 +92,7 @@ let tickerChanged = newTicker => {
     buildPlot(leftTickers,rightTickers);
 }
 
-let infoChanged = newInfo => {
+let handleInfoChange = newInfo => {
     let url = "/showinfo/" + newInfo;
     d3.json(url).then(info => {
         infoplace = d3.select("#infoplace");
@@ -114,12 +114,12 @@ let init = () => {
         {
             menuitem: "Information",
             menuid: "infoSel",
-            menuonchange: "infoChanged"
+            menuonchange: "handleInfoChange"
         },
         {
             menuitem: "Ticker",
             menuid: "tickerSel",
-            menuonchange: "tickerChanged"
+            menuonchange: "handleTickerChange"
         }
     ]
 
@@ -136,7 +136,7 @@ let init = () => {
     });
     //     <div class="well">
     //     <h5>Information</h5>
-    //     <select id="infoSel" onchange="infoChanged(this.value)"></select>
+    //     <select id="infoSel" onchange="handleInfoChange(this.value)"></select>
     //   </div>
 
     let tickerSel = d3.select("#tickerSel");
