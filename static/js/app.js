@@ -35,40 +35,42 @@ let getTickerURL = (d) => {
 }
 
 let buildPlot = (lt,rt) => {
-    d3.json(getTickerURL(lt)).then(data => {
-        let traces = []
+    d3.json(getTickerURL(lt)).then(ld => {
+        // d3.json(getTickerURL(rt)).then(rd => {
+            let traces = []
 
-        // let xmin = d3.min(data[0].x);
-        // let xmax = d3.max(data[0].x);
-        // console.log(`Min: ${xmin} , Max: ${xmax}`);
-        for (let i = 0; i < data.length; i++) {
-            let trace = {
-                type: "scatter",
-                mode: "lines",
-                name: lt[i],
-                x: data[i].x,
-                y: data[i].y,
-                line: {
-                    color: rgb(data.length, i)
-                }
+            // let xmin = d3.min(data[0].x);
+            // let xmax = d3.max(data[0].x);
+            // console.log(`Min: ${xmin} , Max: ${xmax}`);
+            for (let i = 0; i < ld.length; i++) {
+                let trace = {
+                    type: "scatter",
+                    mode: "lines",
+                    name: lt[i],
+                    x: ld[i].x,
+                    y: ld[i].y,
+                    line: {
+                        color: rgb(ld.length, i)
+                    }
+                };
+
+                traces.push(trace);
+            }
+
+            let layout = {
+                title: `closing prices`,
+                // xaxis: {
+                //     range: [startDate, endDate],
+                //     type: "date"
+                // },
+                // yaxis: {
+                //     autorange: true,
+                //     type: "linear"
+                // }
             };
 
-            traces.push(trace);
-        }
-
-        let layout = {
-            title: `closing prices`,
-            // xaxis: {
-            //     range: [startDate, endDate],
-            //     type: "date"
-            // },
-            // yaxis: {
-            //     autorange: true,
-            //     type: "linear"
-            // }
-        };
-
-        Plotly.newPlot("infoplace", traces, layout);
+            Plotly.newPlot("infoplace", traces, layout);
+        // });
     });
 }
 
@@ -217,5 +219,3 @@ let init = () => {
 }
 
 init();
-
-
