@@ -22,15 +22,20 @@ let rgb = (n, i) => {
     return ["rgb(", r, ",", g, ",", b, ")"].join("");
 }
 
-let buildPlot = (lt,rt) => {
-    let tickers_str = lt[0];
-    for (let i = 1; i < lt.length; i++) {
-        tickers_str = tickers_str + "_" + lt[i];
+let getTickerURL = (d) => {
+    if(d.length < 1) return null;
+
+    let d_str = d[0];
+    if(d.length > 1){
+        for (let i = 1; i < d.length; i++) {
+            d_str = d_str + "_" + d[i];
+        }
     }
+    return "/gettickerdata/" + d_str;
+}
 
-    let url = "/gettickerdata/" + tickers_str;
-
-    d3.json(url).then(data => {
+let buildPlot = (lt,rt) => {
+    d3.json(getTickerURL(lt)).then(data => {
         let traces = []
 
         // let xmin = d3.min(data[0].x);
@@ -74,20 +79,22 @@ let handleTickerChange = newTicker => {
     d3.select("#infoplace").html("");
 
     let whichAxis = d3.select("#whichAxis").node().querySelector('input[name="axisradio"]:checked').value;
+    let whichTickers = ""
 
-    if (whichAxis == "leftAxis")
+    if (whichAxis == "leftAxis"){
         selectedTickers = leftTickers;
-    else
+        whichTickers = "#leftTickers";
+    }
+    else{
         selectedTickers = rightTickers;
+        whichTickers = "#rightTickers"
+    }
 
     selectedTickers.push(newTicker);
     tickerstr = "";
     selectedTickers.forEach(ticker => tickerstr = tickerstr + ticker + "<br>");
 
-    if (whichAxis == "leftAxis")
-        d3.select("#leftTickers").html(tickerstr);
-    else
-        d3.select("#rightTickers").html(tickerstr);
+    d3.select(whichTickers).html(tickerstr);
 
     buildPlot(leftTickers,rightTickers);
 }
@@ -105,6 +112,7 @@ let handleClear = () => {
     rightTickers =[]
     d3.select("#leftTickers").html("");
     d3.select("#rightTickers").html("");
+    d3.select("#infoplace").html("");
 }
 
 let init = () => {
