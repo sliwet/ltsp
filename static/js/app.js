@@ -37,10 +37,24 @@ let getTickerURL = (d) => {
 let buildPlot = (lt, rt) => {
     d3.json(getTickerURL(lt)).then(ld => {
         d3.json(getTickerURL(rt)).then(rd => {
+            d3.select("#infoplace").html("");
+
+            let isleft = true;
+            let isdual = false;
+
             if (ld.length == 0){
-                d3.select("#infoplace").html("");
-                return;
+                isleft = false;
+                isdual = false;
             }
+            else if(rd.length == 0){
+                isleft = true;
+                isdual = false;
+            }
+            else{
+                isdual = true;
+            }
+
+            if(!isleft) return;
 
             let traces = []
 

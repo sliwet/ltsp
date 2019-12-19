@@ -16,8 +16,7 @@ ENV = 'dev'
 
 if ENV == 'dev':
     app.debug = True
-    dbname = 'ltsp'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/' + dbname
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/ltsp'
 else:
     app.debug = False
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '')
