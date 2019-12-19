@@ -23,10 +23,10 @@ let rgb = (n, i) => {
 }
 
 let getTickerURL = (d) => {
-    if(d.length < 1) return null;
+    if (d.length == 0) return null;
 
     let d_str = d[0];
-    if(d.length > 1){
+    if (d.length > 1) {
         for (let i = 1; i < d.length; i++) {
             d_str = d_str + "_" + d[i];
         }
@@ -34,23 +34,38 @@ let getTickerURL = (d) => {
     return "/gettickerdata/" + d_str;
 }
 
-let buildPlot = (lt,rt) => {
-    d3.json(getTickerURL(lt)).then(ld => {
-        // d3.json(getTickerURL(rt)).then(rd => {
+let buildPlot = (lt, rt) => {
+    let lurl = getTickerURL(lt);
+    let rurl = getTickerURL(rt);
+
+    if ((lurl == null) || (rurl == null)) {
+        let tickers = [];
+        let url = "";
+
+        if (lurl == null) {
+            tickers = rt;
+            url = rurl;
+        }
+        else {
+            tickers = lt;
+            url = lurl;
+        }
+
+        d3.json(url).then(d => {
             let traces = []
 
             // let xmin = d3.min(data[0].x);
             // let xmax = d3.max(data[0].x);
             // console.log(`Min: ${xmin} , Max: ${xmax}`);
-            for (let i = 0; i < ld.length; i++) {
+            for (let i = 0; i < d.length; i++) {
                 let trace = {
                     type: "scatter",
                     mode: "lines",
-                    name: lt[i],
-                    x: ld[i].x,
-                    y: ld[i].y,
+                    name: tickers[i],
+                    x: d[i].x,
+                    y: d[i].y,
                     line: {
-                        color: rgb(ld.length, i)
+                        color: rgb(d.length, i)
                     }
                 };
 
@@ -70,8 +85,47 @@ let buildPlot = (lt,rt) => {
             };
 
             Plotly.newPlot("infoplace", traces, layout);
-        // });
-    });
+        });
+    }
+    else {
+        d3.json(lurl).then(ld => {
+            d3.json(rurl).then(rd => {
+                let traces = []
+
+                // let xmin = d3.min(data[0].x);
+                // let xmax = d3.max(data[0].x);
+                // console.log(`Min: ${xmin} , Max: ${xmax}`);
+                for (let i = 0; i < ld.length; i++) {
+                    let trace = {
+                        type: "scatter",
+                        mode: "lines",
+                        name: lt[i],
+                        x: ld[i].x,
+                        y: ld[i].y,
+                        line: {
+                            color: rgb(ld.length, i)
+                        }
+                    };
+
+                    traces.push(trace);
+                }
+
+                let layout = {
+                    title: `closing prices`,
+                    // xaxis: {
+                    //     range: [startDate, endDate],
+                    //     type: "date"
+                    // },
+                    // yaxis: {
+                    //     autorange: true,
+                    //     type: "linear"
+                    // }
+                };
+
+                Plotly.newPlot("infoplace", traces, layout);
+            });
+        });
+    }
 }
 
 let leftTickers = []
@@ -83,11 +137,11 @@ let handleTickerChange = newTicker => {
     let whichAxis = d3.select("#whichAxis").node().querySelector('input[name="axisradio"]:checked').value;
     let whichTickers = ""
 
-    if (whichAxis == "leftAxis"){
+    if (whichAxis == "leftAxis") {
         selectedTickers = leftTickers;
         whichTickers = "#leftTickers";
     }
-    else{
+    else {
         selectedTickers = rightTickers;
         whichTickers = "#rightTickers"
     }
@@ -98,7 +152,7 @@ let handleTickerChange = newTicker => {
 
     d3.select(whichTickers).html(tickerstr);
 
-    buildPlot(leftTickers,rightTickers);
+    buildPlot(leftTickers, rightTickers);
 }
 
 let handleInfoChange = newInfo => {
@@ -111,7 +165,7 @@ let handleInfoChange = newInfo => {
 
 let handleClear = () => {
     leftTickers = []
-    rightTickers =[]
+    rightTickers = []
     d3.select("#leftTickers").html("");
     d3.select("#rightTickers").html("");
     d3.select("#infoplace").html("");
