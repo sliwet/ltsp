@@ -124,6 +124,10 @@ def cleantickersindescriptions():
     info = ltspquery.cleanTickersInDescriptions(engine,tickers,descriptions)
     return render_template('showinfo.html',message = info)
 
+@app.route('/getempty')
+def getempty():
+    return jsonify([])
+
 @app.route('/tickers')
 def fillTickers():
     return jsonify(tickers)

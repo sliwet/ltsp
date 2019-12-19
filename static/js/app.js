@@ -23,7 +23,7 @@ let rgb = (n, i) => {
 }
 
 let getTickerURL = (d) => {
-    if (d.length == 0) return null;
+    if (d.length == 0) return "/getempty";
 
     let d_str = d[0];
     if (d.length > 1) {
@@ -35,37 +35,27 @@ let getTickerURL = (d) => {
 }
 
 let buildPlot = (lt, rt) => {
-    let lurl = getTickerURL(lt);
-    let rurl = getTickerURL(rt);
+    d3.json(getTickerURL(lt)).then(ld => {
+        d3.json(getTickerURL(rt)).then(rd => {
+            if (ld.length == 0){
+                d3.select("#infoplace").html("");
+                return;
+            }
 
-    if ((lurl == null) || (rurl == null)) {
-        let tickers = [];
-        let url = "";
-
-        if (lurl == null) {
-            tickers = rt;
-            url = rurl;
-        }
-        else {
-            tickers = lt;
-            url = lurl;
-        }
-
-        d3.json(url).then(d => {
             let traces = []
 
             // let xmin = d3.min(data[0].x);
             // let xmax = d3.max(data[0].x);
             // console.log(`Min: ${xmin} , Max: ${xmax}`);
-            for (let i = 0; i < d.length; i++) {
+            for (let i = 0; i < ld.length; i++) {
                 let trace = {
                     type: "scatter",
                     mode: "lines",
-                    name: tickers[i],
-                    x: d[i].x,
-                    y: d[i].y,
+                    name: lt[i],
+                    x: ld[i].x,
+                    y: ld[i].y,
                     line: {
-                        color: rgb(d.length, i)
+                        color: rgb(ld.length, i)
                     }
                 };
 
@@ -86,46 +76,7 @@ let buildPlot = (lt, rt) => {
 
             Plotly.newPlot("infoplace", traces, layout);
         });
-    }
-    else {
-        d3.json(lurl).then(ld => {
-            d3.json(rurl).then(rd => {
-                let traces = []
-
-                // let xmin = d3.min(data[0].x);
-                // let xmax = d3.max(data[0].x);
-                // console.log(`Min: ${xmin} , Max: ${xmax}`);
-                for (let i = 0; i < ld.length; i++) {
-                    let trace = {
-                        type: "scatter",
-                        mode: "lines",
-                        name: lt[i],
-                        x: ld[i].x,
-                        y: ld[i].y,
-                        line: {
-                            color: rgb(ld.length, i)
-                        }
-                    };
-
-                    traces.push(trace);
-                }
-
-                let layout = {
-                    title: `closing prices`,
-                    // xaxis: {
-                    //     range: [startDate, endDate],
-                    //     type: "date"
-                    // },
-                    // yaxis: {
-                    //     autorange: true,
-                    //     type: "linear"
-                    // }
-                };
-
-                Plotly.newPlot("infoplace", traces, layout);
-            });
-        });
-    }
+    });
 }
 
 let leftTickers = []
