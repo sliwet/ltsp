@@ -40,29 +40,23 @@ let buildPlot = (lt, rt) => {
             d3.select("#infoplace").html("");
 
             let isleft = true;
-            let isdual = false;
+            if (ld.length == 0) isleft = false;
+            
+            let isright = true;
+            if(rd.length == 0) isright = false;
 
-            if (ld.length == 0){
-                isleft = false;
-                isdual = false;
-            }
-            else if(rd.length == 0){
-                isleft = true;
-                isdual = false;
-            }
-            else{
-                isdual = true;
-            }
 // Start of plotting routine
             let plotconf = {
-                b_dual:isdual,
                 b_left:isleft,
+                name_l:lt,
                 data_l:ld,
+                b_right:isright,
+                name_r:rt,
                 data_r:rd
             }
 
             window.addEventListener('resize', dkplot);
-            dkplot(plotconf);
+            dkplot("#infoplace",plotconf);
 
             // let traces = []
 

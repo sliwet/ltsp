@@ -1,44 +1,92 @@
-// let traces = []
+let getXYlabelConf = (margin, width, height) => {
+    let xylabelconf = [
+        {
+        },
+        {  // this is for left y axis
+            'y': -margin.left / 2, // horizontal position
+            'x': -height / 2,          // vertical position
+            'value': 'yl',
+            // 'active': true,
+            // 'inactive': false,
+            'text': "Left Y Label"
+        },
+        { // this is for right y axis
+            'y': width + margin.right / 2,
+            'x': -height / 2,
+            'value': 'yr',
+            // 'active': false,
+            // 'inactive': true,
+            'text': "Rigth Y Label"
+        }
+    ];
 
-// // let xmin = d3.min(data[0].x);
-// // let xmax = d3.max(data[0].x);
-// // console.log(`Min: ${xmin} , Max: ${xmax}`);
-// for (let i = 0; i < ld.length; i++) {
-//     let trace = {
-//         type: "scatter",
-//         mode: "lines",
-//         name: lt[i],
-//         x: ld[i].x,
-//         y: ld[i].y,
-//         line: {
-//             color: rgb(ld.length, i)
-//         }
-//     };
-
-//     traces.push(trace);
-// }
-
-// let layout = {
-//     title: `closing prices`,
-//     // xaxis: {
-//     //     range: [startDate, endDate],
-//     //     type: "date"
-//     // },
-//     // yaxis: {
-//     //     autorange: true,
-//     //     type: "linear"
-//     // }
-// };
-
-// Plotly.newPlot("infoplace", traces, layout);
+    return xylabelconf;
+}
 
 
+let getLinearScale = (chosenAxis, minMax, width_height) => {
+    let min = minMax[0], max = minMax[1];
+    if (min > max) {
+        min = minMax[1];
+        max = minMax[0];
+    }
 
+    let viewrange = [];
 
+    if (chosenAxis == 'x') viewrange = [0, width_height]
+    else viewrange = [width_height, 0];
 
-let lambSVG = (plotconf, uniqueId, widthInput, heightInput, margin) => {
+    let padd = (max - min) * 0.1;
+
+    let linearScale = d3.scaleLinear()
+        .domain([min - padd, max + padd])
+        .range(viewrange);
+
+    return linearScale;
+}
+
+let getXYminmax = (dataset, xyminmax) => {
+    let parseTime = d3.timeParse("%Y-%m-%d");
+    let xminall = [], xmaxall = [], yminall = [], ymaxall = [];
+    let minmaxtmp = [];
+
+    if (xyminmax[0] != null) {
+        xminall.push(xyminmax[0][0]);
+        xmaxall.push(xyminmax[0][1]);
+    }
+
+    if (xyminmax[1] != null) {
+        yminall.push(xyminmax[1][0]);
+        ymaxall.push(xyminmax[1][1]);
+    }
+
+    xyminmax = [];
+
+    dataset.forEach((d, i) => {
+        let xtmp = [];
+        d.x.forEach(data => {
+            xtmp.push(parseTime(data));
+        });
+        d.x = xtmp;
+
+        minmaxtmp = d3.extent(d.x);
+        xminall.push(minmaxtmp[0]);
+        xmaxall.push(minmaxtmp[1]);
+
+        minmaxtmp = d3.extent(d.y);
+        yminall.push(minmaxtmp[0]);
+        ymaxall.push(minmaxtmp[1]);
+    });
+
+    xyminmax.push([d3.min(xminall), d3.max(xmaxall)]);
+    xyminmax.push([d3.min(yminall), d3.max(ymaxall)]);
+
+    return xyminmax;
+}
+
+let lambSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margin) => {
     return {
-        init: function () {
+        init: () => {
             let svgWidth = widthInput;
             let svgHeight = heightInput;
 
@@ -55,106 +103,79 @@ let lambSVG = (plotconf, uniqueId, widthInput, heightInput, margin) => {
             let width = svgWidth - margin.left - margin.right;
             let height = svgHeight - margin.top - margin.bottom;
 
-            let svg = d3.select("#infoplace").append("svg").attr("width", svgWidth).attr("height", svgHeight).attr("id", uniqueId);
+            let svg = d3.select(wheretoplot).append("svg").attr("width", svgWidth).attr("height", svgHeight).attr("id", uniqueId);
             let chartGroup = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-            // plotconf.b_dual
-            // plotconf.b_left
-            // plotconf.data_l
-            // plotconf.data_r
+            let isleft = plotconf.b_left;
+            let isright = plotconf.b_right;
+            let xminmax = null, ylminmax = null, yrminmax = null;
 
-            // let xx = [];
-            // plotconf.data_l[0].x.forEach((element,i) => {
-            //     xx.push(i);
-            // });
+            if (isleft) {
+                let xyminmax = getXYminmax(plotconf.data_l, [xminmax, ylminmax]);
+                xminmax = xyminmax[0];
+                ylminmax = xyminmax[1];
+            }
 
-            let hairData = plotconf.data_l;
+            if (isright) {
+                let xyminmax = getXYminmax(plotconf.data_r, [xminmax, yrminmax]);
+                xminmax = xyminmax[0];
+                yrminmax = xyminmax[1];
+            }
 
-            // // Step 2: Create scale functions
-            // // ==============================
-            let xLinearScale = d3.scaleLinear()
-                .domain([d3.min(hairData, d => d.x), d3.max(hairData, d => d.x)])
-                .range([0, width]);
-
-            let yLinearScale = d3.scaleLinear()
-                .domain([d3.min(hairData, d => d.y), d3.max(hairData, d => d.y)])
-                .range([height, 0]);
-
-            // Step 3: Create axis functions
-            // ==============================
-            let bottomAxis = d3.axisBottom(xLinearScale);
-            let leftAxis = d3.axisLeft(yLinearScale);
-
-            // Step 4: Append Axes to the chart
-            // ==============================
-            chartGroup.append("g")
+            let xLinearScale = getLinearScale("x", xminmax, width);
+            let xAxis = chartGroup.append("g")
+                .classed("x-axis", true)
                 .attr("transform", `translate(0, ${height})`)
-                .call(bottomAxis);
+                .call(d3.axisBottom(xLinearScale));
 
-            chartGroup.append("g")
-                .call(leftAxis);
+            // let xlabel = chartGroup.append("g")
+            //     .attr("transform", `translate(${width / 2}, ${height + 20})`)
+            //     .append("text")
+            //     .attr("x", 0)
+            //     .attr("y", 20)
+            //     .attr("value", "x")
+            //     .text("X label here");
 
-            // Step 5: Create Circles
-            // ==============================
-            let circlesGroup = chartGroup.selectAll("circle")
-                .data(hairData)
-                .enter()
-                .append("circle")
-                .attr("cx", d => xLinearScale(d.x))
-                .attr("cy", d => yLinearScale(d.y))
-                .attr("r", "15")
-                .attr("fill", "pink")
-                .attr("opacity", ".5");
+            let ylLinearScale = null, yrLinearScale = null, ylAxis = null, yrAxis = null, ylLabelsGroup = null, yrLabelsGroup = null;
 
-            // // Step 6: Initialize tool tip
-            // // ==============================
-            // let toolTip = d3.tip()
-            //     .attr("class", "tooltip")
-            //     .offset([80, -60])
-            //     .html(function (d) {
-            //         return (`${d.rockband}<br>Hair length: ${d.hair_length}<br>Hits: ${d.num_hits}`);
+            if (isleft) {
+                ylLinearScale = getLinearScale("yl", ylminmax, height);
+                ylAxis = chartGroup.append("g")
+                    .classed("yl-axis", true)
+                    .call(d3.axisLeft(ylLinearScale));
+                ylLabelsGroup = chartGroup.append("g")
+                    .attr("transform", "rotate(-90)")
+            }
+
+            if (isright) {
+                yrLinearScale = getLinearScale("yr", yrminmax, height);
+                yrAxis = chartGroup.append("g")
+                    .classed("yr-axis", true)
+                    .attr("transform", `translate(${width}, 0)`)
+                    .call(d3.axisRight(yrLinearScale));
+                yrLabelsGroup = chartGroup.append("g")
+                    .attr("transform", `translate(${width}, 0)`)
+                    .attr("transform", "rotate(-90)")
+            }
+
+
+
+
+            // if(isright){
+            //     plotconf.data_r.forEach((d,i) => {
+            //         console.log(plotconf.name_r[i]);
+            //         console.log(d.x);
+            //         console.log(d.y);
             //     });
+            // }
 
-            // // Step 7: Create tooltip in the chart
-            // // ==============================
-            // chartGroup.call(toolTip);
-
-            // // Step 8: Create event listeners to display and hide the tooltip
-            // // ==============================
-            // circlesGroup.on("click", function (data) {
-            //     toolTip.show(data, this);
-            //     d3.select(this).transition()
-            //         .duration(500)
-            //         .attr("fill", "black")
-            //         .style("opacity", "1");
-            // })
-            //     // onmouseout event
-            //     .on("mouseout", function (data, index) {
-            //         toolTip.hide(data);
-            //         d3.select(this)
-            //             .attr("fill", "pink").style("opacity", "0.5");
-            //     });
-
-            // // Create axes labels
-            // chartGroup.append("text")
-            //     .attr("transform", "rotate(-90)")
-            //     .attr("y", 0 - margin.left + 40)
-            //     .attr("x", 0 - (height / 2))
-            //     .attr("dy", "1em")
-            //     .attr("class", "axisText")
-            //     .text("Number of Billboard 100 Hits");
-
-            // chartGroup.append("text")
-            //     .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
-            //     .attr("class", "axisText")
-            //     .text("Hair Metal Band Hair Length (inches)");
         }
     };
 };
 
-let dkplot = (plotconf) => {
+let dkplot = (wheretoplot, plotconf) => {
     d3.select("#svgplot").remove();
-    let lambRunner = lambSVG(plotconf, "svgplot", window.innerWidth * 2 / 3, window.innerHeight * 2 / 3);
+    let lambRunner = lambSVG(wheretoplot, plotconf, "svgplot", window.innerWidth * 2 / 3, window.innerHeight * 2 / 3);
     lambRunner.init();
 }
 
