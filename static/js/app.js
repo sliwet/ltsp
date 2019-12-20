@@ -53,42 +53,51 @@ let buildPlot = (lt, rt) => {
             else{
                 isdual = true;
             }
-
-            if(!isleft) return;
-
-            let traces = []
-
-            // let xmin = d3.min(data[0].x);
-            // let xmax = d3.max(data[0].x);
-            // console.log(`Min: ${xmin} , Max: ${xmax}`);
-            for (let i = 0; i < ld.length; i++) {
-                let trace = {
-                    type: "scatter",
-                    mode: "lines",
-                    name: lt[i],
-                    x: ld[i].x,
-                    y: ld[i].y,
-                    line: {
-                        color: rgb(ld.length, i)
-                    }
-                };
-
-                traces.push(trace);
+// Start of plotting routine
+            let plotconf = {
+                b_dual:isdual,
+                b_left:isleft,
+                data_l:ld,
+                data_r:rd
             }
 
-            let layout = {
-                title: `closing prices`,
-                // xaxis: {
-                //     range: [startDate, endDate],
-                //     type: "date"
-                // },
-                // yaxis: {
-                //     autorange: true,
-                //     type: "linear"
-                // }
-            };
+            window.addEventListener('resize', dkplot);
+            dkplot(plotconf);
 
-            Plotly.newPlot("infoplace", traces, layout);
+            // let traces = []
+
+            // // let xmin = d3.min(data[0].x);
+            // // let xmax = d3.max(data[0].x);
+            // // console.log(`Min: ${xmin} , Max: ${xmax}`);
+            // for (let i = 0; i < ld.length; i++) {
+            //     let trace = {
+            //         type: "scatter",
+            //         mode: "lines",
+            //         name: lt[i],
+            //         x: ld[i].x,
+            //         y: ld[i].y,
+            //         line: {
+            //             color: rgb(ld.length, i)
+            //         }
+            //     };
+
+            //     traces.push(trace);
+            // }
+
+            // let layout = {
+            //     title: `closing prices`,
+            //     // xaxis: {
+            //     //     range: [startDate, endDate],
+            //     //     type: "date"
+            //     // },
+            //     // yaxis: {
+            //     //     autorange: true,
+            //     //     type: "linear"
+            //     // }
+            // };
+
+            // Plotly.newPlot("infoplace", traces, layout);
+// End of plotting routine
         });
     });
 }
