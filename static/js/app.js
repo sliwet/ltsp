@@ -40,23 +40,49 @@ let buildPlot = (lt, rt) => {
             d3.select("#infoplace").html("");
 
             let isleft = true;
-            if (ld.length == 0) isleft = false;
-            
-            let isright = true;
-            if(rd.length == 0) isright = false;
+            let parseTime = d3.timeParse("%Y-%m-%d");
 
-// Start of plotting routine
+            if (ld.length == 0) isleft = false;
+            else {
+                ld.forEach(d => {
+                    let xtmp = [];
+                    d.x.forEach(data => {
+                        xtmp.push(parseTime(data));
+                    });
+                    d.x = xtmp;
+                });
+            }
+
+            let isright = true;
+            if (rd.length == 0) isright = false;
+            else {
+                rd.forEach(d => {
+                    let xtmp = [];
+                    d.x.forEach(data => {
+                        xtmp.push(parseTime(data));
+                    });
+                    d.x = xtmp;
+                });
+            }
+
+            // Start of plotting routine
             let plotconf = {
-                b_left:isleft,
-                name_l:lt,
-                data_l:ld,
-                b_right:isright,
-                name_r:rt,
-                data_r:rd
+                b_left: isleft,
+                name_l: lt,
+                data_l: ld,
+                b_right: isright,
+                name_r: rt,
+                data_r: rd
+            }
+
+            let dkplot = () => {
+                d3.select("#svgplot").remove();
+                let lambRunner = lambSVG("#infoplace", plotconf, "svgplot", window.innerWidth * 2 / 3, window.innerHeight * 2 / 3);
+                lambRunner.init();
             }
 
             window.addEventListener('resize', dkplot);
-            dkplot("#infoplace",plotconf);
+            dkplot();
 
             // let traces = []
 
@@ -91,7 +117,7 @@ let buildPlot = (lt, rt) => {
             // };
 
             // Plotly.newPlot("infoplace", traces, layout);
-// End of plotting routine
+            // End of plotting routine
         });
     });
 }

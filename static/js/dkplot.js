@@ -1,29 +1,3 @@
-let getXYlabelConf = (margin, width, height) => {
-    let xylabelconf = [
-        {
-        },
-        {  // this is for left y axis
-            'y': -margin.left / 2, // horizontal position
-            'x': -height / 2,          // vertical position
-            'value': 'yl',
-            // 'active': true,
-            // 'inactive': false,
-            'text': "Left Y Label"
-        },
-        { // this is for right y axis
-            'y': width + margin.right / 2,
-            'x': -height / 2,
-            'value': 'yr',
-            // 'active': false,
-            // 'inactive': true,
-            'text': "Rigth Y Label"
-        }
-    ];
-
-    return xylabelconf;
-}
-
-
 let getLinearScale = (chosenAxis, minMax, width_height) => {
     let min = minMax[0], max = minMax[1];
     if (min > max) {
@@ -46,7 +20,6 @@ let getLinearScale = (chosenAxis, minMax, width_height) => {
 }
 
 let getXYminmax = (dataset, xyminmax) => {
-    let parseTime = d3.timeParse("%Y-%m-%d");
     let xminall = [], xmaxall = [], yminall = [], ymaxall = [];
     let minmaxtmp = [];
 
@@ -63,12 +36,6 @@ let getXYminmax = (dataset, xyminmax) => {
     xyminmax = [];
 
     dataset.forEach((d, i) => {
-        let xtmp = [];
-        d.x.forEach(data => {
-            xtmp.push(parseTime(data));
-        });
-        d.x = xtmp;
-
         minmaxtmp = d3.extent(d.x);
         xminall.push(minmaxtmp[0]);
         xmaxall.push(minmaxtmp[1]);
@@ -91,7 +58,7 @@ let lambSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margin)
             let svgHeight = heightInput;
 
             if (typeof margin === 'undefined' || margin == null) {
-                margin = { top: 20, right: 40, bottom: 60, left: 100 };
+                margin = { top: 20, right: 100, bottom: 60, left: 100 };
             }
             else {
                 margin.top = typeof margin.top === 'undefined' ? 20 : margin.top;
@@ -128,23 +95,28 @@ let lambSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margin)
                 .attr("transform", `translate(0, ${height})`)
                 .call(d3.axisBottom(xLinearScale));
 
-            // let xlabel = chartGroup.append("g")
-            //     .attr("transform", `translate(${width / 2}, ${height + 20})`)
-            //     .append("text")
-            //     .attr("x", 0)
-            //     .attr("y", 20)
-            //     .attr("value", "x")
-            //     .text("X label here");
+            let label_x = chartGroup.append("g")
+                .attr("transform", `translate(${width / 2}, ${height + 20})`)
+                .append("text")
+                .attr("x", 0)
+                .attr("y", 20)
+                .attr("value", "x")
+                .text("X label here");
 
-            let ylLinearScale = null, yrLinearScale = null, ylAxis = null, yrAxis = null, ylLabelsGroup = null, yrLabelsGroup = null;
+            let ylLinearScale = null, yrLinearScale = null, ylAxis = null, yrAxis = null, label_yl = null, label_yr = null;
 
             if (isleft) {
                 ylLinearScale = getLinearScale("yl", ylminmax, height);
                 ylAxis = chartGroup.append("g")
                     .classed("yl-axis", true)
                     .call(d3.axisLeft(ylLinearScale));
-                ylLabelsGroup = chartGroup.append("g")
+                label_yl = chartGroup.append("g")
                     .attr("transform", "rotate(-90)")
+                    .append("text")
+                    .attr("y", -margin.left *2/ 3) // horizontal position
+                    .attr("x", -height / 2) // vertical position
+                    .attr("value", "yl")
+                    .text("Left Y Label");        
             }
 
             if (isright) {
@@ -153,12 +125,14 @@ let lambSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margin)
                     .classed("yr-axis", true)
                     .attr("transform", `translate(${width}, 0)`)
                     .call(d3.axisRight(yrLinearScale));
-                yrLabelsGroup = chartGroup.append("g")
-                    .attr("transform", `translate(${width}, 0)`)
-                    .attr("transform", "rotate(-90)")
+                label_yr = chartGroup.append("g")
+                    .attr("transform", "rotate(90)")
+                    .append("text")
+                    .attr("y", -width -margin.right * 2/ 3) // horizontal position
+                    .attr("x", height / 2 - margin.bottom) // vertical position
+                    .attr("value", "yr")
+                    .text("Right Y Label");        
             }
-
-
 
 
             // if(isright){
@@ -173,9 +147,4 @@ let lambSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margin)
     };
 };
 
-let dkplot = (wheretoplot, plotconf) => {
-    d3.select("#svgplot").remove();
-    let lambRunner = lambSVG(wheretoplot, plotconf, "svgplot", window.innerWidth * 2 / 3, window.innerHeight * 2 / 3);
-    lambRunner.init();
-}
 
