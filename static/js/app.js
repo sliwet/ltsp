@@ -75,14 +75,14 @@ let buildPlot = (lt, rt) => {
                 data_r: rd
             }
 
-            let dkplot = () => {
-                d3.select("#svgplot").remove();
-                let lambRunner = lambSVG("#infoplace", plotconf, "svgplot", window.innerWidth * 2 / 3, window.innerHeight * 2 / 3);
-                lambRunner.init();
+            let dualplot = () => {
+                d3.select("#dualplot").remove();
+                let lambdaRunner = lambdaSVG("#infoplace", plotconf, "dualplot", window.innerWidth * 2 / 3, window.innerHeight * 2 / 3);
+                lambdaRunner.init();
             }
 
-            window.addEventListener('resize', dkplot);
-            dkplot();
+            window.addEventListener('resize', dualplot);
+            dualplot();
 
             // let traces = []
 

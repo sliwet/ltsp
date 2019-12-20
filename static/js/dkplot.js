@@ -51,7 +51,7 @@ let getXYminmax = (dataset, xyminmax) => {
     return xyminmax;
 }
 
-let lambSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margin) => {
+let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margin) => {
     return {
         init: () => {
             let svgWidth = widthInput;
