@@ -23,13 +23,32 @@ let rgb = (n, i) => {
 }
 
 let addLine = (chartGroup, xy1, xy2, linecolor) => {
-    chartGroup.append("line")
+    let oneline = chartGroup.append("line")
         .attr("x1", xy1.x)
         .attr("y1", xy1.y)
         .attr("x2", xy2.x)
         .attr("y2", xy2.y)
         .attr("fill", "none")
         .attr("stroke", linecolor);
+    return oneline;
+}
+
+let addRect = (chartGroup,xy1,xy2,linecolor,strokewidth,fillcolor) => {
+    if (typeof fillcolor === 'undefined' || fillcolor == null) fillcolor = "none";
+    let xy = {x:d3.min([xy1.x,xy2.x]),y:d3.min([xy1.y,xy2.y])}
+    let width = Math.abs(xy1.x - xy2.x);
+    let height = Math.abs(xy1.y - xy2.y);
+
+    let onerect = chartGroup.append("rect")
+        .attr("x", xy.x)
+        .attr("y", xy.y)
+        .attr("width", width)
+        .attr("height", height)
+        .attr("fill", fillcolor)
+        .attr("stroke", linecolor)
+        .attr("stroke-width",strokewidth);
+
+    return onerect;
 }
 
 let addPath = (chartGroup, xydata, xScale, yScale, pathcolor) => {
@@ -144,11 +163,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
             let svg = d3.select(wheretoplot).append("svg").attr("width", svgWidth).attr("height", svgHeight).attr("id", uniqueId);
             let chartGroup = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-            let outlinecolor = "black";
-            addLine(chartGroup, { x: 0, y: 0 }, { x: width, y: 0 }, outlinecolor);
-            addLine(chartGroup, { x: 0, y: height }, { x: width, y: height }, outlinecolor);
-            addLine(chartGroup, { x: 0, y: 0 }, { x: 0, y: height }, outlinecolor);
-            addLine(chartGroup, { x: width, y: 0 }, { x: width, y: height }, outlinecolor);
+            addRect(chartGroup,{x:0,y:0},{x:width,y:height},"black","1px");
 
             let isleft = plotconf.b_left;
             let isright = plotconf.b_right;
@@ -225,32 +240,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 });
             }
 
-            //         chartGroup.append("line")          // attach a line
-            // .style("stroke", "black")  // colour the line
-            // .attr("x1", 100)     // x position of the first end of the line
-            // .attr("y1", 50)      // y position of the first end of the line
-            // .attr("x2", 300)     // x position of the second end of the line
-            // .attr("y2", 150);
-
-            // chartGroup.selectAll("circle")
-            // .data(medalData)
-            // .enter()
-            // .append("circle")
-            // .attr("cx", d => xTimeScale(d.date))
-            // .attr("cy", d => yLinearScale(d.medals))
-            // .attr("r", "10")
-            // .attr("fill", "gold")
-            // .attr("stroke-width", "1")
-            // .attr("stroke", "black");
-
-
-            // if(isright){
-            //     plotconf.data_r.forEach((d,i) => {
-            //         console.log(plotconf.name_r[i]);
-            //         console.log(d.x);
-            //         console.log(d.y);
-            //     });
-            // }
 
         }
     };
