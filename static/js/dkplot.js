@@ -35,8 +35,8 @@ let getTimeScale = (chosenAxis, minMax, width_height) => {
     else viewrange = [width_height, 0];
 
     let timeScale = d3.scaleTime()
-    .domain(minMax)
-    .range(viewrange);
+        .domain(minMax)
+        .range(viewrange);
 
     return timeScale;
 }
@@ -119,14 +119,17 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
             let isleft = plotconf.b_left;
             let isright = plotconf.b_right;
             let xminmax = null, ylminmax = null, yrminmax = null;
+            let nlines = 0;
 
             if (isleft) {
+                nlines = nlines + plotconf.data_l.length;
                 let xyminmax = getXYminmax(plotconf.data_l, [xminmax, ylminmax]);
                 xminmax = xyminmax[0];
                 ylminmax = xyminmax[1];
             }
 
             if (isright) {
+                nlines = nlines + plotconf.data_r.length;
                 let xyminmax = getXYminmax(plotconf.data_r, [xminmax, yrminmax]);
                 xminmax = xyminmax[0];
                 yrminmax = xyminmax[1];
@@ -148,6 +151,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
 
             let ylLinearScale = null, yrLinearScale = null, ylAxis = null, yrAxis = null, label_yl = null, label_yr = null;
 
+            let ilines = 0;
             if (isleft) {
                 ylLinearScale = getLinearScale("yl", ylminmax, height);
                 ylAxis = chartGroup.append("g")
@@ -156,10 +160,29 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 label_yl = chartGroup.append("g")
                     .attr("transform", "rotate(-90)")
                     .append("text")
-                    .attr("y", -margin.left *2/ 3) // horizontal position
+                    .attr("y", -margin.left * 2 / 3) // horizontal position
                     .attr("x", -height / 2) // vertical position
                     .attr("value", "yl")
-                    .text("Left Y Label");        
+                    .text("Left Y Label");
+
+
+                let xy = [];
+
+                plotconf.data_l[0].x.forEach((xdata, i) => {
+                    xy.push({ x: xdata, y: plotconf.data_l[0].y[i] });
+                });
+
+
+                var line = d3.line()
+                    .x(d => xTimeScale(d.x))
+                    .y(d => ylLinearScale(d.y));
+
+                chartGroup.append("path")
+                    .data([xy])
+                    .attr("d", line)
+                    .attr("fill", "none")
+                    .attr("stroke", "red");
+
             }
 
             if (isright) {
@@ -171,11 +194,30 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 label_yr = chartGroup.append("g")
                     .attr("transform", "rotate(90)")
                     .append("text")
-                    .attr("y", -width -margin.right * 2/ 3) // horizontal position
+                    .attr("y", -width - margin.right * 2 / 3) // horizontal position
                     .attr("x", height / 2 - margin.bottom) // vertical position
                     .attr("value", "yr")
-                    .text("Right Y Label");        
+                    .text("Right Y Label");
             }
+
+
+
+            let xy = [];
+
+            plotconf.data_r[0].x.forEach((xdata, i) => {
+                xy.push({ x: xdata, y: plotconf.data_r[0].y[i] });
+            });
+
+
+            var line = d3.line()
+                .x(d => xTimeScale(d.x))
+                .y(d => yrLinearScale(d.y));
+
+            chartGroup.append("path")
+                .data([xy])
+                .attr("d", line)
+                .attr("fill", "none")
+                .attr("stroke", "red");
 
 
             // if(isright){
