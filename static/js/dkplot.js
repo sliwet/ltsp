@@ -1,3 +1,27 @@
+let rgb = (n, i) => {
+    let r = 255;
+    let g = 0;
+    let b = 0;
+
+    if (n > 1) {
+        let hn = Math.floor(n / 2);
+        r = Math.floor(255 - 510 * i / n);
+        if (i >= hn) r = 0;
+
+        i = n - 1 - i;
+        b = Math.floor(255 - 510 * i / n);
+        if (i >= hn) b = 0;
+
+        g = 255 - r - b;
+        if (g < 0) g = 0;
+    }
+
+    r = Math.floor(r);
+    g = Math.floor(g);
+    b = Math.floor(b);
+    return ["rgb(", r, ",", g, ",", b, ")"].join("");
+}
+
 let getLinearScale = (chosenAxis, minMax, width_height) => {
     let min = minMax[0], max = minMax[1];
     if (min > max) {

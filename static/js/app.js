@@ -1,25 +1,14 @@
-let rgb = (n, i) => {
-    let r = 255;
-    let g = 0;
-    let b = 0;
+let parseTime = d3.timeParse("%Y-%m-%d");
+let dateStrToObj = dataset => {
+    dataset.forEach(d => {
+        let xtmp = [];
+        d.x.forEach(data => {
+            xtmp.push(parseTime(data));
+        });
+        d.x = xtmp;
+    });
 
-    if (n > 1) {
-        let hn = Math.floor(n / 2);
-        r = Math.floor(255 - 510 * i / n);
-        if (i >= hn) r = 0;
-
-        i = n - 1 - i;
-        b = Math.floor(255 - 510 * i / n);
-        if (i >= hn) b = 0;
-
-        g = 255 - r - b;
-        if (g < 0) g = 0;
-    }
-
-    r = Math.floor(r);
-    g = Math.floor(g);
-    b = Math.floor(b);
-    return ["rgb(", r, ",", g, ",", b, ")"].join("");
+    return dataset;
 }
 
 let getTickerURL = (d) => {
@@ -40,30 +29,13 @@ let buildPlot = (lt, rt) => {
             d3.select("#infoplace").html("");
 
             let isleft = true;
-            let parseTime = d3.timeParse("%Y-%m-%d");
 
             if (ld.length == 0) isleft = false;
-            else {
-                ld.forEach(d => {
-                    let xtmp = [];
-                    d.x.forEach(data => {
-                        xtmp.push(parseTime(data));
-                    });
-                    d.x = xtmp;
-                });
-            }
+            else ld = dateStrToObj(ld);
 
             let isright = true;
             if (rd.length == 0) isright = false;
-            else {
-                rd.forEach(d => {
-                    let xtmp = [];
-                    d.x.forEach(data => {
-                        xtmp.push(parseTime(data));
-                    });
-                    d.x = xtmp;
-                });
-            }
+            else rd = dateStrToObj(rd);
 
             // Start of plotting routine
             let plotconf = {
