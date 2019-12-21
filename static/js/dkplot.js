@@ -22,6 +22,34 @@ let rgb = (n, i) => {
     return ["rgb(", r, ",", g, ",", b, ")"].join("");
 }
 
+let addLine = (chartGroup, xy1, xy2, linecolor) => {
+    chartGroup.append("line")
+        .attr("x1", xy1.x)
+        .attr("y1", xy1.y)
+        .attr("x2", xy2.x)
+        .attr("y2", xy2.y)
+        .attr("fill", "none")
+        .attr("stroke", linecolor);
+}
+
+let addPath = (chartGroup, xydata, xScale, yScale, pathcolor) => {
+    let xy = [];
+
+    xydata.x.forEach((xdata, i) => {
+        xy.push({ x: xdata, y: xydata.y[i] });
+    });
+
+    let line = d3.line()
+        .x(d => xScale(d.x))
+        .y(d => yScale(d.y));
+
+    chartGroup.append("path")
+        .data([xy])
+        .attr("d", line)
+        .attr("fill", "none")
+        .attr("stroke", pathcolor);
+}
+
 let getTimeScale = (chosenAxis, minMax, width_height) => {
     let min = minMax[0], max = minMax[1];
     if (min > max) {
@@ -116,20 +144,26 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
             let svg = d3.select(wheretoplot).append("svg").attr("width", svgWidth).attr("height", svgHeight).attr("id", uniqueId);
             let chartGroup = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+            let outlinecolor = "black";
+            addLine(chartGroup, { x: 0, y: 0 }, { x: width, y: 0 }, outlinecolor);
+            addLine(chartGroup, { x: 0, y: height }, { x: width, y: height }, outlinecolor);
+            addLine(chartGroup, { x: 0, y: 0 }, { x: 0, y: height }, outlinecolor);
+            addLine(chartGroup, { x: width, y: 0 }, { x: width, y: height }, outlinecolor);
+
             let isleft = plotconf.b_left;
             let isright = plotconf.b_right;
             let xminmax = null, ylminmax = null, yrminmax = null;
-            let nlines = 0;
+            let npaths = 0;
 
             if (isleft) {
-                nlines = nlines + plotconf.data_l.length;
+                npaths = npaths + plotconf.data_l.length;
                 let xyminmax = getXYminmax(plotconf.data_l, [xminmax, ylminmax]);
                 xminmax = xyminmax[0];
                 ylminmax = xyminmax[1];
             }
 
             if (isright) {
-                nlines = nlines + plotconf.data_r.length;
+                npaths = npaths + plotconf.data_r.length;
                 let xyminmax = getXYminmax(plotconf.data_r, [xminmax, yrminmax]);
                 xminmax = xyminmax[0];
                 yrminmax = xyminmax[1];
@@ -147,11 +181,11 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 .attr("x", 0)
                 .attr("y", 20)
                 .attr("value", "x")
-                .text("X label here");
+                .text("Date");
 
             let ylLinearScale = null, yrLinearScale = null, ylAxis = null, yrAxis = null, label_yl = null, label_yr = null;
 
-            let ilines = 0;
+            let ipath = 0;
             if (isleft) {
                 ylLinearScale = getLinearScale("yl", ylminmax, height);
                 ylAxis = chartGroup.append("g")
@@ -163,26 +197,12 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("y", -margin.left * 2 / 3) // horizontal position
                     .attr("x", -height / 2) // vertical position
                     .attr("value", "yl")
-                    .text("Left Y Label");
+                    .text("Closing Value of Left Tickers");
 
-
-                let xy = [];
-
-                plotconf.data_l[0].x.forEach((xdata, i) => {
-                    xy.push({ x: xdata, y: plotconf.data_l[0].y[i] });
+                plotconf.data_l.forEach(xydata => {
+                    addPath(chartGroup, xydata, xTimeScale, ylLinearScale, rgb(npaths, ipath));
+                    ipath = ipath + 1;
                 });
-
-
-                var line = d3.line()
-                    .x(d => xTimeScale(d.x))
-                    .y(d => ylLinearScale(d.y));
-
-                chartGroup.append("path")
-                    .data([xy])
-                    .attr("d", line)
-                    .attr("fill", "none")
-                    .attr("stroke", "red");
-
             }
 
             if (isright) {
@@ -197,27 +217,31 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("y", -width - margin.right * 2 / 3) // horizontal position
                     .attr("x", height / 2 - margin.bottom) // vertical position
                     .attr("value", "yr")
-                    .text("Right Y Label");
+                    .text("Closing Value of Right Tickers");
+
+                plotconf.data_r.forEach(xydata => {
+                    addPath(chartGroup, xydata, xTimeScale, yrLinearScale, rgb(npaths, ipath));
+                    ipath = ipath + 1;
+                });
             }
 
+            //         chartGroup.append("line")          // attach a line
+            // .style("stroke", "black")  // colour the line
+            // .attr("x1", 100)     // x position of the first end of the line
+            // .attr("y1", 50)      // y position of the first end of the line
+            // .attr("x2", 300)     // x position of the second end of the line
+            // .attr("y2", 150);
 
-
-            let xy = [];
-
-            plotconf.data_r[0].x.forEach((xdata, i) => {
-                xy.push({ x: xdata, y: plotconf.data_r[0].y[i] });
-            });
-
-
-            var line = d3.line()
-                .x(d => xTimeScale(d.x))
-                .y(d => yrLinearScale(d.y));
-
-            chartGroup.append("path")
-                .data([xy])
-                .attr("d", line)
-                .attr("fill", "none")
-                .attr("stroke", "red");
+            // chartGroup.selectAll("circle")
+            // .data(medalData)
+            // .enter()
+            // .append("circle")
+            // .attr("cx", d => xTimeScale(d.date))
+            // .attr("cy", d => yLinearScale(d.medals))
+            // .attr("r", "10")
+            // .attr("fill", "gold")
+            // .attr("stroke-width", "1")
+            // .attr("stroke", "black");
 
 
             // if(isright){
