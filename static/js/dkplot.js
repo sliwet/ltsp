@@ -22,6 +22,25 @@ let rgb = (n, i) => {
     return ["rgb(", r, ",", g, ",", b, ")"].join("");
 }
 
+let getTimeScale = (chosenAxis, minMax, width_height) => {
+    let min = minMax[0], max = minMax[1];
+    if (min > max) {
+        min = minMax[1];
+        max = minMax[0];
+    }
+
+    let viewrange = [];
+
+    if (chosenAxis == 'x') viewrange = [0, width_height]
+    else viewrange = [width_height, 0];
+
+    let timeScale = d3.scaleTime()
+    .domain(minMax)
+    .range(viewrange);
+
+    return timeScale;
+}
+
 let getLinearScale = (chosenAxis, minMax, width_height) => {
     let min = minMax[0], max = minMax[1];
     if (min > max) {
@@ -113,11 +132,11 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 yrminmax = xyminmax[1];
             }
 
-            let xLinearScale = getLinearScale("x", xminmax, width);
+            let xTimeScale = getTimeScale("x", xminmax, width);
             let xAxis = chartGroup.append("g")
                 .classed("x-axis", true)
                 .attr("transform", `translate(0, ${height})`)
-                .call(d3.axisBottom(xLinearScale));
+                .call(d3.axisBottom(xTimeScale));
 
             let label_x = chartGroup.append("g")
                 .attr("transform", `translate(${width / 2}, ${height + 20})`)
