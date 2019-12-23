@@ -198,6 +198,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 yrminmax = xyminmax[1];
             }
 
+
             let xTimeScale = getTimeScale("x", xminmax, width);
             let xAxis = chartGroup.append("g")
                 .classed("x-axis", true)
@@ -254,24 +255,48 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 });
             }
 
-            svg.on("click", () => {
-                let chartxy = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
-                if (isinside(chartxy, [0, 0], [width, height])) {
+            let xy1 = [0, 0], xy2 = [0, 0];
+            svg.on("mousedown", () => { //"click"
+                xy1 = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
+                if (isinside(xy1, [0, 0], [width, height])) {
                     d3.select("#selectionline").remove();
-                    selectionline = addLine(chartGroup, { x: chartxy[0], y: 0 }, { x: chartxy[0], y: height }, "gray");
+                    selectionline = addLine(chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "gray");
                     selectionline.attr("id", "selectionline");
                 }
-                console.log(xTimeScale.invert(chartxy[0]));
+                console.log(xTimeScale.invert(xy1[0]));
                 if (isleft) {
-                    console.log(ylLinearScale.invert(chartxy[1]));
+                    console.log(ylLinearScale.invert(xy1[1]));
                 }
 
                 if (isright) {
-                    console.log(yrLinearScale.invert(chartxy[1]));
+                    console.log(yrLinearScale.invert(xy1[1]));
                 }
             });
 
 
+            svg.on("mouseup", () => {
+                xy2 = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
+                addRect(chartGroup, {x:xy1[0],y:xy1[1]},{x:xy2[0],y:xy2[1]}, "green", "1px");
+                // console.log(`Position at mouseup: ${d3.mouse(d3.event.target)}`);
+
+            });
+
+
+
+
+            // svg.on("mousemove", () => {
+            //     console.log(d3.mouse(d3.event.target));
+            // });
+
+
+
+
+            //     var dragBehavior = d3.behavior.drag();
+            //     // .on("drag", dragMove)
+            //     // .on("dragstart", dragStart)
+            //     // .on("dragend", dragEnd);
+
+            // svg.call(dragBehavior);
 
 
             // console.log(xTimeScale.invert(chartxy[0]));
