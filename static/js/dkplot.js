@@ -163,8 +163,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
             let svg = d3.select(wheretoplot).append("svg").attr("width", svgWidth).attr("height", svgHeight).attr("id", uniqueId);
             let chartGroup = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-            addRect(chartGroup,{x:0,y:0},{x:width,y:height},"black","1px");
-
             let isleft = plotconf.b_left;
             let isright = plotconf.b_right;
             let xminmax = null, ylminmax = null, yrminmax = null;
@@ -240,6 +238,49 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 });
             }
 
+            let chartbox = addRect(chartGroup,{x:0,y:0},{x:width,y:height},"black","1px");
+            chartbox
+              .on("mouseover", () => {
+                d3.select(d3.event.target)
+                  .attr("fill", "red");
+              })
+              .on("mouseout", () => {
+                d3.select(d3.event.target)
+                  .attr("fill", "green");
+              });
+
+
+
+//               function findObjectCoords(mouseEvent)
+// {
+//   var obj = document.getElementById("objectBox");
+//   var obj_left = 0;
+//   var obj_top = 0;
+//   var xpos;
+//   var ypos;
+//   while (obj.offsetParent)
+//   {
+//     obj_left += obj.offsetLeft;
+//     obj_top += obj.offsetTop;
+//     obj = obj.offsetParent;
+//   }
+//   if (mouseEvent)
+//   {
+//     //FireFox
+//     xpos = mouseEvent.pageX;
+//     ypos = mouseEvent.pageY;
+//   }
+//   else
+//   {
+//     //IE
+//     xpos = window.event.x + document.body.scrollLeft - 2;
+//     ypos = window.event.y + document.body.scrollTop - 2;
+//   }
+//   xpos -= obj_left;
+//   ypos -= obj_top;
+//   document.getElementById("objectCoords").innerHTML = xpos + ", " + ypos;
+// }
+// document.getElementById("objectBox").onmousemove = findObjectCoords;
 
         }
     };
