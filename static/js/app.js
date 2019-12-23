@@ -49,12 +49,15 @@ let buildPlot = (lt, rt) => {
 
             let dualplot = () => {
                 d3.select("#dualplot").remove();
-                let lambdaRunner = lambdaSVG("#infoplace", plotconf, "dualplot", window.innerWidth * 2 / 3, window.innerHeight * 2 / 3);
+                let lambdaRunner = lambdaSVG("#infoplace", plotconf, "dualplot", window.innerWidth * 0.7, window.innerHeight * 0.7);
                 lambdaRunner.init();
             }
 
             window.addEventListener('resize', dualplot);
             dualplot();
+        });
+    });
+}
 
             // let traces = []
 
@@ -90,9 +93,6 @@ let buildPlot = (lt, rt) => {
 
             // Plotly.newPlot("infoplace", traces, layout);
             // End of plotting routine
-        });
-    });
-}
 
 let leftTickers = []
 let rightTickers = []
