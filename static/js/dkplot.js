@@ -33,9 +33,9 @@ let addLine = (chartGroup, xy1, xy2, linecolor) => {
     return oneline;
 }
 
-let addRect = (chartGroup,xy1,xy2,linecolor,strokewidth,fillcolor) => {
+let addRect = (chartGroup, xy1, xy2, linecolor, strokewidth, fillcolor) => {
     if (typeof fillcolor === 'undefined' || fillcolor == null) fillcolor = "none";
-    let xy = {x:d3.min([xy1.x,xy2.x]),y:d3.min([xy1.y,xy2.y])}
+    let xy = { x: d3.min([xy1.x, xy2.x]), y: d3.min([xy1.y, xy2.y]) }
     let width = Math.abs(xy1.x - xy2.x);
     let height = Math.abs(xy1.y - xy2.y);
 
@@ -46,7 +46,7 @@ let addRect = (chartGroup,xy1,xy2,linecolor,strokewidth,fillcolor) => {
         .attr("height", height)
         .attr("fill", fillcolor)
         .attr("stroke", linecolor)
-        .attr("stroke-width",strokewidth);
+        .attr("stroke-width", strokewidth);
 
     return onerect;
 }
@@ -141,6 +141,21 @@ let getXYminmax = (dataset, xyminmax) => {
     return xyminmax;
 }
 
+let svgXY_to_chartXY = (svgXY, leftmargin, topmargin) => {
+    let chartXY = [0, 0];
+    chartXY[0] = svgXY[0] - leftmargin; //margin.left;
+    chartXY[1] = svgXY[1] - topmargin; //margin.top;
+    return chartXY;
+}
+
+let isinside = (xy,xy1,xy2) => {
+    let xminmax = d3.extent([xy1[0],xy2[0]]);
+    let yminmax = d3.extent([xy1[1],xy2[1]]);
+
+    if((xy[0] >= xminmax[0]) && (xy[0] <= xminmax[1]) && (xy[1] >= yminmax[0]) && (xy[1] <= yminmax[1])) return true;
+    else return false;
+}
+
 let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margin) => {
     return {
         init: () => {
@@ -162,6 +177,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
 
             let svg = d3.select(wheretoplot).append("svg").attr("width", svgWidth).attr("height", svgHeight).attr("id", uniqueId);
             let chartGroup = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`);
+            addRect(chartGroup, { x: 0, y: 0 }, { x: width, y: height }, "black", "1px");
 
             let isleft = plotconf.b_left;
             let isright = plotconf.b_right;
@@ -238,49 +254,91 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 });
             }
 
-            let chartbox = addRect(chartGroup,{x:0,y:0},{x:width,y:height},"black","1px");
-            chartbox
-              .on("mouseover", () => {
-                d3.select(d3.event.target)
-                  .attr("fill", "red");
-              })
-              .on("mouseout", () => {
-                d3.select(d3.event.target)
-                  .attr("fill", "green");
-              });
+            svg.on("click", () => {
+                let chartxy = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
+                if(isinside(chartxy,[0,0],[width,height])) {
+                    d3.select("#selectionline").remove();
+                    selectionline = addLine(chartGroup, { x: chartxy[0], y: 0 }, { x: chartxy[0], y: height }, "gray");
+                    selectionline.attr("id", "selectionline");
+                }
+                console.log(xTimeScale.invert(chartxy[0]));
+            });
 
 
 
-//               function findObjectCoords(mouseEvent)
-// {
-//   var obj = document.getElementById("objectBox");
-//   var obj_left = 0;
-//   var obj_top = 0;
-//   var xpos;
-//   var ypos;
-//   while (obj.offsetParent)
-//   {
-//     obj_left += obj.offsetLeft;
-//     obj_top += obj.offsetTop;
-//     obj = obj.offsetParent;
-//   }
-//   if (mouseEvent)
-//   {
-//     //FireFox
-//     xpos = mouseEvent.pageX;
-//     ypos = mouseEvent.pageY;
-//   }
-//   else
-//   {
-//     //IE
-//     xpos = window.event.x + document.body.scrollLeft - 2;
-//     ypos = window.event.y + document.body.scrollTop - 2;
-//   }
-//   xpos -= obj_left;
-//   ypos -= obj_top;
-//   document.getElementById("objectCoords").innerHTML = xpos + ", " + ypos;
-// }
-// document.getElementById("objectBox").onmousemove = findObjectCoords;
+            
+    // console.log(xTimeScale.invert(chartxy[0]));
+    // if(isleft){
+    //     console.log(ylLinearScale.invert(chartxy[1]));
+    // }
+
+    // if(isright){
+    //     console.log(yrLinearScale.invert(chartxy[1]));
+    // }
+
+    // // Normally we go from data to pixels, but here we're doing pixels to data
+    // let newData= {
+    //   x: Math.round( xScale.invert(coords[0])),  // Takes the pixel number to convert to number
+    //   y: Math.round( yScale.invert(coords[1]))
+    // };
+
+    // dataset.push(newData);   // Push data to our array
+
+    // svg.selectAll("circle")  // For new circle, go through the update process
+    //   .data(dataset)
+    //   .enter()
+    //   .append("circle")
+    //   .attr(circleAttrs)  // Get attributes from circleAttrs var
+    //   .on("mouseover", handleMouseOver)
+    //   .on("mouseout", handleMouseOut);
+
+
+
+
+
+            // let chartbox = addRect(chartGroup,{x:0,y:0},{x:width,y:height},"black","1px");
+            // chartbox
+            //   .on("mouseover", () => {
+            //     d3.select(d3.event.target)
+            //       .attr("fill", "red");
+            //   })
+            //   .on("mouseout", () => {
+            //     d3.select(d3.event.target)
+            //       .attr("fill", "green");
+            //   });
+
+
+
+            //               function findObjectCoords(mouseEvent)
+            // {
+            //   var obj = document.getElementById("objectBox");
+            //   var obj_left = 0;
+            //   var obj_top = 0;
+            //   var xpos;
+            //   var ypos;
+            //   while (obj.offsetParent)
+            //   {
+            //     obj_left += obj.offsetLeft;
+            //     obj_top += obj.offsetTop;
+            //     obj = obj.offsetParent;
+            //   }
+            //   if (mouseEvent)
+            //   {
+            //     //FireFox
+            //     xpos = mouseEvent.pageX;
+            //     ypos = mouseEvent.pageY;
+            //   }
+            //   else
+            //   {
+            //     //IE
+            //     xpos = window.event.x + document.body.scrollLeft - 2;
+            //     ypos = window.event.y + document.body.scrollTop - 2;
+            //   }
+            //   xpos -= obj_left;
+            //   ypos -= obj_top;
+            //   document.getElementById("objectCoords").innerHTML = xpos + ", " + ypos;
+            // }
+            // document.getElementById("objectBox").onmousemove = findObjectCoords;
 
         }
     };
