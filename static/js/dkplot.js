@@ -205,7 +205,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 .call(d3.axisBottom(xTimeScale));
 
             let label_x = chartGroup.append("g")
-                .attr("transform", `translate(${width / 2}, ${height + 20})`)
+                .attr("transform", `translate(${width * 0.5}, ${height + 20})`)
                 .append("text")
                 .attr("x", 0)
                 .attr("y", 20)
