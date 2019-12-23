@@ -148,11 +148,11 @@ let svgXY_to_chartXY = (svgXY, leftmargin, topmargin) => {
     return chartXY;
 }
 
-let isinside = (xy,xy1,xy2) => {
-    let xminmax = d3.extent([xy1[0],xy2[0]]);
-    let yminmax = d3.extent([xy1[1],xy2[1]]);
+let isinside = (xy, xy1, xy2) => {
+    let xminmax = d3.extent([xy1[0], xy2[0]]);
+    let yminmax = d3.extent([xy1[1], xy2[1]]);
 
-    if((xy[0] >= xminmax[0]) && (xy[0] <= xminmax[1]) && (xy[1] >= yminmax[0]) && (xy[1] <= yminmax[1])) return true;
+    if ((xy[0] >= xminmax[0]) && (xy[0] <= xminmax[1]) && (xy[1] >= yminmax[0]) && (xy[1] <= yminmax[1])) return true;
     else return false;
 }
 
@@ -223,8 +223,8 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 label_yl = chartGroup.append("g")
                     .attr("transform", "rotate(-90)")
                     .append("text")
-                    .attr("y", -margin.left * 2 / 3) // horizontal position
-                    .attr("x", -height / 2) // vertical position
+                    .attr("y", -margin.left * 0.7) // horizontal position
+                    .attr("x", -height * 0.5) // vertical position
                     .attr("value", "yl")
                     .text("Closing Value of Left Tickers");
 
@@ -243,8 +243,8 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 label_yr = chartGroup.append("g")
                     .attr("transform", "rotate(90)")
                     .append("text")
-                    .attr("y", -width - margin.right * 2 / 3) // horizontal position
-                    .attr("x", height / 2 - margin.bottom) // vertical position
+                    .attr("y", -width - margin.right * 0.7) // horizontal position
+                    .attr("x", height * 0.5 - margin.bottom) // vertical position
                     .attr("value", "yr")
                     .text("Closing Value of Right Tickers");
 
@@ -256,41 +256,41 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
 
             svg.on("click", () => {
                 let chartxy = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
-                if(isinside(chartxy,[0,0],[width,height])) {
+                if (isinside(chartxy, [0, 0], [width, height])) {
                     d3.select("#selectionline").remove();
                     selectionline = addLine(chartGroup, { x: chartxy[0], y: 0 }, { x: chartxy[0], y: height }, "gray");
                     selectionline.attr("id", "selectionline");
                 }
                 console.log(xTimeScale.invert(chartxy[0]));
+                if (isleft) {
+                    console.log(ylLinearScale.invert(chartxy[1]));
+                }
+
+                if (isright) {
+                    console.log(yrLinearScale.invert(chartxy[1]));
+                }
             });
 
 
 
-            
-    // console.log(xTimeScale.invert(chartxy[0]));
-    // if(isleft){
-    //     console.log(ylLinearScale.invert(chartxy[1]));
-    // }
 
-    // if(isright){
-    //     console.log(yrLinearScale.invert(chartxy[1]));
-    // }
+            // console.log(xTimeScale.invert(chartxy[0]));
 
-    // // Normally we go from data to pixels, but here we're doing pixels to data
-    // let newData= {
-    //   x: Math.round( xScale.invert(coords[0])),  // Takes the pixel number to convert to number
-    //   y: Math.round( yScale.invert(coords[1]))
-    // };
+            // // Normally we go from data to pixels, but here we're doing pixels to data
+            // let newData= {
+            //   x: Math.round( xScale.invert(coords[0])),  // Takes the pixel number to convert to number
+            //   y: Math.round( yScale.invert(coords[1]))
+            // };
 
-    // dataset.push(newData);   // Push data to our array
+            // dataset.push(newData);   // Push data to our array
 
-    // svg.selectAll("circle")  // For new circle, go through the update process
-    //   .data(dataset)
-    //   .enter()
-    //   .append("circle")
-    //   .attr(circleAttrs)  // Get attributes from circleAttrs var
-    //   .on("mouseover", handleMouseOver)
-    //   .on("mouseout", handleMouseOut);
+            // svg.selectAll("circle")  // For new circle, go through the update process
+            //   .data(dataset)
+            //   .enter()
+            //   .append("circle")
+            //   .attr(circleAttrs)  // Get attributes from circleAttrs var
+            //   .on("mouseover", handleMouseOver)
+            //   .on("mouseout", handleMouseOut);
 
 
 
