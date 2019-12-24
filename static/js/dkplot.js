@@ -75,11 +75,25 @@ let addRect = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth, fillcolor
     return true;
 }
 
-let addPath = (uniqueID, chartGroup, xydata, xScale, yScale, pathcolor) => {
+let addPath = (uniqueID, chartGroup, xydata,xrange,xScale, yScale, pathcolor) => {
+
+    if(xrange != null){
+        if(xrange[0] > xrange[1]){
+            let tmp = xrange[1];
+            xrange[1] = xrange[0];
+            xrange[0] = tmp;
+        }
+    }
+
     let xy = [];
 
     xydata.x.forEach((xdata, i) => {
-        xy.push({ x: xdata, y: xydata.y[i] });
+        if(xrange == null){
+            xy.push({ x: xdata, y: xydata.y[i] });
+        }
+        else if((xdata >= xrange[0]) && (xdata <= xrange[1])){
+            xy.push({ x: xdata, y: xydata.y[i] });
+        }
     });
 
     let line = d3.line()
@@ -110,11 +124,11 @@ let getTimeScale = (chosenAxis, minMax, width_height) => {
 
     let viewrange = [];
 
-    if (chosenAxis == 'x') viewrange = [0, width_height]
+    if (chosenAxis == "x") viewrange = [0, width_height]
     else viewrange = [width_height, 0];
 
     let timeScale = d3.scaleTime()
-        .domain(minMax)
+        .domain([min,max])
         .range(viewrange);
 
     return timeScale;
@@ -129,7 +143,7 @@ let getLinearScale = (chosenAxis, minMax, width_height) => {
 
     let viewrange = [];
 
-    if (chosenAxis == 'x') viewrange = [0, width_height]
+    if (chosenAxis == "x") viewrange = [0, width_height]
     else viewrange = [width_height, 0];
 
     let padd = (max - min) * 0.1;
@@ -188,6 +202,33 @@ let isinside = (xy, xy1, xy2) => {
     else return false;
 }
 
+let handleOnClickZoom = (dxy1, dxy2, xAxis, yl_yr, yAxis, width, height) => {
+    xScale = getTimeScale("x", [dxy1[0], dxy2[0]], width);
+    renderAxis("x", xAxis, xScale);
+
+    yScale = getLinearScale(yl_yr, [dxy1[1], dxy2[1]], height);
+    renderAxis(yl_yr, yAxis, yScale);
+
+    return [xScale,yScale];
+}
+
+
+let renderAxis = (XorY, newAxis, scale) => {
+    let axis = null;
+
+    if (XorY == 'x') axis = d3.axisBottom(scale);
+    else if (XorY == 'yl') axis = d3.axisLeft(scale);
+    else axis = d3.axisRight(scale);
+
+    newAxis.transition().duration(1000).call(axis);
+    return newAxis;
+}
+
+
+
+
+
+
 let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margin) => {
     return {
         init: () => {
@@ -203,8 +244,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 margin.bottom = typeof margin.bottom === 'undefined' ? 20 : margin.bottom;
                 margin.left = typeof margin.left === 'undefined' ? 20 : margin.left;
             }
-
-
 
             let width = svgWidth - margin.left - margin.right;
             let height = svgHeight - margin.top - margin.bottom;
@@ -267,7 +306,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .text("Closing Value of Left Tickers");
 
                 plotconf.data_l.forEach((xydata, i) => {
-                    addPath(plotconf.name_l[i], chartGroup, xydata, xTimeScale, ylLinearScale, rgb(npaths, ipath));
+                    addPath(plotconf.name_l[i], chartGroup, xydata,null,xTimeScale, ylLinearScale, rgb(npaths, ipath));
                     ipath = ipath + 1;
                 });
             }
@@ -287,14 +326,14 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .text("Closing Value of Right Tickers");
 
                 plotconf.data_r.forEach((xydata, i) => {
-                    addPath(plotconf.name_r[i], chartGroup, xydata, xTimeScale, yrLinearScale, rgb(npaths, ipath));
+                    addPath(plotconf.name_r[i], chartGroup, xydata,null,xTimeScale, yrLinearScale, rgb(npaths, ipath));
                     ipath = ipath + 1;
                 });
             }
 
             // mousedown, mousemove, mouseup, dblclick, click, dragstart, drag, dragend
 
-            let xy1 = null, xy2 = null,zoombtn,onefivebtn;
+            let xy1 = null, xy2 = null, zoombtn, onefivebtn;
             svg.on("click", () => { //"click"
                 let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
                 let usetmp = true;
@@ -337,32 +376,70 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 d3.select("#onefive").remove();
                 d3.select("#zoomin").remove();
 
-                if((xy1 != null) && (xy2 != null)){
+                if ((xy1 != null) && (xy2 != null)) {
                     d3.select(wheretoplot).append("div")
-                    .append("button")
-                    .attr("id", "zoomin")
-                    .attr("type", "submit")
-                    .attr("class", "btn btn-default")
-                    .attr("position","center")
-                    .text("Zoom in the selected region");
+                        .append("button")
+                        .attr("id", "zoomin")
+                        .attr("type", "submit")
+                        .attr("class", "btn btn-default")
+                        .attr("position", "center")
+                        .text("Zoom in the selected region");
 
                     d3.select("#zoomin").on("click", () => {
-                        console.log("Zoom in");
-        
+                        let dxy1,dxy2,xyScale;
+                        ipath = 0;
+                        if (isleft) {
+                            dxy1 = chartXYtoXY(xy1, xTimeScale, ylLinearScale);
+                            dxy2 = chartXYtoXY(xy2, xTimeScale, ylLinearScale);
+                            console.log(`Left dxy1: ${dxy1}`);
+                            console.log(`Left dxy2: ${dxy2}`);
+                            xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yl", ylAxis, width, height);
+                            ylLinearScale = xyScale[1];
+
+                            plotconf.data_l.forEach((xydata, i) => {
+                                addPath(plotconf.name_l[i], chartGroup, xydata,[dxy1[0],dxy2[0]], xyScale[0], xyScale[1], rgb(npaths, ipath));
+                                ipath = ipath + 1;
+                            });
+                        }
+
+                        if (isright) {
+                            let dxy1 = chartXYtoXY(xy1, xTimeScale, yrLinearScale);
+                            let dxy2 = chartXYtoXY(xy2, xTimeScale, yrLinearScale);
+                            console.log(`Right dxy1: ${dxy1}`);
+                            console.log(`Right dxy2: ${dxy2}`);
+                            let xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yr", yrAxis, width, height);
+                            yrLinearScale = xyScale[1];
+
+                            plotconf.data_r.forEach((xydata, i) => {
+                                addPath(plotconf.name_r[i], chartGroup, xydata,[dxy1[0],dxy2[0]], xyScale[0], xyScale[1], rgb(npaths, ipath));
+                                ipath = ipath + 1;
+                            });
+                        }
+                        
+                        xTimeScale = xyScale[0];
+
+                        xy1 = null;
+                        d3.select("#selectionlineX").remove();
+                        d3.select("#selectionlineY").remove();
+                        xy2 = null;
+                        d3.select("#selectionlineX2").remove();
+                        d3.select("#selectionlineY2").remove();
+
+                        d3.select("#zoomin").remove();
                     });
                 }
-                else if((xy1 != null) || (xy2 != null)){
+                else if ((xy1 != null) || (xy2 != null)) {
                     d3.select(wheretoplot).append("div")
-                    .append("button")
-                    .attr("id", "onefive")
-                    .attr("type", "submit")
-                    .attr("class", "btn btn-default")
-                    .attr("position","center")
-                    .text("Zoom in from -1 Year to +5 years");
+                        .append("button")
+                        .attr("id", "onefive")
+                        .attr("type", "submit")
+                        .attr("class", "btn btn-default")
+                        .attr("position", "center")
+                        .text("Zoom in from -1 Year to +5 years");
 
                     d3.select("#onefive").on("click", () => {
                         console.log("Onefive");
-        
+
                     });
                 }
             });
