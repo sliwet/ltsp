@@ -27,7 +27,11 @@ let chartXYtoXY = (chartXY, xScale, yScale) => {
     return [xScale.invert(chartXY[0]), yScale.invert(chartXY[1])];
 }
 
-let addLine = (chartGroup, xy1, xy2, linecolor) => {
+let addLine = (uniqueID, chartGroup, xy1, xy2, linecolor) => {
+    if (uniqueID != null) {
+        d3.select(`#${uniqueID}`).remove();
+    }
+
     let oneline = chartGroup.append("line")
         .attr("x1", xy1.x)
         .attr("y1", xy1.y)
@@ -35,10 +39,18 @@ let addLine = (chartGroup, xy1, xy2, linecolor) => {
         .attr("y2", xy2.y)
         .attr("fill", "none")
         .attr("stroke", linecolor);
+
+    if (uniqueID != null) {
+        oneline.attr("id", uniqueID);
+    }
+
     return oneline;
 }
 
 let addRect = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth, fillcolor) => {
+    if (uniqueID != null) {
+        d3.select(`#${uniqueID}`).remove();
+    }
 
     if (typeof fillcolor === 'undefined' || fillcolor == null) fillcolor = "none";
     let xy = { x: d3.min([xy1.x, xy2.x]), y: d3.min([xy1.y, xy2.y]) }
@@ -47,8 +59,6 @@ let addRect = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth, fillcolor
 
     if ((width < 10) || (height < 10)) return false;
 
-    d3.select(`#${uniqueID}`).remove();
-
     let onerect = chartGroup.append("rect")
         .attr("x", xy.x)
         .attr("y", xy.y)
@@ -56,12 +66,16 @@ let addRect = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth, fillcolor
         .attr("height", height)
         .attr("fill", fillcolor)
         .attr("stroke", linecolor)
-        .attr("stroke-width", strokewidth)
-        .attr("id", uniqueID);
+        .attr("stroke-width", strokewidth);
+
+    if (uniqueID != null) {
+        onerect.attr("id", uniqueID);
+    }
+
     return true;
 }
 
-let addPath = (chartGroup, xydata, xScale, yScale, pathcolor) => {
+let addPath = (uniqueID, chartGroup, xydata, xScale, yScale, pathcolor) => {
     let xy = [];
 
     xydata.x.forEach((xdata, i) => {
@@ -72,11 +86,19 @@ let addPath = (chartGroup, xydata, xScale, yScale, pathcolor) => {
         .x(d => xScale(d.x))
         .y(d => yScale(d.y));
 
-    chartGroup.append("path")
+    if (uniqueID != null) {
+        d3.select(`#${uniqueID}`).remove();
+    }
+
+    let onepath = chartGroup.append("path")
         .data([xy])
         .attr("d", line)
         .attr("fill", "none")
         .attr("stroke", pathcolor);
+
+    if (uniqueID != null) {
+        onepath.attr("id", uniqueID);
+    }
 }
 
 let getTimeScale = (chosenAxis, minMax, width_height) => {
@@ -182,6 +204,8 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 margin.left = typeof margin.left === 'undefined' ? 20 : margin.left;
             }
 
+
+
             let width = svgWidth - margin.left - margin.right;
             let height = svgHeight - margin.top - margin.bottom;
 
@@ -189,7 +213,8 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
             let chartGroup = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`);
             addRect("outline", chartGroup, { x: 0, y: 0 }, { x: width, y: height }, "black", "1px");
 
-
+            d3.select("#onefive").remove();
+            d3.select("#zoomin").remove();
 
             let isleft = plotconf.b_left;
             let isright = plotconf.b_right;
@@ -241,8 +266,8 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("value", "yl")
                     .text("Closing Value of Left Tickers");
 
-                plotconf.data_l.forEach(xydata => {
-                    addPath(chartGroup, xydata, xTimeScale, ylLinearScale, rgb(npaths, ipath));
+                plotconf.data_l.forEach((xydata, i) => {
+                    addPath(plotconf.name_l[i], chartGroup, xydata, xTimeScale, ylLinearScale, rgb(npaths, ipath));
                     ipath = ipath + 1;
                 });
             }
@@ -261,54 +286,133 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("value", "yr")
                     .text("Closing Value of Right Tickers");
 
-                plotconf.data_r.forEach(xydata => {
-                    addPath(chartGroup, xydata, xTimeScale, yrLinearScale, rgb(npaths, ipath));
+                plotconf.data_r.forEach((xydata, i) => {
+                    addPath(plotconf.name_r[i], chartGroup, xydata, xTimeScale, yrLinearScale, rgb(npaths, ipath));
                     ipath = ipath + 1;
                 });
             }
 
             // mousedown, mousemove, mouseup, dblclick, click, dragstart, drag, dragend
 
-            let xy1 = null, xy2 = null;
-            svg.on("mousedown", () => { //"click"
-                xy1 = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
-            });
+            let xy1 = null, xy2 = null,zoombtn,onefivebtn;
+            svg.on("click", () => { //"click"
+                let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
+                let usetmp = true;
 
-            svg.on("mousemove", () => {
                 if (xy1 != null) {
-                    xy2 = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
-                    addRect("selectionbox", chartGroup, { x: xy1[0], y: xy1[1] }, { x: xy2[0], y: xy2[1] }, "gray", "1px");
-                }
-            });
-
-            svg.on("mouseup", () => {
-                xy2 = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
-                let isrect = addRect("selectionbox", chartGroup, { x: xy1[0], y: xy1[1] }, { x: xy2[0], y: xy2[1] }, "gray", "1px");
-                xy1 = null;
-
-                if (isrect) {
-                    d3.select("#selectionline").remove();
-                }
-                else {
-                    if (isinside(xy2, [0, 0], [width, height])) {
-                        d3.select("#selectionbox").remove();
-                        d3.select("#selectionline").remove();
-                        selectionline = addLine(chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "gray");
-                        selectionline.attr("id", "selectionline");
+                    if (Math.abs(xytmp[0] - xy1[0]) < 10) {
+                        usetmp = false;
+                        xy1 = null;
+                        d3.select("#selectionlineX").remove();
+                        d3.select("#selectionlineY").remove();
                     }
                 }
 
+                if (usetmp && (xy2 != null)) {
+                    if (Math.abs(xytmp[0] - xy2[0]) < 10) {
+                        usetmp = false;
+                        xy2 = null;
+                        d3.select("#selectionlineX2").remove();
+                        d3.select("#selectionlineY2").remove();
+                    }
+                }
+
+                if (usetmp) {
+                    if (xy1 == null) {
+                        if (isinside(xytmp, [0, 0], [width, height])) {
+                            xy1 = xytmp;
+                            addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "gray");
+                            addLine("selectionlineY", chartGroup, { x: 0, y: xy1[1] }, { x: width, y: xy1[1] }, "gray");
+                        }
+                    }
+                    else {
+                        if (isinside(xytmp, [0, 0], [width, height])) {
+                            xy2 = xytmp;
+                            addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightgray");
+                            addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightgray");
+                        }
+                    }
+                }
+
+                d3.select("#onefive").remove();
+                d3.select("#zoomin").remove();
+
+                if((xy1 != null) && (xy2 != null)){
+                    d3.select(wheretoplot).append("div")
+                    .append("button")
+                    .attr("id", "zoomin")
+                    .attr("type", "submit")
+                    .attr("class", "btn btn-default")
+                    .attr("position","center")
+                    .text("Zoom in the selected region");
+
+                    d3.select("#zoomin").on("click", () => {
+                        console.log("Zoom in");
+        
+                    });
+                }
+                else if((xy1 != null) || (xy2 != null)){
+                    d3.select(wheretoplot).append("div")
+                    .append("button")
+                    .attr("id", "onefive")
+                    .attr("type", "submit")
+                    .attr("class", "btn btn-default")
+                    .attr("position","center")
+                    .text("Zoom in from -1 Year to +5 years");
+
+                    d3.select("#onefive").on("click", () => {
+                        console.log("Onefive");
+        
+                    });
+                }
+            });
+
+            svg.on("dblclick", () => {
                 if (isleft) {
-                    console.log(chartXYtoXY(xy2, xTimeScale, ylLinearScale));
+                    console.log(chartXYtoXY(xy1, xTimeScale, ylLinearScale));
                 }
 
                 if (isright) {
-                    console.log(chartXYtoXY(xy2, xTimeScale, yrLinearScale));
+                    console.log(chartXYtoXY(xy1, xTimeScale, yrLinearScale));
                 }
             });
 
 
-            
+            // svg.on("mousemove", () => {
+            //     if (xy1 != null) {
+            //         xy2 = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
+            //         addRect("selectionbox", chartGroup, { x: xy1[0], y: xy1[1] }, { x: xy2[0], y: xy2[1] }, "gray", "1px");
+            //     }
+            // });
+
+            // svg.on("mouseup", () => {
+            //     xy2 = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
+            //     let isrect = addRect("selectionbox", chartGroup, { x: xy1[0], y: xy1[1] }, { x: xy2[0], y: xy2[1] }, "gray", "1px");
+            //     xy1 = null;
+
+            //     if (isrect) {
+            //         d3.select("#selectionline").remove();
+            //     }
+            //     else {
+            //         if (isinside(xy2, [0, 0], [width, height])) {
+            //             addLine("selectionline", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "gray");
+            //         }
+            //     }
+
+            //     if (isleft) {
+            //         console.log(chartXYtoXY(xy2, xTimeScale, ylLinearScale));
+            //     }
+
+            //     if (isright) {
+            //         console.log(chartXYtoXY(xy2, xTimeScale, yrLinearScale));
+            //     }
+
+            // });
+
+
+
+
+
         }
     };
 
