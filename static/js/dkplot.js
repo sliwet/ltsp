@@ -223,7 +223,12 @@ let renderAxis = (XorY, newAxis, scale) => {
     return newAxis;
 }
 
-let plotPaths = (data, names, chartGroup, xrange, xyScale, npaths, ipath) => {
+let plotPaths = (ylr,data, names, chartGroup, xrange, xyScale, npaths, ipath) => {
+
+    if(ylr == "yl"){
+        console.log("@todo dkwon add code here");
+    }
+
     data.forEach((xydata, i) => {
         addPath(names[i], chartGroup, xydata, xrange, xyScale[0], xyScale[1], rgb(npaths, ipath));
         ipath = ipath + 1;
@@ -242,7 +247,7 @@ let redrawDual = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, 
         dxy2 = chartXYtoXY(xy2, xTimeScale, ylLinearScale);
         xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yl", ylAxis, width, height);
         ylLinearScale = xyScale[1];
-        ipath = plotPaths(plotconf_data_l, plotconf_name_l, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
+        ipath = plotPaths("yl",plotconf_data_l, plotconf_name_l, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
     }
 
     if (isright) {
@@ -250,7 +255,7 @@ let redrawDual = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, 
         let dxy2 = chartXYtoXY(xy2, xTimeScale, yrLinearScale);
         let xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yr", yrAxis, width, height);
         yrLinearScale = xyScale[1];
-        ipath = plotPaths(plotconf_data_r, plotconf_name_r, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
+        ipath = plotPaths("yr",plotconf_data_r, plotconf_name_r, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
     }
 
     xTimeScale = xyScale[0];
@@ -341,7 +346,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("x", -height * 0.5) // vertical position
                     .attr("value", "yl")
                     .text("Closing Value of Left Tickers");
-                ipath = plotPaths(plotconf.data_l, plotconf.name_l, chartGroup, null, [xTimeScale, ylLinearScale], npaths, ipath);
+                ipath = plotPaths("yl",plotconf.data_l, plotconf.name_l, chartGroup, null, [xTimeScale, ylLinearScale], npaths, ipath);
             }
 
             if (isright) {
@@ -357,7 +362,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("x", height * 0.5 - margin.bottom) // vertical position
                     .attr("value", "yr")
                     .text("Closing Value of Right Tickers");
-                ipath = plotPaths(plotconf.data_r, plotconf.name_r, chartGroup, null, [xTimeScale, yrLinearScale], npaths, ipath);
+                ipath = plotPaths("yr",plotconf.data_r, plotconf.name_r, chartGroup, null, [xTimeScale, yrLinearScale], npaths, ipath);
             }
 
             // mousedown, mousemove, mouseup, dblclick, click, dragstart, drag, dragend
