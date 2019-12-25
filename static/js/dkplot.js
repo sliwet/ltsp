@@ -144,15 +144,15 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     if (xy1 == null) {
                         if (isinside(xytmp, [0, 0], [width, height])) {
                             xy1 = xytmp;
-                            addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "lightblue");
-                            addLine("selectionlineY", chartGroup, { x: 0, y: xy1[1] }, { x: width, y: xy1[1] }, "lightblue");
+                            addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "lightblue","2px");
+                            addLine("selectionlineY", chartGroup, { x: 0, y: xy1[1] }, { x: width, y: xy1[1] }, "lightblue","2px");
                         }
                     }
                     else {
                         if (isinside(xytmp, [0, 0], [width, height])) {
                             xy2 = xytmp;
-                            addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightblue");
-                            addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightblue");
+                            addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightblue","2px");
+                            addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightblue","2px");
                         }
                     }
                 }
@@ -219,7 +219,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         yrLinearScale = scales.yrScale;
 
                         selectedxy = [xTimeScale(selecteddate), 0];
-                        addLine("selecteddate", chartGroup, { x: selectedxy[0], y: 0 }, { x: selectedxy[0], y: height }, "gray");
+                        addLine("selecteddate", chartGroup, { x: selectedxy[0], y: 0 }, { x: selectedxy[0], y: height }, "gray","2px");
                     });
                 }
             });

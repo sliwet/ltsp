@@ -27,7 +27,7 @@ let chartXYtoXY = (chartXY, xScale, yScale) => {
     return [xScale.invert(chartXY[0]), yScale.invert(chartXY[1])];
 }
 
-let addLine = (uniqueID, chartGroup, xy1, xy2, linecolor) => {
+let addLine = (uniqueID, chartGroup, xy1, xy2, linecolor,strokewidth) => {
     if (uniqueID != null) {
         d3.select(`#${uniqueID}`).remove();
     }
@@ -38,7 +38,9 @@ let addLine = (uniqueID, chartGroup, xy1, xy2, linecolor) => {
         .attr("x2", xy2.x)
         .attr("y2", xy2.y)
         .attr("fill", "none")
-        .attr("stroke", linecolor);
+        .attr("stroke", linecolor)
+        .attr("stroke-width", strokewidth);
+
 
     if (uniqueID != null) {
         oneline.attr("id", uniqueID);
