@@ -185,6 +185,10 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     });
                 }
                 else if ((xy1 != null) || (xy2 != null)) {
+
+// @todo input markers here
+
+
                     d3.select(wheretoplot).append("div")
                         .append("button")
                         .attr("id", "onefive")
