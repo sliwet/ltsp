@@ -263,24 +263,19 @@ let plotPaths = (data, names, chartGroup, xrange, xyScale, npaths, ipath) => {
         addPath(names[i], chartGroup, xydata, xrange, xyScale[0], xyScale[1], rgb(npaths, ipath));
         ipath = ipath + 1;
     });
-
-    return ipath;
 }
 
 let redrawDual = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, ylLinearScale, yrLinearScale
     , width, height, chartGroup, npaths, plotconf_data_l, plotconf_name_l, plotconf_data_r, plotconf_name_r) => {
 
     let dxy1, dxy2, xyScale;
-    let ipath = 0;
     if (isleft) {
         dxy1 = chartXYtoXY(xy1, xTimeScale, ylLinearScale);
         dxy2 = chartXYtoXY(xy2, xTimeScale, ylLinearScale);
         xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yl", ylAxis, width, height);
         ylLinearScale = xyScale[1];
-        let ipath0 = ipath;
-        ipath = plotPaths(plotconf_data_l, plotconf_name_l, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
-        addTickerSelections("yl", chartGroup, width, plotconf_name_l, npaths, ipath0);
-
+        plotPaths(plotconf_data_l, plotconf_name_l, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, 0);
+        addTickerSelections("yl", chartGroup, width, plotconf_name_l, npaths, 0);
     }
 
     if (isright) {
@@ -288,9 +283,8 @@ let redrawDual = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, 
         let dxy2 = chartXYtoXY(xy2, xTimeScale, yrLinearScale);
         let xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yr", yrAxis, width, height);
         yrLinearScale = xyScale[1];
-        let ipath0 = ipath;
-        ipath = plotPaths(plotconf_data_r, plotconf_name_r, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
-        addTickerSelections("yr", chartGroup, width, plotconf_name_r, npaths, ipath0);
+        plotPaths(plotconf_data_r, plotconf_name_r, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, plotconf_data_l.length);
+        addTickerSelections("yr", chartGroup, width, plotconf_name_r, npaths, plotconf_data_l.length);
     }
 
     xTimeScale = xyScale[0];

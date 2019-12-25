@@ -28,17 +28,15 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
             let isleft = plotconf.b_left;
             let isright = plotconf.b_right;
             let xminmax = null, ylminmax = null, yrminmax = null;
-            let npaths = 0;
+            let npaths = plotconf.data_l.length + plotconf.data_r.length;
 
             if (isleft) {
-                npaths = npaths + plotconf.data_l.length;
                 let xyminmax = getXYminmax(plotconf.data_l, [xminmax, ylminmax]);
                 xminmax = xyminmax[0];
                 ylminmax = xyminmax[1];
             }
 
             if (isright) {
-                npaths = npaths + plotconf.data_r.length;
                 let xyminmax = getXYminmax(plotconf.data_r, [xminmax, yrminmax]);
                 xminmax = xyminmax[0];
                 yrminmax = xyminmax[1];
@@ -64,7 +62,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
 
             let padding;
 
-            let ipath = 0;
             if (isleft) {
                 padding = (ylminmax[1] - ylminmax[0]) * 0.1;
                 ylminmax = [ylminmax[0] - padding, ylminmax[1] + padding];
@@ -82,9 +79,8 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("text-anchor", "middle")
                     .text("Closing Value of Left Tickers");
 
-                let ipath0 = ipath;
-                ipath = plotPaths(plotconf.data_l, plotconf.name_l, chartGroup, null, [xTimeScale, ylLinearScale], npaths, ipath);
-                addTickerSelections("yl", chartGroup, width, plotconf.name_l, npaths, ipath0);
+                plotPaths(plotconf.data_l, plotconf.name_l, chartGroup, null, [xTimeScale, ylLinearScale], npaths, 0);
+                addTickerSelections("yl", chartGroup, width, plotconf.name_l, npaths, 0);
             }
 
             if (isright) {
@@ -104,10 +100,8 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("value", "yr")
                     .attr("text-anchor", "middle")
                     .text("Closing Value of Right Tickers");
-                let ipath0 = ipath;
-                ipath = plotPaths(plotconf.data_r, plotconf.name_r, chartGroup, null, [xTimeScale, yrLinearScale], npaths, ipath);
-                addTickerSelections("yr", chartGroup, width, plotconf.name_r, npaths, ipath0);
-
+                plotPaths(plotconf.data_r, plotconf.name_r, chartGroup, null, [xTimeScale, yrLinearScale], npaths, plotconf.data_l.length);
+                addTickerSelections("yr", chartGroup, width, plotconf.name_r, npaths, plotconf.data_l.length);
             }
 
             // mousedown, mousemove, mouseup, dblclick, click, dragstart, drag, dragend
