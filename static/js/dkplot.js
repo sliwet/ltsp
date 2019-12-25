@@ -144,15 +144,15 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     if (xy1 == null) {
                         if (isinside(xytmp, [0, 0], [width, height])) {
                             xy1 = xytmp;
-                            addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "gray");
-                            addLine("selectionlineY", chartGroup, { x: 0, y: xy1[1] }, { x: width, y: xy1[1] }, "gray");
+                            addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "lightblue");
+                            addLine("selectionlineY", chartGroup, { x: 0, y: xy1[1] }, { x: width, y: xy1[1] }, "lightblue");
                         }
                     }
                     else {
                         if (isinside(xytmp, [0, 0], [width, height])) {
                             xy2 = xytmp;
-                            addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightgray");
-                            addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightgray");
+                            addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightblue");
+                            addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightblue");
                         }
                     }
                 }
@@ -202,9 +202,9 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         // selecteddate.setDate(selecteddate.getDate() - 365);
                         let enddate = new Date(selecteddate);
                         enddate.setFullYear(enddate.getFullYear() + 5);
-                        console.log(startdate);
-                        console.log(selecteddate);
-                        console.log(enddate);
+                        // console.log(startdate);
+                        // console.log(selecteddate);
+                        // console.log(enddate);
 
                         let startxy = [xTimeScale(startdate), 0];
                         let endxy = [xTimeScale(enddate), height];
