@@ -249,7 +249,6 @@ let addTickerSelections = (ylr, chartGroup, width, names, npaths, ipath) => {
     if (ylr == 'yr') {
         ioffset = -ipath;
         x = width - 50;
-
     }
 
     names.forEach((name, i) => {
@@ -257,7 +256,6 @@ let addTickerSelections = (ylr, chartGroup, width, names, npaths, ipath) => {
         addText(name, chartGroup, { x: x, y: (iy + 1) * 20 }, rgb(npaths, ipath));
         ipath = ipath + 1;
     });
-
 }
 
 let plotPaths = (data, names, chartGroup, xrange, xyScale, npaths, ipath) => {
