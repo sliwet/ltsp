@@ -75,10 +75,10 @@ let addRect = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth, fillcolor
     return true;
 }
 
-let addPath = (uniqueID, chartGroup, xydata,xrange,xScale, yScale, pathcolor) => {
+let addPath = (uniqueID, chartGroup, xydata, xrange, xScale, yScale, pathcolor) => {
 
-    if(xrange != null){
-        if(xrange[0] > xrange[1]){
+    if (xrange != null) {
+        if (xrange[0] > xrange[1]) {
             let tmp = xrange[1];
             xrange[1] = xrange[0];
             xrange[0] = tmp;
@@ -88,10 +88,10 @@ let addPath = (uniqueID, chartGroup, xydata,xrange,xScale, yScale, pathcolor) =>
     let xy = [];
 
     xydata.x.forEach((xdata, i) => {
-        if(xrange == null){
+        if (xrange == null) {
             xy.push({ x: xdata, y: xydata.y[i] });
         }
-        else if((xdata >= xrange[0]) && (xdata <= xrange[1])){
+        else if ((xdata >= xrange[0]) && (xdata <= xrange[1])) {
             xy.push({ x: xdata, y: xydata.y[i] });
         }
     });
@@ -128,7 +128,7 @@ let getTimeScale = (chosenAxis, minMax, width_height) => {
     else viewrange = [width_height, 0];
 
     let timeScale = d3.scaleTime()
-        .domain([min,max])
+        .domain([min, max])
         .range(viewrange);
 
     return timeScale;
@@ -209,9 +209,8 @@ let handleOnClickZoom = (dxy1, dxy2, xAxis, yl_yr, yAxis, width, height) => {
     yScale = getLinearScale(yl_yr, [dxy1[1], dxy2[1]], height);
     renderAxis(yl_yr, yAxis, yScale);
 
-    return [xScale,yScale];
+    return [xScale, yScale];
 }
-
 
 let renderAxis = (XorY, newAxis, scale) => {
     let axis = null;
@@ -224,10 +223,14 @@ let renderAxis = (XorY, newAxis, scale) => {
     return newAxis;
 }
 
+let plotPaths = (data, names, chartGroup, xrange, xyScale, npaths, ipath) => {
+    data.forEach((xydata, i) => {
+        addPath(names[i], chartGroup, xydata, xrange, xyScale[0], xyScale[1], rgb(npaths, ipath));
+        ipath = ipath + 1;
+    });
 
-
-
-
+    return ipath;
+}
 
 let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margin) => {
     return {
@@ -304,11 +307,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("x", -height * 0.5) // vertical position
                     .attr("value", "yl")
                     .text("Closing Value of Left Tickers");
-
-                plotconf.data_l.forEach((xydata, i) => {
-                    addPath(plotconf.name_l[i], chartGroup, xydata,null,xTimeScale, ylLinearScale, rgb(npaths, ipath));
-                    ipath = ipath + 1;
-                });
+                ipath = plotPaths(plotconf.data_l, plotconf.name_l, chartGroup, null, [xTimeScale, ylLinearScale], npaths, ipath);
             }
 
             if (isright) {
@@ -324,16 +323,13 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("x", height * 0.5 - margin.bottom) // vertical position
                     .attr("value", "yr")
                     .text("Closing Value of Right Tickers");
+                ipath = plotPaths(plotconf.data_r, plotconf.name_r, chartGroup, null, [xTimeScale, yrLinearScale], npaths, ipath);
 
-                plotconf.data_r.forEach((xydata, i) => {
-                    addPath(plotconf.name_r[i], chartGroup, xydata,null,xTimeScale, yrLinearScale, rgb(npaths, ipath));
-                    ipath = ipath + 1;
-                });
             }
 
             // mousedown, mousemove, mouseup, dblclick, click, dragstart, drag, dragend
 
-            let xy1 = null, xy2 = null, zoombtn, onefivebtn;
+            let xy1 = null, xy2 = null;
             svg.on("click", () => { //"click"
                 let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
                 let usetmp = true;
@@ -386,36 +382,28 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         .text("Zoom in the selected region");
 
                     d3.select("#zoomin").on("click", () => {
-                        let dxy1,dxy2,xyScale;
+
+
+
+
+                        let dxy1, dxy2, xyScale;
                         ipath = 0;
                         if (isleft) {
                             dxy1 = chartXYtoXY(xy1, xTimeScale, ylLinearScale);
                             dxy2 = chartXYtoXY(xy2, xTimeScale, ylLinearScale);
-                            console.log(`Left dxy1: ${dxy1}`);
-                            console.log(`Left dxy2: ${dxy2}`);
                             xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yl", ylAxis, width, height);
                             ylLinearScale = xyScale[1];
-
-                            plotconf.data_l.forEach((xydata, i) => {
-                                addPath(plotconf.name_l[i], chartGroup, xydata,[dxy1[0],dxy2[0]], xyScale[0], xyScale[1], rgb(npaths, ipath));
-                                ipath = ipath + 1;
-                            });
+                            ipath = plotPaths(plotconf.data_l, plotconf.name_l, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
                         }
 
                         if (isright) {
                             let dxy1 = chartXYtoXY(xy1, xTimeScale, yrLinearScale);
                             let dxy2 = chartXYtoXY(xy2, xTimeScale, yrLinearScale);
-                            console.log(`Right dxy1: ${dxy1}`);
-                            console.log(`Right dxy2: ${dxy2}`);
                             let xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yr", yrAxis, width, height);
                             yrLinearScale = xyScale[1];
-
-                            plotconf.data_r.forEach((xydata, i) => {
-                                addPath(plotconf.name_r[i], chartGroup, xydata,[dxy1[0],dxy2[0]], xyScale[0], xyScale[1], rgb(npaths, ipath));
-                                ipath = ipath + 1;
-                            });
+                            ipath = plotPaths(plotconf.data_r, plotconf.name_r, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
                         }
-                        
+
                         xTimeScale = xyScale[0];
 
                         xy1 = null;
@@ -426,6 +414,10 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         d3.select("#selectionlineY2").remove();
 
                         d3.select("#zoomin").remove();
+
+
+
+                        
                     });
                 }
                 else if ((xy1 != null) || (xy2 != null)) {
@@ -444,47 +436,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 }
             });
 
-            svg.on("dblclick", () => {
-                if (isleft) {
-                    console.log(chartXYtoXY(xy1, xTimeScale, ylLinearScale));
-                }
-
-                if (isright) {
-                    console.log(chartXYtoXY(xy1, xTimeScale, yrLinearScale));
-                }
-            });
-
-
-            // svg.on("mousemove", () => {
-            //     if (xy1 != null) {
-            //         xy2 = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
-            //         addRect("selectionbox", chartGroup, { x: xy1[0], y: xy1[1] }, { x: xy2[0], y: xy2[1] }, "gray", "1px");
-            //     }
-            // });
-
-            // svg.on("mouseup", () => {
-            //     xy2 = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
-            //     let isrect = addRect("selectionbox", chartGroup, { x: xy1[0], y: xy1[1] }, { x: xy2[0], y: xy2[1] }, "gray", "1px");
-            //     xy1 = null;
-
-            //     if (isrect) {
-            //         d3.select("#selectionline").remove();
-            //     }
-            //     else {
-            //         if (isinside(xy2, [0, 0], [width, height])) {
-            //             addLine("selectionline", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "gray");
-            //         }
-            //     }
-
-            //     if (isleft) {
-            //         console.log(chartXYtoXY(xy2, xTimeScale, ylLinearScale));
-            //     }
-
-            //     if (isright) {
-            //         console.log(chartXYtoXY(xy2, xTimeScale, yrLinearScale));
-            //     }
-
-            // });
 
 
 
