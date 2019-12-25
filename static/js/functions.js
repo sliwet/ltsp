@@ -27,7 +27,7 @@ let chartXYtoXY = (chartXY, xScale, yScale) => {
     return [xScale.invert(chartXY[0]), yScale.invert(chartXY[1])];
 }
 
-let addLine = (uniqueID, chartGroup, xy1, xy2, linecolor,strokewidth) => {
+let addLine = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth) => {
     if (uniqueID != null) {
         d3.select(`#${uniqueID}`).remove();
     }
@@ -226,20 +226,42 @@ let renderAxis = (XorY, newAxis, scale) => {
     return newAxis;
 }
 
-let plotPaths = (ylr, data, names, chartGroup, xrange, xyScale, npaths, ipath) => {
+//weight: "bold", "normal" , location: "left", "middle", "right"
+let addText = (uniqueID, chartGroup, xy, color) => {
+    d3.select(`#ticker-${uniqueID}`).remove();
 
     chartGroup.append("text")
-    .attr("x", 0)
-    .attr("y", 20)
-    .attr("font-family", "sans-serif")
-    .attr("font-size", "20px")
-    .attr("text-anchor", "left") // left middle right
-    .attr("fill", "red")
-    .text("This is a test");
+        .attr("x", xy.x)
+        .attr("y", xy.y)
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "14px")
+        .attr("font-weight", "bold")
+        .attr("width", "60px")
+        .attr("text-anchor", "middle") // left middle right
+        .attr("fill", color)
+        .text(uniqueID)
+        .attr("id", `#ticker-${uniqueID}`);
+}
 
+let addTickerSelections = (ylr, chartGroup, width, names, npaths, ipath) => {
+    let ioffset = 0;
+    let x = 50;
+    if (ylr == 'yr') {
+        ioffset = -ipath;
+        x = width - 50;
 
+    }
+
+    names.forEach((name, i) => {
+        let iy = ipath + ioffset;
+        addText(name, chartGroup, { x: x, y: (iy + 1) * 20 }, rgb(npaths, ipath));
+        ipath = ipath + 1;
+    });
+
+}
+
+let plotPaths = (data, names, chartGroup, xrange, xyScale, npaths, ipath) => {
     data.forEach((xydata, i) => {
-
         addPath(names[i], chartGroup, xydata, xrange, xyScale[0], xyScale[1], rgb(npaths, ipath));
         ipath = ipath + 1;
     });
@@ -257,7 +279,10 @@ let redrawDual = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, 
         dxy2 = chartXYtoXY(xy2, xTimeScale, ylLinearScale);
         xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yl", ylAxis, width, height);
         ylLinearScale = xyScale[1];
-        ipath = plotPaths("yl", plotconf_data_l, plotconf_name_l, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
+        let ipath0 = ipath;
+        ipath = plotPaths(plotconf_data_l, plotconf_name_l, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
+        addTickerSelections("yl", chartGroup, width, plotconf_name_l, npaths, ipath0);
+
     }
 
     if (isright) {
@@ -265,7 +290,9 @@ let redrawDual = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, 
         let dxy2 = chartXYtoXY(xy2, xTimeScale, yrLinearScale);
         let xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yr", yrAxis, width, height);
         yrLinearScale = xyScale[1];
-        ipath = plotPaths("yr", plotconf_data_r, plotconf_name_r, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
+        let ipath0 = ipath;
+        ipath = plotPaths(plotconf_data_r, plotconf_name_r, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
+        addTickerSelections("yr", chartGroup, width, plotconf_name_r, npaths, ipath0);
     }
 
     xTimeScale = xyScale[0];

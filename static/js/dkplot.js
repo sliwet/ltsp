@@ -57,7 +57,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 .attr("x", 0)
                 .attr("y", 20)
                 .attr("value", "x")
-                .attr("text-anchor","middle")
+                .attr("text-anchor", "middle")
                 .text("Date");
 
             let ylLinearScale = null, yrLinearScale = null, ylAxis = null, yrAxis = null, label_yl = null, label_yr = null;
@@ -79,15 +79,18 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("y", -margin.left * 0.7) // horizontal position
                     .attr("x", -height * 0.5) // vertical position
                     .attr("value", "yl")
-                    .attr("text-anchor","middle")
+                    .attr("text-anchor", "middle")
                     .text("Closing Value of Left Tickers");
-                ipath = plotPaths("yl", plotconf.data_l, plotconf.name_l, chartGroup, null, [xTimeScale, ylLinearScale], npaths, ipath);
+
+                let ipath0 = ipath;
+                ipath = plotPaths(plotconf.data_l, plotconf.name_l, chartGroup, null, [xTimeScale, ylLinearScale], npaths, ipath);
+                addTickerSelections("yl", chartGroup, width, plotconf.name_l, npaths, ipath0);
             }
 
             if (isright) {
                 padding = (yrminmax[1] - yrminmax[0]) * 0.1;
                 yrminmax = [yrminmax[0] - padding, yrminmax[1] + padding];
-                
+
                 yrLinearScale = getLinearScale("yr", yrminmax, height);
                 yrAxis = chartGroup.append("g")
                     .classed("yr-axis", true)
@@ -99,9 +102,12 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("y", -width - margin.right * 0.7) // horizontal position
                     .attr("x", height * 0.5) // vertical position
                     .attr("value", "yr")
-                    .attr("text-anchor","middle")
+                    .attr("text-anchor", "middle")
                     .text("Closing Value of Right Tickers");
-                ipath = plotPaths("yr", plotconf.data_r, plotconf.name_r, chartGroup, null, [xTimeScale, yrLinearScale], npaths, ipath);
+                let ipath0 = ipath;
+                ipath = plotPaths(plotconf.data_r, plotconf.name_r, chartGroup, null, [xTimeScale, yrLinearScale], npaths, ipath);
+                addTickerSelections("yr", chartGroup, width, plotconf.name_r, npaths, ipath0);
+
             }
 
             // mousedown, mousemove, mouseup, dblclick, click, dragstart, drag, dragend
@@ -147,15 +153,15 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     if (xy1 == null) {
                         if (isinside(xytmp, [0, 0], [width, height])) {
                             xy1 = xytmp;
-                            addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "lightblue","2px");
-                            addLine("selectionlineY", chartGroup, { x: 0, y: xy1[1] }, { x: width, y: xy1[1] }, "lightblue","2px");
+                            addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "lightblue", "2px");
+                            addLine("selectionlineY", chartGroup, { x: 0, y: xy1[1] }, { x: width, y: xy1[1] }, "lightblue", "2px");
                         }
                     }
                     else {
                         if (isinside(xytmp, [0, 0], [width, height])) {
                             xy2 = xytmp;
-                            addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightblue","2px");
-                            addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightblue","2px");
+                            addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightblue", "2px");
+                            addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightblue", "2px");
                         }
                     }
                 }
@@ -222,7 +228,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         yrLinearScale = scales.yrScale;
 
                         selectedxy = [xTimeScale(selecteddate), 0];
-                        addLine("selecteddate", chartGroup, { x: selectedxy[0], y: 0 }, { x: selectedxy[0], y: height }, "gray","2px");
+                        addLine("selecteddate", chartGroup, { x: selectedxy[0], y: 0 }, { x: selectedxy[0], y: height }, "gray", "2px");
                     });
                 }
             });
