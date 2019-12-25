@@ -110,7 +110,8 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
             let yrLinearScale0 = yrLinearScale;
             let xy1 = null, xy2 = null;
 
-            d3.select("#zoomout").on("click", () => {
+            // d3.select("#zoomout").on("click", () => {
+            svg.on("dblclick", () => {
                 let scales = redrawDual([0, 0], [width, height], isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale0, ylLinearScale0, yrLinearScale0
                     , width, height, chartGroup, npaths, plotconf.data_l, plotconf.name_l, plotconf.data_r, plotconf.name_r);
 

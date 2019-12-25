@@ -230,15 +230,15 @@ let init = () => {
         .text("Clear Selection");
 
     menuplace.append("div").html("<br>")
-    // Clear Selection
-    menuplace.append("div")
-        .append("button")
-        .attr("id", "zoomout")
-        .attr("type", "submit")
-        .attr("class", "btn btn-default")
-        .text("Zoom Out");
 
-    menuplace.append("div").html("<br>")
+    // menuplace.append("div")
+    //     .append("button")
+    //     .attr("id", "zoomout")
+    //     .attr("type", "submit")
+    //     .attr("class", "btn btn-default")
+    //     .text("Zoom Out");
+
+    // menuplace.append("div").html("<br>")
 
     // Initial message
     d3.select("#infoplace").html(initialmessage);
