@@ -228,11 +228,18 @@ let renderAxis = (XorY, newAxis, scale) => {
 
 let plotPaths = (ylr, data, names, chartGroup, xrange, xyScale, npaths, ipath) => {
 
-    if (ylr == "yl") {
-        console.log("@todo dkwon add code here");
-    }
+    chartGroup.append("text")
+    .attr("x", 0)
+    .attr("y", 20)
+    .attr("font-family", "sans-serif")
+    .attr("font-size", "20px")
+    .attr("text-anchor", "left") // left middle right
+    .attr("fill", "red")
+    .text("This is a test");
+
 
     data.forEach((xydata, i) => {
+
         addPath(names[i], chartGroup, xydata, xrange, xyScale[0], xyScale[1], rgb(npaths, ipath));
         ipath = ipath + 1;
     });

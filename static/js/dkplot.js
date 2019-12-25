@@ -57,6 +57,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 .attr("x", 0)
                 .attr("y", 20)
                 .attr("value", "x")
+                .attr("text-anchor","middle")
                 .text("Date");
 
             let ylLinearScale = null, yrLinearScale = null, ylAxis = null, yrAxis = null, label_yl = null, label_yr = null;
@@ -78,6 +79,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("y", -margin.left * 0.7) // horizontal position
                     .attr("x", -height * 0.5) // vertical position
                     .attr("value", "yl")
+                    .attr("text-anchor","middle")
                     .text("Closing Value of Left Tickers");
                 ipath = plotPaths("yl", plotconf.data_l, plotconf.name_l, chartGroup, null, [xTimeScale, ylLinearScale], npaths, ipath);
             }
@@ -95,8 +97,9 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("transform", "rotate(90)")
                     .append("text")
                     .attr("y", -width - margin.right * 0.7) // horizontal position
-                    .attr("x", height * 0.5 - margin.bottom) // vertical position
+                    .attr("x", height * 0.5) // vertical position
                     .attr("value", "yr")
+                    .attr("text-anchor","middle")
                     .text("Closing Value of Right Tickers");
                 ipath = plotPaths("yr", plotconf.data_r, plotconf.name_r, chartGroup, null, [xTimeScale, yrLinearScale], npaths, ipath);
             }
