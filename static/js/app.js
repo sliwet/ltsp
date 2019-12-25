@@ -59,40 +59,40 @@ let buildPlot = (lt, rt) => {
     });
 }
 
-            // let traces = []
+// let traces = []
 
-            // // let xmin = d3.min(data[0].x);
-            // // let xmax = d3.max(data[0].x);
-            // // console.log(`Min: ${xmin} , Max: ${xmax}`);
-            // for (let i = 0; i < ld.length; i++) {
-            //     let trace = {
-            //         type: "scatter",
-            //         mode: "lines",
-            //         name: lt[i],
-            //         x: ld[i].x,
-            //         y: ld[i].y,
-            //         line: {
-            //             color: rgb(ld.length, i)
-            //         }
-            //     };
+// // let xmin = d3.min(data[0].x);
+// // let xmax = d3.max(data[0].x);
+// // console.log(`Min: ${xmin} , Max: ${xmax}`);
+// for (let i = 0; i < ld.length; i++) {
+//     let trace = {
+//         type: "scatter",
+//         mode: "lines",
+//         name: lt[i],
+//         x: ld[i].x,
+//         y: ld[i].y,
+//         line: {
+//             color: rgb(ld.length, i)
+//         }
+//     };
 
-            //     traces.push(trace);
-            // }
+//     traces.push(trace);
+// }
 
-            // let layout = {
-            //     title: `closing prices`,
-            //     // xaxis: {
-            //     //     range: [startDate, endDate],
-            //     //     type: "date"
-            //     // },
-            //     // yaxis: {
-            //     //     autorange: true,
-            //     //     type: "linear"
-            //     // }
-            // };
+// let layout = {
+//     title: `closing prices`,
+//     // xaxis: {
+//     //     range: [startDate, endDate],
+//     //     type: "date"
+//     // },
+//     // yaxis: {
+//     //     autorange: true,
+//     //     type: "linear"
+//     // }
+// };
 
-            // Plotly.newPlot("infoplace", traces, layout);
-            // End of plotting routine
+// Plotly.newPlot("infoplace", traces, layout);
+// End of plotting routine
 
 let leftTickers = []
 let rightTickers = []
@@ -228,6 +228,15 @@ let init = () => {
         .attr("type", "submit")
         .attr("class", "btn btn-default")
         .text("Clear Selection");
+
+    menuplace.append("div").html("<br>")
+    // Clear Selection
+    menuplace.append("div")
+        .append("button")
+        .attr("id", "zoomout")
+        .attr("type", "submit")
+        .attr("class", "btn btn-default")
+        .text("Zoom Out");
 
     menuplace.append("div").html("<br>")
 

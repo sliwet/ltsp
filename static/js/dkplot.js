@@ -232,6 +232,40 @@ let plotPaths = (data, names, chartGroup, xrange, xyScale, npaths, ipath) => {
     return ipath;
 }
 
+let redrawDual = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, ylLinearScale, yrLinearScale
+    , width, height, chartGroup, npaths, plotconf_data_l, plotconf_name_l, plotconf_data_r, plotconf_name_r) => {
+
+    let dxy1, dxy2, xyScale;
+    let ipath = 0;
+    if (isleft) {
+        dxy1 = chartXYtoXY(xy1, xTimeScale, ylLinearScale);
+        dxy2 = chartXYtoXY(xy2, xTimeScale, ylLinearScale);
+        xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yl", ylAxis, width, height);
+        ylLinearScale = xyScale[1];
+        ipath = plotPaths(plotconf_data_l, plotconf_name_l, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
+    }
+
+    if (isright) {
+        let dxy1 = chartXYtoXY(xy1, xTimeScale, yrLinearScale);
+        let dxy2 = chartXYtoXY(xy2, xTimeScale, yrLinearScale);
+        let xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yr", yrAxis, width, height);
+        yrLinearScale = xyScale[1];
+        ipath = plotPaths(plotconf_data_r, plotconf_name_r, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
+    }
+
+    xTimeScale = xyScale[0];
+
+    d3.select("#selectionlineX").remove();
+    d3.select("#selectionlineY").remove();
+    d3.select("#selectionlineX2").remove();
+    d3.select("#selectionlineY2").remove();
+    d3.select("#zoomin").remove();
+    d3.select("#onefive").remove();
+
+    return { xScale: xTimeScale, ylScale: ylLinearScale, yrScale: yrLinearScale };
+}
+
+
 let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margin) => {
     return {
         init: () => {
@@ -324,12 +358,25 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("value", "yr")
                     .text("Closing Value of Right Tickers");
                 ipath = plotPaths(plotconf.data_r, plotconf.name_r, chartGroup, null, [xTimeScale, yrLinearScale], npaths, ipath);
-
             }
 
             // mousedown, mousemove, mouseup, dblclick, click, dragstart, drag, dragend
-
+            let xTimeScale0 = xTimeScale;
+            let ylLinearScale0 = ylLinearScale;
+            let yrLinearScale0 = yrLinearScale;
             let xy1 = null, xy2 = null;
+
+            d3.select("#zoomout").on("click", () => {
+                let scales = redrawDual([0, 0], [width, height], isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale0, ylLinearScale0, yrLinearScale0
+                    , width, height, chartGroup, npaths, plotconf.data_l, plotconf.name_l, plotconf.data_r, plotconf.name_r);
+
+                xy1 = null;
+                xy2 = null;
+                xTimeScale = scales.xScale;
+                ylLinearScale = scales.ylScale;
+                yrLinearScale = scales.yrScale;
+            });
+
             svg.on("click", () => { //"click"
                 let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
                 let usetmp = true;
@@ -382,42 +429,14 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         .text("Zoom in the selected region");
 
                     d3.select("#zoomin").on("click", () => {
-
-
-
-
-                        let dxy1, dxy2, xyScale;
-                        ipath = 0;
-                        if (isleft) {
-                            dxy1 = chartXYtoXY(xy1, xTimeScale, ylLinearScale);
-                            dxy2 = chartXYtoXY(xy2, xTimeScale, ylLinearScale);
-                            xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yl", ylAxis, width, height);
-                            ylLinearScale = xyScale[1];
-                            ipath = plotPaths(plotconf.data_l, plotconf.name_l, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
-                        }
-
-                        if (isright) {
-                            let dxy1 = chartXYtoXY(xy1, xTimeScale, yrLinearScale);
-                            let dxy2 = chartXYtoXY(xy2, xTimeScale, yrLinearScale);
-                            let xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yr", yrAxis, width, height);
-                            yrLinearScale = xyScale[1];
-                            ipath = plotPaths(plotconf.data_r, plotconf.name_r, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, ipath);
-                        }
-
-                        xTimeScale = xyScale[0];
+                        let scales = redrawDual(xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, ylLinearScale, yrLinearScale
+                            , width, height, chartGroup, npaths, plotconf.data_l, plotconf.name_l, plotconf.data_r, plotconf.name_r);
 
                         xy1 = null;
-                        d3.select("#selectionlineX").remove();
-                        d3.select("#selectionlineY").remove();
                         xy2 = null;
-                        d3.select("#selectionlineX2").remove();
-                        d3.select("#selectionlineY2").remove();
-
-                        d3.select("#zoomin").remove();
-
-
-
-                        
+                        xTimeScale = scales.xScale;
+                        ylLinearScale = scales.ylScale;
+                        yrLinearScale = scales.yrScale;
                     });
                 }
                 else if ((xy1 != null) || (xy2 != null)) {
