@@ -168,7 +168,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         .attr("type", "submit")
                         .attr("class", "btn btn-default")
                         .attr("position", "center")
-                        .text("Zoom in selected region");
+                        .html("Zoom in<br>Selected region");
 
                     d3.select("#zoomin").on("click", () => {
                         let scales = redraw_ylyr(xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, ylLinearScale, yrLinearScale
@@ -188,7 +188,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         .attr("type", "submit")
                         .attr("class", "btn btn-default")
                         .attr("position", "center")
-                        .text("Zoom in -1 to +5 yrs");
+                        .html("Zoom in<br>-1 to +5 yrs<br>Normalize data");
 
                     d3.select("#onefive").on("click", () => {
                         let selectedxy = xy1;
