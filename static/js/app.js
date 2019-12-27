@@ -49,7 +49,7 @@ let buildPlot = (lt, rt) => {
 
             let ltspPlot = () => {
                 d3.select("#ltspPlot").remove();
-                let lambdaRunner = lambdaSVG("#infoplace", plotconf, "ltspPlot", window.innerWidth * 0.7, window.innerHeight * 0.7);
+                let lambdaRunner = lambdaSVG("#infoplace", plotconf, "ltspPlot", window.innerWidth * 0.7, window.innerHeight * 0.5);
                 lambdaRunner.init();
             }
 
