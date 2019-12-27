@@ -1,3 +1,14 @@
+let bisectDate = d3.bisector(d => d.date).left;
+
+let getBisectIdx = (data,x0) => {
+    let i = bisectDate(data, x0, 1),d0 = data[i - 1],d1 = d0;
+    try{
+        d1 = data[i];
+        return (x0 - d0.date > d1.date - x0 ? i : i-1);
+    }
+    catch(error){ return i-1;}
+}
+
 let rgb = (n, i) => {
     let r = 255;
     let g = 0;
@@ -185,20 +196,31 @@ let getXYminmax = (dataset, xyminmax) => {
     return xyminmax;
 }
 
-// chartXYtoXY(chartXY,xTimeScale,ylLinearScale or yrLinearScale)
-let chartXYtoXY = (chartXY, xScale, yScale) => {
-    return [xScale.invert(chartXY[0]), yScale.invert(chartXY[1])];
-}
-
-let XYtoChartXY = (xy, xScale, yScale) => {
+let XY_to_ChartXY = (xy, xScale, yScale) => {
     return [xScale(xy[0]), yScale(xy[1])];
 }
 
+let chartXY_to_XY = (chartXY, xScale, yScale) => {
+    return [xScale.invert(chartXY[0]), yScale.invert(chartXY[1])];
+}
+
 let svgXY_to_chartXY = (svgXY, leftmargin, topmargin) => {
+    return [svgXY[0] - leftmargin,svgXY[1] - topmargin];
+}
+
+let chartXY_to_svgXY = (chartXY, leftmargin, topmargin) => {
+    return [chartXY[0] + leftmargin,chartXY[1] + topmargin];
+}
+
+let svgXY_to_XY = (svgXY,xScale,yScale, leftmargin, topmargin) => {
     let chartXY = [0, 0];
     chartXY[0] = svgXY[0] - leftmargin; //margin.left;
     chartXY[1] = svgXY[1] - topmargin; //margin.top;
-    return chartXY;
+    return [xScale.invert(chartXY[0]), yScale.invert(chartXY[1])];
+}
+
+let XY_to_svgXY = (xy,xScale,yScale, leftmargin, topmargin) => {
+    return [xScale(xy[0]) + leftmargin, yScale(xy[1]) + topmargin];
 }
 
 let isinside = (xy, xy1, xy2) => {
@@ -274,8 +296,8 @@ let redraw_ylyr = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale,
 
     let dxy1, dxy2, xyScale;
     if (isleft) {
-        dxy1 = chartXYtoXY(xy1, xTimeScale, ylLinearScale);
-        dxy2 = chartXYtoXY(xy2, xTimeScale, ylLinearScale);
+        dxy1 = chartXY_to_XY(xy1, xTimeScale, ylLinearScale);
+        dxy2 = chartXY_to_XY(xy2, xTimeScale, ylLinearScale);
         xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yl", ylAxis, width, height);
         ylLinearScale = xyScale[1];
         plotPaths(plotconf_data_l, plotconf_name_l, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, 0);
@@ -283,8 +305,8 @@ let redraw_ylyr = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale,
     }
 
     if (isright) {
-        let dxy1 = chartXYtoXY(xy1, xTimeScale, yrLinearScale);
-        let dxy2 = chartXYtoXY(xy2, xTimeScale, yrLinearScale);
+        let dxy1 = chartXY_to_XY(xy1, xTimeScale, yrLinearScale);
+        let dxy2 = chartXY_to_XY(xy2, xTimeScale, yrLinearScale);
         let xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yr", yrAxis, width, height);
         yrLinearScale = xyScale[1];
         plotPaths(plotconf_data_r, plotconf_name_r, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, plotconf_data_l.length);
