@@ -22,11 +22,6 @@ let rgb = (n, i) => {
     return ["rgb(", r, ",", g, ",", b, ")"].join("");
 }
 
-// chartXYtoXY(chartXY,xTimeScale,ylLinearScale or yrLinearScale)
-let chartXYtoXY = (chartXY, xScale, yScale) => {
-    return [xScale.invert(chartXY[0]), yScale.invert(chartXY[1])];
-}
-
 let addLine = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth) => {
     if (uniqueID != null) {
         d3.select(`#${uniqueID}`).remove();
@@ -188,6 +183,15 @@ let getXYminmax = (dataset, xyminmax) => {
     xyminmax.push([d3.min(yminall), d3.max(ymaxall)]);
 
     return xyminmax;
+}
+
+// chartXYtoXY(chartXY,xTimeScale,ylLinearScale or yrLinearScale)
+let chartXYtoXY = (chartXY, xScale, yScale) => {
+    return [xScale.invert(chartXY[0]), yScale.invert(chartXY[1])];
+}
+
+let XYtoChartXY = (xy, xScale, yScale) => {
+    return [xScale(xy[0]), yScale(xy[1])];
 }
 
 let svgXY_to_chartXY = (svgXY, leftmargin, topmargin) => {

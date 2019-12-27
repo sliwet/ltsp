@@ -124,19 +124,20 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
 
             svg.on("click", () => { //"click"
                 let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
-                let usetmp = true;
+                if(!isinside(xytmp,[0,0],[width,height])) return;
 
+                let usetmp = true;
                 if (xy1 != null) {
-                    if (Math.abs(xytmp[0] - xy1[0]) < 10) {
+                    if ((Math.abs(xytmp[0] - xy1[0]) < 10) || (Math.abs(xytmp[1] - xy1[1]) < 10)) {
                         usetmp = false;
                         xy1 = null;
                         d3.select("#selectionlineX").remove();
                         d3.select("#selectionlineY").remove();
                     }
                 }
-
+                
                 if (usetmp && (xy2 != null)) {
-                    if (Math.abs(xytmp[0] - xy2[0]) < 10) {
+                    if ((Math.abs(xytmp[0] - xy2[0]) < 10) || (Math.abs(xytmp[1] - xy2[1]) < 10)) {
                         usetmp = false;
                         xy2 = null;
                         d3.select("#selectionlineX2").remove();
@@ -146,18 +147,14 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
 
                 if (usetmp) {
                     if (xy1 == null) {
-                        if (isinside(xytmp, [0, 0], [width, height])) {
-                            xy1 = xytmp;
-                            addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "lightblue", "2px");
-                            addLine("selectionlineY", chartGroup, { x: 0, y: xy1[1] }, { x: width, y: xy1[1] }, "lightblue", "2px");
-                        }
+                        xy1 = xytmp;
+                        addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "lightblue", "2px");
+                        addLine("selectionlineY", chartGroup, { x: 0, y: xy1[1] }, { x: width, y: xy1[1] }, "lightblue", "2px");
                     }
                     else {
-                        if (isinside(xytmp, [0, 0], [width, height])) {
-                            xy2 = xytmp;
-                            addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightblue", "2px");
-                            addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightblue", "2px");
-                        }
+                        xy2 = xytmp;
+                        addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightblue", "2px");
+                        addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightblue", "2px");
                     }
                 }
 
@@ -185,10 +182,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     });
                 }
                 else if ((xy1 != null) || (xy2 != null)) {
-
-// @todo input markers here
-
-
                     d3.select(wheretoplot).append("div")
                         .append("button")
                         .attr("id", "onefive")
@@ -210,9 +203,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         // selecteddate.setDate(selecteddate.getDate() - 365);
                         let enddate = new Date(selecteddate);
                         enddate.setFullYear(enddate.getFullYear() + 5);
-                        // console.log(startdate);
-                        // console.log(selecteddate);
-                        // console.log(enddate);
 
                         let startxy = [xTimeScale(startdate), 0];
                         let endxy = [xTimeScale(enddate), height];

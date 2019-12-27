@@ -47,14 +47,14 @@ let buildPlot = (lt, rt) => {
                 data_r: rd
             }
 
-            let dualplot = () => {
-                d3.select("#dualplot").remove();
-                let lambdaRunner = lambdaSVG("#infoplace", plotconf, "dualplot", window.innerWidth * 0.7, window.innerHeight * 0.7);
+            let ltspPlot = () => {
+                d3.select("#ltspPlot").remove();
+                let lambdaRunner = lambdaSVG("#infoplace", plotconf, "ltspPlot", window.innerWidth * 0.7, window.innerHeight * 0.7);
                 lambdaRunner.init();
             }
 
-            window.addEventListener('resize', dualplot);
-            dualplot();
+            window.addEventListener('resize', ltspPlot);
+            ltspPlot();
         });
     });
 }
