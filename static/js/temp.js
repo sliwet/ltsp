@@ -116,7 +116,7 @@ function mousemove() {
     // focus.select(".tooltip-likes").text(formatValue(d.likes));
     focus.select(".tooltip-likes").text(`${d.likes.toLocaleString(undefined, {style: "currency", currency: "USD"})}<br>test`);
 
-
+// mouseover mouseout
     
 }
 });
