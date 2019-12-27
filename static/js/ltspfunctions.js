@@ -269,7 +269,7 @@ let plotPaths = (data, names, chartGroup, xrange, xyScale, npaths, ipath) => {
     });
 }
 
-let redrawDual = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, ylLinearScale, yrLinearScale
+let redraw_ylyr = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, ylLinearScale, yrLinearScale
     , width, height, chartGroup, npaths, plotconf_data_l, plotconf_name_l, plotconf_data_r, plotconf_name_r) => {
 
     let dxy1, dxy2, xyScale;
