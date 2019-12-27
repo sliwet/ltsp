@@ -1,12 +1,12 @@
-let bisectDate = d3.bisector(d => d.date).left;
+let bisectX = d3.bisector(d => d.x).left;
 
-let getBisectIdx = (data,x0) => {
-    let i = bisectDate(data, x0, 1),d0 = data[i - 1],d1 = d0;
-    try{
+let getBisectIdx = (data, x0) => {
+    let i = bisectX(data, x0, 1), d0 = data[i - 1], d1 = d0;
+    try {
         d1 = data[i];
-        return (x0 - d0.date > d1.date - x0 ? i : i-1);
+        return (x0 - d0.x > d1.x - x0 ? i : i - 1);
     }
-    catch(error){ return i-1;}
+    catch (error) { return i - 1; }
 }
 
 let rgb = (n, i) => {
@@ -33,7 +33,8 @@ let rgb = (n, i) => {
     return ["rgb(", r, ",", g, ",", b, ")"].join("");
 }
 
-let addLine = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth) => {
+// addLine("test",chartGroup,{x:chartXY[0],y:0},{x:chartXY[0],y:height},"gray","1px","stroke-dasharray","3, 3");
+let addLine = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth, linestyle, styleparam) => {
     if (uniqueID != null) {
         d3.select(`#${uniqueID}`).remove();
     }
@@ -47,6 +48,8 @@ let addLine = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth) => {
         .attr("stroke", linecolor)
         .attr("stroke-width", strokewidth);
 
+    if (typeof linestyle !== 'undefined')
+        oneline.style(linestyle, styleparam);
 
     if (uniqueID != null) {
         oneline.attr("id", uniqueID);
@@ -205,21 +208,21 @@ let chartXY_to_XY = (chartXY, xScale, yScale) => {
 }
 
 let svgXY_to_chartXY = (svgXY, leftmargin, topmargin) => {
-    return [svgXY[0] - leftmargin,svgXY[1] - topmargin];
+    return [svgXY[0] - leftmargin, svgXY[1] - topmargin];
 }
 
 let chartXY_to_svgXY = (chartXY, leftmargin, topmargin) => {
-    return [chartXY[0] + leftmargin,chartXY[1] + topmargin];
+    return [chartXY[0] + leftmargin, chartXY[1] + topmargin];
 }
 
-let svgXY_to_XY = (svgXY,xScale,yScale, leftmargin, topmargin) => {
+let svgXY_to_XY = (svgXY, xScale, yScale, leftmargin, topmargin) => {
     let chartXY = [0, 0];
     chartXY[0] = svgXY[0] - leftmargin; //margin.left;
     chartXY[1] = svgXY[1] - topmargin; //margin.top;
     return [xScale.invert(chartXY[0]), yScale.invert(chartXY[1])];
 }
 
-let XY_to_svgXY = (xy,xScale,yScale, leftmargin, topmargin) => {
+let XY_to_svgXY = (xy, xScale, yScale, leftmargin, topmargin) => {
     return [xScale(xy[0]) + leftmargin, yScale(xy[1]) + topmargin];
 }
 

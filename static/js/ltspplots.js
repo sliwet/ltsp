@@ -104,49 +104,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 addTickerSelections("yr", chartGroup, width, plotconf.name_r, npaths, plotconf.data_l.length);
             }
 
-
-
-            let xydata = [];
-            plotconf.data_l[0].x.forEach((date,i) => {
-                xydata.push({date:date,value:plotconf.data_l[0].y[i]});
-            });
-
-            // updateTooltip(xydata,svg,margin.left, margin.top);
-
-            // let updateTooltip = (xydata,svg,leftmargin,topmargin) =>{
-            //     // svg.on("mouseover",() => {}); // not needed
-            
-
-                svg.on("mousemove",() => {
-                    let x0 = svgXY_to_XY(d3.mouse(d3.event.target),xTimeScale,ylLinearScale,margin.left,margin.top)[0];
-                    console.log(xydata[getBisectIdx(xydata,x0)]);
-
-
-
-
-                //     var x0 = x.invert(d3.mouse(this)[0]),
-                //     i = bisectDate(data, x0, 1),
-                //     d0 = data[i - 1],
-                //     d1 = data[i],
-                //     d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-            
-                // focus.attr("transform", "translate(" + x(d.date) + "," + y(d.likes) + ")");
-                // focus.select(".tooltip-date").text(dateFormatter(d.date));
-                // // focus.select(".tooltip-likes").text(formatValue(d.likes));
-                // focus.select(".tooltip-likes").text(`${d.likes.toLocaleString(undefined, {style: "currency", currency: "USD"})}<br>test`);
-            
-
-
-
-                //     console.log(xytmp);
-                });
-
-                svg.on("mouseout",() => {
-                    console.log("mouse out");
-                });
-
-            // }
-
             // mousedown, mousemove, mouseup, dblclick, click, dragstart, drag, dragend
             let xTimeScale0 = xTimeScale;
             let ylLinearScale0 = ylLinearScale;
@@ -174,8 +131,8 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     if ((Math.abs(xytmp[0] - xy1[0]) < 10) || (Math.abs(xytmp[1] - xy1[1]) < 10)) {
                         usetmp = false;
                         xy1 = null;
-                        d3.select("#selectionlineX").remove();
                         d3.select("#selectionlineY").remove();
+                        d3.select("#selectionlineX").remove();
                     }
                 }
                 
@@ -183,21 +140,41 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     if ((Math.abs(xytmp[0] - xy2[0]) < 10) || (Math.abs(xytmp[1] - xy2[1]) < 10)) {
                         usetmp = false;
                         xy2 = null;
-                        d3.select("#selectionlineX2").remove();
                         d3.select("#selectionlineY2").remove();
+                        d3.select("#selectionlineX2").remove();
                     }
                 }
 
                 if (usetmp) {
                     if (xy1 == null) {
                         xy1 = xytmp;
-                        addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "lightblue", "2px");
                         addLine("selectionlineY", chartGroup, { x: 0, y: xy1[1] }, { x: width, y: xy1[1] }, "lightblue", "2px");
+                        addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "lightblue", "2px");
+
+
+
+                        let xydata = [];
+                        plotconf.data_l[0].x.forEach((date,i) => {
+                            xydata.push({x:date,y:plotconf.data_l[0].y[i]});
+                        });
+    
+    
+                        let x0 = chartXY_to_XY(xy1,xTimeScale,ylLinearScale)[0];
+                        // let x0 = svgXY_to_XY(d3.mouse(d3.event.target),xTimeScale,ylLinearScale,margin.left,margin.top)[0];
+                        let idx = getBisectIdx(xydata,x0);
+
+                        console.log(xydata[idx]);
+    
+                        // let chartXY = XY_to_ChartXY([xydata[idx].x,xydata[idx].y],xTimeScale,ylLinearScale);
+                        // addLine("test",chartGroup,{x:chartXY[0],y:0},{x:chartXY[0],y:height},"gray","1px","stroke-dasharray","3, 3");
+    
+    
+
                     }
                     else {
                         xy2 = xytmp;
-                        addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightblue", "2px");
                         addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightblue", "2px");
+                        addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightblue", "2px");
                     }
                 }
 
@@ -240,7 +217,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         if (isleft) yScale = ylLinearScale;
                         else yScale = yrLinearScale;
 
-                        let selecteddate = chartXYtoXY(selectedxy, xTimeScale, yScale)[0];
+                        let selecteddate = chartXY_to_XY(selectedxy, xTimeScale, yScale)[0];
                         let startdate = new Date(selecteddate);
                         startdate.setFullYear(startdate.getFullYear() - 1);
                         // selecteddate.setDate(selecteddate.getDate() - 365);
