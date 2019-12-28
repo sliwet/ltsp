@@ -219,27 +219,22 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         let selectedxy = xy1;
                         if (xy1 == null) selectedxy = xy2;
 
+                        let yScale = yrLinearScale;
                         if (isleft) yScale = ylLinearScale;
-                        else yScale = yrLinearScale;
 
                         let selecteddate = chartXY_to_XY(selectedxy, xTimeScale, yScale)[0];
-                        let startdate = new Date(selecteddate);
-                        startdate.setFullYear(startdate.getFullYear() - 1);
-                        // selecteddate.setDate(selecteddate.getDate() - 365);
-                        let enddate = new Date(selecteddate);
-                        enddate.setFullYear(enddate.getFullYear() + 5);
 
-                        let startxy = [xTimeScale(startdate), 0];
-                        let endxy = [xTimeScale(enddate), height];
+                        let normalized = normalizeData(selecteddate,isleft,plotconf.data_l,isright,plotconf.data_r);
 
+                        let xScale = getTimeScale("x", normalized.xminmax, width);
+                        yScale = getLinearScale("y", normalized.yminmax, height);
 
-                        // @todo
-                        // ylLinearScale,yrLinearScale
-                        // plotconf.data_l,plotconf.data_r
+                        let startxy = [xScale(normalized.xminmax[0]), 0];
+                        let endxy = [xScale(normalized.xminmax[1]), height];
 
-
-                        let scales = redraw_ylyr(startxy, endxy, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, ylLinearScale, yrLinearScale
-                            , width, height, chartGroup, npaths, plotconf.data_l, plotconf.name_l, plotconf.data_r, plotconf.name_r);
+                        let scales = redraw_ylyr(startxy, endxy, isleft, isright, xAxis, ylAxis, yrAxis
+                            , xScale, yScale, yScale, width, height
+                            , chartGroup, npaths, normalized.data_l, plotconf.name_l, normalized.data_r, plotconf.name_r);
 
                         xy1 = null;
                         xy2 = null;
@@ -247,8 +242,9 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         ylLinearScale = scales.ylScale;
                         yrLinearScale = scales.yrScale;
 
-                        selectedxy = [xTimeScale(selecteddate), 0];
-                        addLine("selecteddate", chartGroup, { x: selectedxy[0], y: 0 }, { x: selectedxy[0], y: height }, "gray", "2px");
+                        selectedxy = [xScale(selecteddate), yScale(0)];
+                        addLine("selecteddateX", chartGroup, { x: selectedxy[0], y: 0 }, { x: selectedxy[0], y: height }, "gray", "1px");
+                        addLine("selecteddateY", chartGroup, { x: 0, y: selectedxy[1] }, { x: width, y: selectedxy[1]}, "gray", "1px");
                     });
                 }
             });

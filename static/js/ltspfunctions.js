@@ -89,6 +89,34 @@ let getOne_XY_CXY = (one_plotconf_data, xScale, yScale, chartxy) => {
     return { onexy: onexy, onecxy: onecxy };
 }
 
+let normalize_one_plotconf_data = (one_plotconf_data,x0,xstart,xend) => {
+    let xydata = [];
+    one_plotconf_data.x.forEach((date, i) => {
+        if((date >= xstart) && (date <= xend)){
+            xydata.push({ x: date, y: one_plotconf_data.y[i] });
+        }
+    });
+
+    let idx = getBisectIdx(xydata, x0);
+    let y0 = xydata[idx].y;
+
+    let x = [];
+    let y = [];
+
+    let ymin = 0.0,ymax = 0.0,ytmp;
+
+    xydata.forEach( xy => {
+        x.push(xy.x);
+        ytmp = (xy.y - y0) * 100.0 / y0;
+        
+        if(ytmp < ymin) ymin = ytmp;
+        else if(ytmp > ymax) ymax = ytmp;
+
+        y.push(ytmp);
+    });
+
+    return {onedata:{x:x,y:y},xminmax:[x[0],x[x.length-1]],yminmax:[ymin,ymax]};
+}
 
 // addLine("test",chartGroup,{x:chartXY[0],y:0},{x:chartXY[0],y:height},"gray","1px","stroke-dasharray","3, 3");
 let addLine = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth, linestyle, styleparam) => {
@@ -256,6 +284,13 @@ let getXYminmax = (dataset, xyminmax) => {
     return xyminmax;
 }
 
+let newMinmax = (newitem,old) => {
+    if(old == null) return newitem;
+    if(newitem[0] > old[0]) newitem[0] = old[0];
+    if(newitem[1] < old[1]) newitem[1] = old[1];
+    return newitem; 
+}
+
 let XY_to_ChartXY = (xy, xScale, yScale) => {
     return [xScale(xy[0]), yScale(xy[1])];
 }
@@ -381,8 +416,44 @@ let redraw_ylyr = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale,
     d3.select("#selectionlineY2").remove();
     d3.select("#zoomin").remove();
     d3.select("#onefive").remove();
-    d3.select("#selecteddate").remove();
+    d3.select("#selecteddateX").remove();
+    d3.select("#selecteddateY").remove();
     chartGroup.selectAll("circle").remove();
 
     return { xScale: xTimeScale, ylScale: ylLinearScale, yrScale: yrLinearScale };
+}
+
+let normalizeData = (selecteddate,isleft,plotconf_data_l,isright,plotconf_data_r) => {
+    let startdate = new Date(selecteddate);
+    startdate.setFullYear(startdate.getFullYear() - 1);
+    // selecteddate.setDate(selecteddate.getDate() - 365);
+
+    let enddate = new Date(selecteddate);
+    enddate.setFullYear(enddate.getFullYear() + 5);
+
+    let data_l = [],data_r = [],xminmax = null,yminmax = null;
+    if(isleft){
+        plotconf_data_l.forEach((one_plotconf_data,i) => {
+            let normalized = normalize_one_plotconf_data(one_plotconf_data,selecteddate,startdate,enddate);
+            data_l.push(normalized.onedata);
+            xminmax = newMinmax(normalized.xminmax,xminmax);
+            yminmax = newMinmax(normalized.yminmax,yminmax);
+        });
+    }
+
+    if(isright){
+        plotconf_data_r.forEach((one_plotconf_data,i) => {
+            let normalized = normalize_one_plotconf_data(one_plotconf_data,selecteddate,startdate,enddate);
+            data_r.push(normalized.onedata);
+            xminmax = newMinmax(normalized.xminmax,xminmax);
+            yminmax = newMinmax(normalized.yminmax,yminmax);
+        });
+    }
+
+    return {
+        xminmax:xminmax,
+        yminmax:yminmax,
+        data_l:data_l,
+        data_r:data_r
+    };
 }
