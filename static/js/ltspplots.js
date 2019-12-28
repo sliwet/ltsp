@@ -152,27 +152,31 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "lightblue", "2px");
 
 
+//                        let addTooltips = () => {
 
 
-                        let xydata = [];
-                        plotconf.data_l[0].x.forEach((date,i) => {
-                            xydata.push({x:date,y:plotconf.data_l[0].y[i]});
-                        });
-    
-    
-                        let x0 = chartXY_to_XY(xy1,xTimeScale,ylLinearScale)[0];
-                        // let x0 = svgXY_to_XY(d3.mouse(d3.event.target),xTimeScale,ylLinearScale,margin.left,margin.top)[0];
-                        let idx = getBisectIdx(xydata,x0);
+                            let xydata = [];
+                            plotconf.data_l[0].x.forEach((date,i) => {
+                                xydata.push({x:date,y:plotconf.data_l[0].y[i]});
+                            });
+        
+        
+                            let x0 = chartXY_to_XY(xy1,xTimeScale,ylLinearScale)[0];
+                            // let x0 = svgXY_to_XY(d3.mouse(d3.event.target),xTimeScale,ylLinearScale,margin.left,margin.top)[0];
+                            let idx = getBisectIdx(xydata,x0);
 
-                        console.log(xydata[idx]);
+                            console.log(xydata[idx]);
 
-                        let cxy = [];
+                            let cxy = [];
 
-                        let oneitem = {x: xTimeScale(xydata[idx].x),y: ylLinearScale(xydata[idx].y)};
+                            let oneitem = {x: xTimeScale(xydata[idx].x),y: ylLinearScale(xydata[idx].y)};
 
-                        cxy.push(oneitem);
+                            cxy.push(oneitem);
 
-                        updateTooltips(chartGroup,[plotconf.name_l[0]],[xydata[idx]],cxy);
+                            updateTooltips(chartGroup,[plotconf.name_l[0]],[xydata[idx]],cxy);
+
+
+//                        }
 
                     
                     //   circlesGroup = updateToolTip(circlesGroup);
@@ -186,8 +190,8 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     }
                     else {
                         xy2 = xytmp;
-                        addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightblue", "2px");
-                        addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightblue", "2px");
+                        addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightgray", "2px");
+                        addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightgray", "2px");
                     }
                 }
 

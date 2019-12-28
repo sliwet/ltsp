@@ -43,7 +43,7 @@ let rgb = (n, i, a) => {
 }
 
 let updateTooltips = (chartGroup,names, xy, cxy) => {
-
+    
     chartGroup.selectAll("circle").remove();
 
     let n = cxy.length;
