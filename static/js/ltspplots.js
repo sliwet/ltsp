@@ -153,6 +153,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
 
 
 
+
                         let xydata = [];
                         plotconf.data_l[0].x.forEach((date,i) => {
                             xydata.push({x:date,y:plotconf.data_l[0].y[i]});
@@ -164,6 +165,18 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         let idx = getBisectIdx(xydata,x0);
 
                         console.log(xydata[idx]);
+
+                        let cxy = [];
+
+                        let oneitem = {x: xTimeScale(xydata[idx].x),y: ylLinearScale(xydata[idx].y)};
+
+                        cxy.push(oneitem);
+
+                        updateTooltips(chartGroup,[plotconf.name_l[0]],[xydata[idx]],cxy);
+
+                    
+                    //   circlesGroup = updateToolTip(circlesGroup);
+
     
                         // let chartXY = XY_to_ChartXY([xydata[idx].x,xydata[idx].y],xTimeScale,ylLinearScale);
                         // addLine("test",chartGroup,{x:chartXY[0],y:0},{x:chartXY[0],y:height},"gray","1px","stroke-dasharray","3, 3");

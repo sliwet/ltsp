@@ -1,3 +1,10 @@
+let dateFormatter = d3.timeFormat("%m/%d/%Y");
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2
+  });
+
 let bisectX = d3.bisector(d => d.x).left;
 
 let getBisectIdx = (data, x0) => {
@@ -9,7 +16,9 @@ let getBisectIdx = (data, x0) => {
     catch (error) { return i - 1; }
 }
 
-let rgb = (n, i) => {
+let rgb = (n, i, a) => {
+    if (typeof a === 'undefined') a = 1.0;
+
     let r = 255;
     let g = 0;
     let b = 0;
@@ -30,7 +39,40 @@ let rgb = (n, i) => {
     r = Math.floor(r);
     g = Math.floor(g);
     b = Math.floor(b);
-    return ["rgb(", r, ",", g, ",", b, ")"].join("");
+    return ["rgba(", r, ",", g, ",", b, ",", a, ")"].join("");
+}
+
+let updateTooltips = (chartGroup,names, xy, cxy) => {
+
+    chartGroup.selectAll("circle").remove();
+
+    let n = cxy.length;
+
+    let circlesGroup = chartGroup.selectAll("circle")
+        .data(xy)
+        .enter()
+        .append("circle")
+        .attr("cx", (d, i) => cxy[i].x)
+        .attr("cy", (d, i) => cxy[i].y)
+        .attr("r", 7)
+        .attr("stroke", (d, i) => rgb(n, i))
+        .attr("stroke-width", "1px")
+        .attr("fill", (d, i) => rgb(n, i, 0.2))
+        .attr("opacity", "1.0");
+
+    let toolTip = d3.tip()
+        .attr("class", "d3-tip")
+        .style("color", (d,i) => rgb(n,i))
+        .offset([0, 0])
+        .html((d,name) => {
+            return `${name}<br>${dateFormatter(d.x)}<br>${currencyFormatter.format(d.y)}`;
+        });
+
+    circlesGroup.call(toolTip);
+
+    circlesGroup
+        .on("mouseover", data => toolTip.show(data,names))
+        .on("mouseout", data => toolTip.hide(data));
 }
 
 // addLine("test",chartGroup,{x:chartXY[0],y:0},{x:chartXY[0],y:height},"gray","1px","stroke-dasharray","3, 3");

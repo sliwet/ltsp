@@ -1,0 +1,15 @@
+.d3-tip {
+    padding: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
+    /* line-height: 1.5em; */
+    /* color: #fff; */
+    text-align: center;
+    /* text-transform: capitalize; */
+    background: rgba(255, 255, 255, 1.0);
+    border-style: solid;
+    border-width: thin;
+    border-color: rgba(67, 72, 83, 1.0);
+  }
+  
