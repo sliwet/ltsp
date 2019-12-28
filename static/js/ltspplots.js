@@ -178,8 +178,8 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     }
                     else {
                         xy2 = xytmp;
-                        addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightgray", "2px");
-                        addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightgray", "2px");
+                        addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightpink", "2px");
+                        addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightpink", "2px");
                     }
                 }
 
@@ -187,13 +187,13 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 d3.select("#zoomin").remove();
 
                 if ((xy1 != null) && (xy2 != null)) {
-                    d3.select("#menuplace").append("div")
+                    d3.select("#infoplace").append("div")
                         .append("button")
                         .attr("id", "zoomin")
                         .attr("type", "submit")
                         .attr("class", "btn btn-default")
                         .attr("position", "center")
-                        .html("Zoom in<br>Selected region");
+                        .html("Zoom in selected region");
 
                     d3.select("#zoomin").on("click", () => {
                         let scales = redraw_ylyr(xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, ylLinearScale, yrLinearScale
@@ -207,13 +207,13 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     });
                 }
                 else if ((xy1 != null) || (xy2 != null)) {
-                    d3.select("#menuplace").append("div")
+                    d3.select("#infoplace").append("div")
                         .append("button")
                         .attr("id", "onefive")
                         .attr("type", "submit")
                         .attr("class", "btn btn-default")
                         .attr("position", "center")
-                        .html("Zoom in<br>-1 to +5 yrs<br>Normalize data");
+                        .html("Zoom in -1 year from selected date to +5 yrs<br>This will normalize data");
 
                     d3.select("#onefive").on("click", () => {
                         let selectedxy = xy1;
