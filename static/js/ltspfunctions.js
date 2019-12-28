@@ -4,7 +4,7 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 2
-  });
+});
 
 let bisectX = d3.bisector(d => d.x).left;
 
@@ -43,38 +43,53 @@ let rgb = (n, i, a) => {
     return ["rgba(", r, ",", g, ",", b, ",", a, ")"].join("");
 }
 
-let updateTooltips = (chartGroup,names, xy, cxy) => {
-    
+let updateTooltips = (chartGroup, tooltipinputs) => {
+
     chartGroup.selectAll("circle").remove();
 
-    let n = cxy.length;
+    let n = tooltipinputs.length;
 
     let circlesGroup = chartGroup.selectAll("circle")
-        .data(xy)
+        .data(tooltipinputs)
         .enter()
         .append("circle")
-        .attr("cx", (d, i) => cxy[i].x)
-        .attr("cy", (d, i) => cxy[i].y)
+        .attr("cx", d => d.cxy.x)
+        .attr("cy", d => d.cxy.y)
         .attr("r", 7)
-        .attr("stroke", (d, i) => rgb(n, i))
+        .attr("stroke", (d,i) => rgb(n, i))
         .attr("stroke-width", "1px")
-        .attr("fill", (d, i) => rgb(n, i, 0.2))
+        .attr("fill", (d,i) => rgb(n, i, 0.2))
         .attr("opacity", "1.0");
 
     let toolTip = d3.tip()
         .attr("class", "d3-tip")
-        .style("color", (d,i) => rgb(n,i))
         .offset([0, 0])
-        .html((d,name) => {
-            return `${name}<br>${dateFormatter(d.x)}<br>${currencyFormatter.format(d.y)}`;
-        });
+        .html(d => `${d.name}<br>${dateFormatter(d.xy.x)}<br>${currencyFormatter.format(d.xy.y)}`);
 
     circlesGroup.call(toolTip);
 
     circlesGroup
-        .on("mouseover", data => toolTip.show(data,names))
+        .on("mouseover", (data,i) => {
+            toolTip.style("color",rgb(n,i))
+            toolTip.show(data)
+        })
         .on("mouseout", data => toolTip.hide(data));
 }
+
+let getOne_XY_CXY = (one_plotconf_data, xScale, yScale, chartxy) => {
+    let xydata = [];
+    one_plotconf_data.x.forEach((date, i) => {
+        xydata.push({ x: date, y: one_plotconf_data.y[i] });
+    });
+
+    let x0 = chartXY_to_XY(chartxy, xScale, yScale)[0];
+    let idx = getBisectIdx(xydata, x0);
+
+    let onexy = xydata[idx];
+    let onecxy = { x: xScale(onexy.x), y: yScale(onexy.y) };
+    return { onexy: onexy, onecxy: onecxy };
+}
+
 
 // addLine("test",chartGroup,{x:chartXY[0],y:0},{x:chartXY[0],y:height},"gray","1px","stroke-dasharray","3, 3");
 let addLine = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth, linestyle, styleparam) => {
@@ -368,6 +383,8 @@ let redraw_ylyr = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale,
     d3.select("#zoomin").remove();
     d3.select("#onefive").remove();
     d3.select("#selecteddate").remove();
+    chartGroup.selectAll("circle").remove();
+
 
     return { xScale: xTimeScale, ylScale: ylLinearScale, yrScale: yrLinearScale };
 }

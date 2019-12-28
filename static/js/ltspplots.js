@@ -124,7 +124,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
 
             svg.on("click", () => { //"click"
                 let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
-                if(!isinside(xytmp,[0,0],[width,height])) return;
+                if (!isinside(xytmp, [0, 0], [width, height])) return;
 
                 let usetmp = true;
                 if (xy1 != null) {
@@ -133,15 +133,17 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         xy1 = null;
                         d3.select("#selectionlineY").remove();
                         d3.select("#selectionlineX").remove();
+                        chartGroup.selectAll("circle").remove();
                     }
                 }
-                
+
                 if (usetmp && (xy2 != null)) {
                     if ((Math.abs(xytmp[0] - xy2[0]) < 10) || (Math.abs(xytmp[1] - xy2[1]) < 10)) {
                         usetmp = false;
                         xy2 = null;
                         d3.select("#selectionlineY2").remove();
                         d3.select("#selectionlineX2").remove();
+                        chartGroup.selectAll("circle").remove();
                     }
                 }
 
@@ -150,63 +152,35 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         xy1 = xytmp;
                         addLine("selectionlineY", chartGroup, { x: 0, y: xy1[1] }, { x: width, y: xy1[1] }, "lightblue", "2px");
                         addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "lightblue", "2px");
-
-
-                    //     addTooltips();
-
-                    //    let addTooltips = () => {
-
-
-
-                    let one_plotconf_data = plotconf.data_l[0];
-                    let xScale = xTimeScale;
-                    let yScale = ylLinearScale;
-                    let chartxy = xy1;
-                    let onename = plotconf.name_l[0];
-                    
-                    let names = [];
-                    let xy = [];
-                    let cxy = [];
-
-
-
-
-                            let xydata = [];
-                            one_plotconf_data.x.forEach((date,i) => {
-                                xydata.push({x:date,y:one_plotconf_data.y[i]});
-                            });
-        
-        
-                            let x0 = chartXY_to_XY(chartxy,xScale,yScale)[0];
-                            let idx = getBisectIdx(xydata,x0);
-
-                            let onexy = xydata[idx];
-                            let onecxy = {x: xScale(onexy.x),y: yScale(onexy.y)};
-
-
-                            names.push(onename);
-                            xy.push(onexy);
-                            cxy.push(onecxy);
-
-                            updateTooltips(chartGroup,names,xy,cxy);
-
-
-                    //    }
-
-                    
-                    //   circlesGroup = updateToolTip(circlesGroup);
-
-    
-                        // let chartXY = XY_to_ChartXY([xydata[idx].x,xydata[idx].y],xTimeScale,ylLinearScale);
-                        // addLine("test",chartGroup,{x:chartXY[0],y:0},{x:chartXY[0],y:height},"gray","1px","stroke-dasharray","3, 3");
-    
-    
-
                     }
                     else {
                         xy2 = xytmp;
                         addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightgray", "2px");
                         addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightgray", "2px");
+                    }
+
+                    if((xy1 == null) || (xy2 == null)){
+                        let tooltipinputs = [];
+
+                        if (isleft) {
+                            plotconf.data_l.forEach((one_plotconf_data, i) => {
+                                let xy_cxy = getOne_XY_CXY(one_plotconf_data, xTimeScale, ylLinearScale, xytmp);
+                                tooltipinputs.push({xy:xy_cxy.onexy,cxy:xy_cxy.onecxy,name:plotconf.name_l[i]});
+                            });
+                        }
+    
+                        if (isright) {
+                            plotconf.data_r.forEach((one_plotconf_data, i) => {
+                                let xy_cxy = getOne_XY_CXY(one_plotconf_data, xTimeScale, yrLinearScale, xytmp);
+                                tooltipinputs.push({xy:xy_cxy.onexy,cxy:xy_cxy.onecxy,name:plotconf.name_r[i]});
+                            });
+                        }
+    
+                        updateTooltips(chartGroup, tooltipinputs);
+    
+                    }
+                    else{
+                        chartGroup.selectAll("circle").remove();
                     }
                 }
 
