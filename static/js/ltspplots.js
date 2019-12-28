@@ -232,6 +232,12 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         let startxy = [xTimeScale(startdate), 0];
                         let endxy = [xTimeScale(enddate), height];
 
+
+                        // @todo
+                        // ylLinearScale,yrLinearScale
+                        // plotconf.data_l,plotconf.data_r
+
+
                         let scales = redraw_ylyr(startxy, endxy, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, ylLinearScale, yrLinearScale
                             , width, height, chartGroup, npaths, plotconf.data_l, plotconf.name_l, plotconf.data_r, plotconf.name_r);
 
