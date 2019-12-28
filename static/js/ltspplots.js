@@ -152,31 +152,46 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "lightblue", "2px");
 
 
-//                        let addTooltips = () => {
+                    //     addTooltips();
+
+                    //    let addTooltips = () => {
+
+
+
+                    let one_plotconf_data = plotconf.data_l[0];
+                    let xScale = xTimeScale;
+                    let yScale = ylLinearScale;
+                    let chartxy = xy1;
+                    let onename = plotconf.name_l[0];
+                    
+                    let names = [];
+                    let xy = [];
+                    let cxy = [];
+
+
 
 
                             let xydata = [];
-                            plotconf.data_l[0].x.forEach((date,i) => {
-                                xydata.push({x:date,y:plotconf.data_l[0].y[i]});
+                            one_plotconf_data.x.forEach((date,i) => {
+                                xydata.push({x:date,y:one_plotconf_data.y[i]});
                             });
         
         
-                            let x0 = chartXY_to_XY(xy1,xTimeScale,ylLinearScale)[0];
-                            // let x0 = svgXY_to_XY(d3.mouse(d3.event.target),xTimeScale,ylLinearScale,margin.left,margin.top)[0];
+                            let x0 = chartXY_to_XY(chartxy,xScale,yScale)[0];
                             let idx = getBisectIdx(xydata,x0);
 
-                            console.log(xydata[idx]);
-
-                            let cxy = [];
-
-                            let oneitem = {x: xTimeScale(xydata[idx].x),y: ylLinearScale(xydata[idx].y)};
-
-                            cxy.push(oneitem);
-
-                            updateTooltips(chartGroup,[plotconf.name_l[0]],[xydata[idx]],cxy);
+                            let onexy = xydata[idx];
+                            let onecxy = {x: xScale(onexy.x),y: yScale(onexy.y)};
 
 
-//                        }
+                            names.push(onename);
+                            xy.push(onexy);
+                            cxy.push(onecxy);
+
+                            updateTooltips(chartGroup,names,xy,cxy);
+
+
+                    //    }
 
                     
                     //   circlesGroup = updateToolTip(circlesGroup);

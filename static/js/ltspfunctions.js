@@ -1,4 +1,5 @@
 let dateFormatter = d3.timeFormat("%m/%d/%Y");
+
 const currencyFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
