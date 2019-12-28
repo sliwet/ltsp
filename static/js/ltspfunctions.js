@@ -46,7 +46,6 @@ let rgb = (n, i, a) => {
 let updateTooltips = (chartGroup, tooltipinputs) => {
 
     chartGroup.selectAll("circle").remove();
-
     let n = tooltipinputs.length;
 
     let circlesGroup = chartGroup.selectAll("circle")
@@ -384,7 +383,6 @@ let redraw_ylyr = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale,
     d3.select("#onefive").remove();
     d3.select("#selecteddate").remove();
     chartGroup.selectAll("circle").remove();
-
 
     return { xScale: xTimeScale, ylScale: ylLinearScale, yrScale: yrLinearScale };
 }

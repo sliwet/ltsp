@@ -110,6 +110,31 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
             let yrLinearScale0 = yrLinearScale;
             let xy1 = null, xy2 = null;
 
+            svg.on("mousewheel", () => {
+                let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
+                if (isinside(xytmp, [0, 0], [width, height])){
+                    let tooltipinputs = [];
+                    if (isleft) {
+                        plotconf.data_l.forEach((one_plotconf_data, i) => {
+                            let xy_cxy = getOne_XY_CXY(one_plotconf_data, xTimeScale, ylLinearScale, xytmp);
+                            tooltipinputs.push({ xy: xy_cxy.onexy, cxy: xy_cxy.onecxy, name: plotconf.name_l[i] });
+                        });
+                    }
+    
+                    if (isright) {
+                        plotconf.data_r.forEach((one_plotconf_data, i) => {
+                            let xy_cxy = getOne_XY_CXY(one_plotconf_data, xTimeScale, yrLinearScale, xytmp);
+                            tooltipinputs.push({ xy: xy_cxy.onexy, cxy: xy_cxy.onecxy, name: plotconf.name_r[i] });
+                        });
+                    }
+    
+                    updateTooltips(chartGroup, tooltipinputs);
+                }
+                else{
+                    chartGroup.selectAll("circle").remove();
+                }
+            });
+
             // d3.select("#zoomout").on("click", () => {
             svg.on("dblclick", () => {
                 let scales = redraw_ylyr([0, 0], [width, height], isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale0, ylLinearScale0, yrLinearScale0
@@ -133,7 +158,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         xy1 = null;
                         d3.select("#selectionlineY").remove();
                         d3.select("#selectionlineX").remove();
-                        chartGroup.selectAll("circle").remove();
                     }
                 }
 
@@ -143,7 +167,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         xy2 = null;
                         d3.select("#selectionlineY2").remove();
                         d3.select("#selectionlineX2").remove();
-                        chartGroup.selectAll("circle").remove();
                     }
                 }
 
@@ -157,30 +180,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         xy2 = xytmp;
                         addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightgray", "2px");
                         addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightgray", "2px");
-                    }
-
-                    if((xy1 == null) || (xy2 == null)){
-                        let tooltipinputs = [];
-
-                        if (isleft) {
-                            plotconf.data_l.forEach((one_plotconf_data, i) => {
-                                let xy_cxy = getOne_XY_CXY(one_plotconf_data, xTimeScale, ylLinearScale, xytmp);
-                                tooltipinputs.push({xy:xy_cxy.onexy,cxy:xy_cxy.onecxy,name:plotconf.name_l[i]});
-                            });
-                        }
-    
-                        if (isright) {
-                            plotconf.data_r.forEach((one_plotconf_data, i) => {
-                                let xy_cxy = getOne_XY_CXY(one_plotconf_data, xTimeScale, yrLinearScale, xytmp);
-                                tooltipinputs.push({xy:xy_cxy.onexy,cxy:xy_cxy.onecxy,name:plotconf.name_r[i]});
-                            });
-                        }
-    
-                        updateTooltips(chartGroup, tooltipinputs);
-    
-                    }
-                    else{
-                        chartGroup.selectAll("circle").remove();
                     }
                 }
 
