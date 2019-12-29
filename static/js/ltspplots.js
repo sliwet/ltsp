@@ -278,7 +278,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
 
                             d3.select(wheretoplot).append('div')
                                 .attr("id", "analysismessage")
-                                .html("Click mouse on plot area to start / pause / resume analysis<br>Analysis will be done only on <b>top tickers</b> of both sides");
+                                .html("Click mouse on plot area to start / pause / resume analysis<br>Analysis will be done only on <b>left top ticker and right bottom ticker</b>");
                         });
                     }
                 }
