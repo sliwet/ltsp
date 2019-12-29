@@ -460,6 +460,7 @@ let normalizeData = (selecteddate,isleft,plotconf_data_l,isright,plotconf_data_r
         data_l:data_l,
         data_r:data_r,
         xScale:null,
-        yScale:null
+        ylScale:null,
+        yrScale:null
     };
 }

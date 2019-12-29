@@ -124,8 +124,8 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     data_l = normalized.data_l;
                     data_r = normalized.data_r;
                     xScale = normalized.xScale;
-                    ylScale = normalized.yScale;
-                    yrScale = normalized.yScale;
+                    ylScale = normalized.ylScale;
+                    yrScale = normalized.yrScale;
                 }
 
                 let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
@@ -249,13 +249,14 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                             normalized = normalizeData(selecteddate, isleft, plotconf.data_l, isright, plotconf.data_r);
 
                             normalized.xScale = getTimeScale("x", normalized.xminmax, width);
-                            normalized.yScale = getLinearScale("y", normalized.yminmax, height);
+                            normalized.ylScale = getLinearScale("y", normalized.yminmax, height);
+                            normalized.yrScale = normalized.ylScale;
 
                             let startxy = [normalized.xScale(normalized.xminmax[0]), 0];
                             let endxy = [normalized.xScale(normalized.xminmax[1]), height];
 
                             let scales = redraw_ylyr(startxy, endxy, isleft, isright, xAxis, ylAxis, yrAxis
-                                , normalized.xScale, normalized.yScale, normalized.yScale, width, height
+                                , normalized.xScale, normalized.ylScale, normalized.yrScale, width, height
                                 , chartGroup, npaths, normalized.data_l, plotconf.name_l, normalized.data_r, plotconf.name_r);
 
                             if (isleft) label_yl.text("Change in value (%)");
@@ -267,7 +268,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                             ylLinearScale = scales.ylScale;
                             yrLinearScale = scales.yrScale;
 
-                            selectedxy = [normalized.xScale(selecteddate), normalized.yScale(0)];
+                            selectedxy = [normalized.xScale(selecteddate), normalized.ylScale(0)];
                             addLine("selecteddateX", chartGroup, { x: selectedxy[0], y: 0 }, { x: selectedxy[0], y: height }, "gray", "1px");
                             addLine("selecteddateY", chartGroup, { x: 0, y: selectedxy[1] }, { x: width, y: selectedxy[1] }, "gray", "1px");
 
@@ -282,7 +283,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
 
                     // let analysisPlot = () => {
                     //     d3.select("#analysisPlot").remove();
-                    //     let analysisRunner = simpleLSVG(wheretoplot, normalized, "analysisPlot", window.innerWidth * 0.7, window.innerHeight * 0.5);
+                    //     let analysisRunner = simpleLambdaSVG(wheretoplot, normalized, "analysisPlot", window.innerWidth * 0.7, window.innerHeight * 0.5);
                     //     analysisRunner.init();
                     // }
 
