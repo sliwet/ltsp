@@ -156,6 +156,9 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 let scales = redraw_ylyr([0, 0], [width, height], isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale0, ylLinearScale0, yrLinearScale0
                     , width, height, chartGroup, npaths, plotconf.data_l, plotconf.name_l, plotconf.data_r, plotconf.name_r);
 
+                label_yl.text("Closing Value of Left Tickers");
+                label_yr.text("Closing Value of Right Tickers");
+
                 xy1 = null;
                 xy2 = null;
                 xTimeScale = scales.xScale;
@@ -254,6 +257,9 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                                 , normalized.xScale, normalized.yScale, normalized.yScale, width, height
                                 , chartGroup, npaths, normalized.data_l, plotconf.name_l, normalized.data_r, plotconf.name_r);
 
+                            label_yl.text("Change in value (%)");
+                            label_yr.text("Change in value (%)");
+
                             xy1 = null;
                             xy2 = null;
                             xTimeScale = scales.xScale;
@@ -267,7 +273,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     }
 
                 }
-                else{
+                else {
                     console.log("input normalized behavior");
                 }
             });
