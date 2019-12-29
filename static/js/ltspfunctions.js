@@ -418,6 +418,7 @@ let redraw_ylyr = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale,
     d3.select("#onefive").remove();
     d3.select("#selecteddateX").remove();
     d3.select("#selecteddateY").remove();
+    d3.select("#analysismessage").remove();
     chartGroup.selectAll("circle").remove();
 
     return { xScale: xTimeScale, ylScale: ylLinearScale, yrScale: yrLinearScale };
@@ -451,6 +452,8 @@ let normalizeData = (selecteddate,isleft,plotconf_data_l,isright,plotconf_data_r
     }
 
     return {
+        startdate:startdate,
+        selecteddate:selecteddate,
         xminmax:xminmax,
         yminmax:yminmax,
         data_l:data_l,
