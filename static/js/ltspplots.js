@@ -285,44 +285,16 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 else {
                     d3.select("#analysismessage").remove();
 
-                    // data_l = normalized.data_l;
-                    // data_r = normalized.data_r;
-                    // xScale = normalized.xScale;
-                    // ylScale = normalized.ylScale;
-                    // yrScale = normalized.yrScale;
 
-                    // let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
-                    // if (isinside(xytmp, [0, 0], [width, height])) {
-                    //     let tooltipinputs = [];
-                    //     if (isleft) {
-                    //         data_l.forEach((one_plotconf_data, i) => {
-                    //             let xy_cxy = getOne_XY_CXY(one_plotconf_data, xScale, ylScale, xytmp);
-                    //             tooltipinputs.push({ xy: xy_cxy.onexy, cxy: xy_cxy.onecxy, name: plotconf.name_l[i] });
-                    //         });
-                    //     }
 
-                    //     if (isright) {
-                    //         data_r.forEach((one_plotconf_data, i) => {
-                    //             let xy_cxy = getOne_XY_CXY(one_plotconf_data, xScale, yrScale, xytmp);
-                    //             tooltipinputs.push({ xy: xy_cxy.onexy, cxy: xy_cxy.onecxy, name: plotconf.name_r[i] });
-                    //         });
-                    //     }
-
-                    //     updateTooltips(chartGroup, tooltipinputs, normalized);
-                    // }
-                    // else {
-                    //     chartGroup.selectAll("circle").remove();
+                    // let fitPlot = () => {
+                    //     d3.select("#fitPlot").remove();
+                    //     let fitplotRunner = fitplotLSVG(wheretoplot, normalized, "fitPlot", window.innerWidth * 0.7, window.innerHeight * 0.5);
+                    //     fitplotRunner.init();
                     // }
 
-
-                    // let analysisPlot = () => {
-                    //     d3.select("#analysisPlot").remove();
-                    //     let analysisRunner = simpleLambdaSVG(wheretoplot, normalized, "analysisPlot", window.innerWidth * 0.7, window.innerHeight * 0.5);
-                    //     analysisRunner.init();
-                    // }
-
-                    // window.addEventListener('resize', analysisPlot);
-                    // analysisPlot();
+                    // window.addEventListener('resize', fitPlot);
+                    // fitPlot();
                 }
             }); // end of on click
         } // end of init
