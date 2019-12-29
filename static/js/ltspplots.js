@@ -209,7 +209,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     d3.select("#zoomin").remove();
 
                     if ((xy1 != null) && (xy2 != null)) {
-                        d3.select("#infoplace").append("div")
+                        d3.select(wheretoplot).append("div")
                             .append("button")
                             .attr("id", "zoomin")
                             .attr("type", "submit")
@@ -229,7 +229,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                         });
                     }
                     else if ((xy1 != null) || (xy2 != null)) {
-                        d3.select("#infoplace").append("div")
+                        d3.select(wheretoplot).append("div")
                             .append("button")
                             .attr("id", "onefive")
                             .attr("type", "submit")
@@ -280,7 +280,14 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 else {
                     d3.select("#analysismessage").remove();
 
-                    console.log("input normalized behavior");
+                    // let analysisPlot = () => {
+                    //     d3.select("#analysisPlot").remove();
+                    //     let analysisRunner = simpleLSVG(wheretoplot, normalized, "analysisPlot", window.innerWidth * 0.7, window.innerHeight * 0.5);
+                    //     analysisRunner.init();
+                    // }
+
+                    // window.addEventListener('resize', analysisPlot);
+                    // analysisPlot();
                 }
             }); // end of on click
         } // end of init

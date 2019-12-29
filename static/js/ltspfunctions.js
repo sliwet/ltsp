@@ -420,6 +420,7 @@ let redraw_ylyr = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale,
     d3.select("#selecteddateY").remove();
     d3.select("#analysismessage").remove();
     chartGroup.selectAll("circle").remove();
+    d3.select("#analysisPlot").remove();
 
     return { xScale: xTimeScale, ylScale: ylLinearScale, yrScale: yrLinearScale };
 }
