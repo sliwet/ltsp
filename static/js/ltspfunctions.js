@@ -43,7 +43,7 @@ let rgb = (n, i, a) => {
     return ["rgba(", r, ",", g, ",", b, ",", a, ")"].join("");
 }
 
-let updateTooltips = (chartGroup, tooltipinputs) => {
+let updateTooltips = (chartGroup, tooltipinputs,normalized) => {
 
     chartGroup.selectAll("circle").remove();
     let n = tooltipinputs.length;
@@ -63,7 +63,7 @@ let updateTooltips = (chartGroup, tooltipinputs) => {
     let toolTip = d3.tip()
         .attr("class", "d3-tip")
         .offset([0, 0])
-        .html(d => `${d.name}<br>${dateFormatter(d.xy.x)}<br>${currencyFormatter.format(d.xy.y)}`);
+        .html(d => `${d.name}<br>${dateFormatter(d.xy.x)}<br>${normalized == null ?currencyFormatter.format(d.xy.y):parseInt(d.xy.y)} ${normalized ==null?"":" %"}`);
 
     circlesGroup.call(toolTip);
 
@@ -454,6 +454,8 @@ let normalizeData = (selecteddate,isleft,plotconf_data_l,isright,plotconf_data_r
         xminmax:xminmax,
         yminmax:yminmax,
         data_l:data_l,
-        data_r:data_r
+        data_r:data_r,
+        xScale:null,
+        yScale:null
     };
 }

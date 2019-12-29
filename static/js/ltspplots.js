@@ -2,6 +2,7 @@
 let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margin) => {
     return {
         init: () => {
+            let normalized = null;
             let svgWidth = widthInput;
             let svgHeight = heightInput;
 
@@ -111,32 +112,47 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
             let xy1 = null, xy2 = null;
 
             svg.on("mousewheel", () => {
+                let data_l = plotconf.data_l;
+                let data_r = plotconf.data_r;
+                let xScale = xTimeScale;
+                let ylScale = ylLinearScale;
+                let yrScale = yrLinearScale;
+
+                if (normalized != null) {
+                    data_l = normalized.data_l;
+                    data_r = normalized.data_r;
+                    xScale = normalized.xScale;
+                    ylScale = normalized.yScale;
+                    yrScale = normalized.yScale;
+                }
+
                 let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
-                if (isinside(xytmp, [0, 0], [width, height])){
+                if (isinside(xytmp, [0, 0], [width, height])) {
                     let tooltipinputs = [];
                     if (isleft) {
-                        plotconf.data_l.forEach((one_plotconf_data, i) => {
-                            let xy_cxy = getOne_XY_CXY(one_plotconf_data, xTimeScale, ylLinearScale, xytmp);
+                        data_l.forEach((one_plotconf_data, i) => {
+                            let xy_cxy = getOne_XY_CXY(one_plotconf_data, xScale, ylScale, xytmp);
                             tooltipinputs.push({ xy: xy_cxy.onexy, cxy: xy_cxy.onecxy, name: plotconf.name_l[i] });
                         });
                     }
-    
+
                     if (isright) {
-                        plotconf.data_r.forEach((one_plotconf_data, i) => {
-                            let xy_cxy = getOne_XY_CXY(one_plotconf_data, xTimeScale, yrLinearScale, xytmp);
+                        data_r.forEach((one_plotconf_data, i) => {
+                            let xy_cxy = getOne_XY_CXY(one_plotconf_data, xScale, yrScale, xytmp);
                             tooltipinputs.push({ xy: xy_cxy.onexy, cxy: xy_cxy.onecxy, name: plotconf.name_r[i] });
                         });
                     }
-    
-                    updateTooltips(chartGroup, tooltipinputs);
+
+                    updateTooltips(chartGroup, tooltipinputs, normalized);
                 }
-                else{
+                else {
                     chartGroup.selectAll("circle").remove();
                 }
             });
 
             // d3.select("#zoomout").on("click", () => {
             svg.on("dblclick", () => {
+                normalized = null;
                 let scales = redraw_ylyr([0, 0], [width, height], isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale0, ylLinearScale0, yrLinearScale0
                     , width, height, chartGroup, npaths, plotconf.data_l, plotconf.name_l, plotconf.data_r, plotconf.name_r);
 
@@ -148,104 +164,111 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
             });
 
             svg.on("click", () => { //"click"
-                let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
-                if (!isinside(xytmp, [0, 0], [width, height])) return;
 
-                let usetmp = true;
-                if (xy1 != null) {
-                    if ((Math.abs(xytmp[0] - xy1[0]) < 10) || (Math.abs(xytmp[1] - xy1[1]) < 10)) {
-                        usetmp = false;
-                        xy1 = null;
-                        d3.select("#selectionlineY").remove();
-                        d3.select("#selectionlineX").remove();
+                if (normalized == null) {
+                    let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
+                    if (!isinside(xytmp, [0, 0], [width, height])) return;
+
+                    let usetmp = true;
+                    if (xy1 != null) {
+                        if ((Math.abs(xytmp[0] - xy1[0]) < 10) || (Math.abs(xytmp[1] - xy1[1]) < 10)) {
+                            usetmp = false;
+                            xy1 = null;
+                            d3.select("#selectionlineY").remove();
+                            d3.select("#selectionlineX").remove();
+                        }
                     }
-                }
 
-                if (usetmp && (xy2 != null)) {
-                    if ((Math.abs(xytmp[0] - xy2[0]) < 10) || (Math.abs(xytmp[1] - xy2[1]) < 10)) {
-                        usetmp = false;
-                        xy2 = null;
-                        d3.select("#selectionlineY2").remove();
-                        d3.select("#selectionlineX2").remove();
+                    if (usetmp && (xy2 != null)) {
+                        if ((Math.abs(xytmp[0] - xy2[0]) < 10) || (Math.abs(xytmp[1] - xy2[1]) < 10)) {
+                            usetmp = false;
+                            xy2 = null;
+                            d3.select("#selectionlineY2").remove();
+                            d3.select("#selectionlineX2").remove();
+                        }
                     }
-                }
 
-                if (usetmp) {
-                    if (xy1 == null) {
-                        xy1 = xytmp;
-                        addLine("selectionlineY", chartGroup, { x: 0, y: xy1[1] }, { x: width, y: xy1[1] }, "lightblue", "2px");
-                        addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "lightblue", "2px");
+                    if (usetmp) {
+                        if (xy1 == null) {
+                            xy1 = xytmp;
+                            addLine("selectionlineY", chartGroup, { x: 0, y: xy1[1] }, { x: width, y: xy1[1] }, "lightblue", "2px");
+                            addLine("selectionlineX", chartGroup, { x: xy1[0], y: 0 }, { x: xy1[0], y: height }, "lightblue", "2px");
+                        }
+                        else {
+                            xy2 = xytmp;
+                            addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightpink", "2px");
+                            addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightpink", "2px");
+                        }
                     }
-                    else {
-                        xy2 = xytmp;
-                        addLine("selectionlineY2", chartGroup, { x: 0, y: xy2[1] }, { x: width, y: xy2[1] }, "lightpink", "2px");
-                        addLine("selectionlineX2", chartGroup, { x: xy2[0], y: 0 }, { x: xy2[0], y: height }, "lightpink", "2px");
+
+                    d3.select("#onefive").remove();
+                    d3.select("#zoomin").remove();
+
+                    if ((xy1 != null) && (xy2 != null)) {
+                        d3.select("#infoplace").append("div")
+                            .append("button")
+                            .attr("id", "zoomin")
+                            .attr("type", "submit")
+                            .attr("class", "btn btn-default")
+                            .attr("position", "center")
+                            .html("Zoom in selected region");
+
+                        d3.select("#zoomin").on("click", () => {
+                            let scales = redraw_ylyr(xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, ylLinearScale, yrLinearScale
+                                , width, height, chartGroup, npaths, plotconf.data_l, plotconf.name_l, plotconf.data_r, plotconf.name_r);
+
+                            xy1 = null;
+                            xy2 = null;
+                            xTimeScale = scales.xScale;
+                            ylLinearScale = scales.ylScale;
+                            yrLinearScale = scales.yrScale;
+                        });
                     }
+                    else if ((xy1 != null) || (xy2 != null)) {
+                        d3.select("#infoplace").append("div")
+                            .append("button")
+                            .attr("id", "onefive")
+                            .attr("type", "submit")
+                            .attr("class", "btn btn-default")
+                            .attr("position", "center")
+                            .html("Zoom in -1 year from selected date to +5 yrs<br>This will normalize data");
+
+                        d3.select("#onefive").on("click", () => {
+                            let selectedxy = xy1;
+                            if (xy1 == null) selectedxy = xy2;
+
+                            let yScale = yrLinearScale;
+                            if (isleft) yScale = ylLinearScale;
+
+                            let selecteddate = chartXY_to_XY(selectedxy, xTimeScale, yScale)[0];
+
+                            normalized = normalizeData(selecteddate, isleft, plotconf.data_l, isright, plotconf.data_r);
+
+                            normalized.xScale = getTimeScale("x", normalized.xminmax, width);
+                            normalized.yScale = getLinearScale("y", normalized.yminmax, height);
+
+                            let startxy = [normalized.xScale(normalized.xminmax[0]), 0];
+                            let endxy = [normalized.xScale(normalized.xminmax[1]), height];
+
+                            let scales = redraw_ylyr(startxy, endxy, isleft, isright, xAxis, ylAxis, yrAxis
+                                , normalized.xScale, normalized.yScale, normalized.yScale, width, height
+                                , chartGroup, npaths, normalized.data_l, plotconf.name_l, normalized.data_r, plotconf.name_r);
+
+                            xy1 = null;
+                            xy2 = null;
+                            xTimeScale = scales.xScale;
+                            ylLinearScale = scales.ylScale;
+                            yrLinearScale = scales.yrScale;
+
+                            selectedxy = [normalized.xScale(selecteddate), normalized.yScale(0)];
+                            addLine("selecteddateX", chartGroup, { x: selectedxy[0], y: 0 }, { x: selectedxy[0], y: height }, "gray", "1px");
+                            addLine("selecteddateY", chartGroup, { x: 0, y: selectedxy[1] }, { x: width, y: selectedxy[1] }, "gray", "1px");
+                        });
+                    }
+
                 }
-
-                d3.select("#onefive").remove();
-                d3.select("#zoomin").remove();
-
-                if ((xy1 != null) && (xy2 != null)) {
-                    d3.select("#infoplace").append("div")
-                        .append("button")
-                        .attr("id", "zoomin")
-                        .attr("type", "submit")
-                        .attr("class", "btn btn-default")
-                        .attr("position", "center")
-                        .html("Zoom in selected region");
-
-                    d3.select("#zoomin").on("click", () => {
-                        let scales = redraw_ylyr(xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, ylLinearScale, yrLinearScale
-                            , width, height, chartGroup, npaths, plotconf.data_l, plotconf.name_l, plotconf.data_r, plotconf.name_r);
-
-                        xy1 = null;
-                        xy2 = null;
-                        xTimeScale = scales.xScale;
-                        ylLinearScale = scales.ylScale;
-                        yrLinearScale = scales.yrScale;
-                    });
-                }
-                else if ((xy1 != null) || (xy2 != null)) {
-                    d3.select("#infoplace").append("div")
-                        .append("button")
-                        .attr("id", "onefive")
-                        .attr("type", "submit")
-                        .attr("class", "btn btn-default")
-                        .attr("position", "center")
-                        .html("Zoom in -1 year from selected date to +5 yrs<br>This will normalize data");
-
-                    d3.select("#onefive").on("click", () => {
-                        let selectedxy = xy1;
-                        if (xy1 == null) selectedxy = xy2;
-
-                        let yScale = yrLinearScale;
-                        if (isleft) yScale = ylLinearScale;
-
-                        let selecteddate = chartXY_to_XY(selectedxy, xTimeScale, yScale)[0];
-
-                        let normalized = normalizeData(selecteddate,isleft,plotconf.data_l,isright,plotconf.data_r);
-
-                        let xScale = getTimeScale("x", normalized.xminmax, width);
-                        yScale = getLinearScale("y", normalized.yminmax, height);
-
-                        let startxy = [xScale(normalized.xminmax[0]), 0];
-                        let endxy = [xScale(normalized.xminmax[1]), height];
-
-                        let scales = redraw_ylyr(startxy, endxy, isleft, isright, xAxis, ylAxis, yrAxis
-                            , xScale, yScale, yScale, width, height
-                            , chartGroup, npaths, normalized.data_l, plotconf.name_l, normalized.data_r, plotconf.name_r);
-
-                        xy1 = null;
-                        xy2 = null;
-                        xTimeScale = scales.xScale;
-                        ylLinearScale = scales.ylScale;
-                        yrLinearScale = scales.yrScale;
-
-                        selectedxy = [xScale(selecteddate), yScale(0)];
-                        addLine("selecteddateX", chartGroup, { x: selectedxy[0], y: 0 }, { x: selectedxy[0], y: height }, "gray", "1px");
-                        addLine("selecteddateY", chartGroup, { x: 0, y: selectedxy[1] }, { x: width, y: selectedxy[1]}, "gray", "1px");
-                    });
+                else{
+                    console.log("input normalized behavior");
                 }
             });
 
