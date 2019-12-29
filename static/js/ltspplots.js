@@ -107,27 +107,22 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                 addTickerSelections("yr", chartGroup, width, plotconf.name_r, npaths, plotconf.data_l.length);
             }
 
-            // mousedown, mousemove, mouseup, dblclick, click, dragstart, drag, dragend
-            let xTimeScale0 = xTimeScale;
-            let ylLinearScale0 = ylLinearScale;
-            let yrLinearScale0 = yrLinearScale;
+            let data_l0 = plotconf.data_l;
+            let data_r0 = plotconf.data_r;
+            let xScale0 = xTimeScale;
+            let ylScale0 = ylLinearScale;
+            let yrScale0 = yrLinearScale;
+
+            let data_l = data_l0;
+            let data_r = data_r0;
+            let xScale = xScale0;
+            let ylScale = ylScale0;
+            let yrScale = yrScale0;
+
             let xy1 = null, xy2 = null;
 
+
             svg.on("mousewheel", () => {
-                let data_l = plotconf.data_l;
-                let data_r = plotconf.data_r;
-                let xScale = xTimeScale;
-                let ylScale = ylLinearScale;
-                let yrScale = yrLinearScale;
-
-                if (normalized != null) {
-                    data_l = normalized.data_l;
-                    data_r = normalized.data_r;
-                    xScale = normalized.xScale;
-                    ylScale = normalized.ylScale;
-                    yrScale = normalized.yrScale;
-                }
-
                 let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
                 if (isinside(xytmp, [0, 0], [width, height])) {
                     let tooltipinputs = [];
@@ -155,17 +150,26 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
             // d3.select("#zoomout").on("click", () => {
             svg.on("dblclick", () => {
                 normalized = null;
-                let scales = redraw_ylyr([0, 0], [width, height], isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale0, ylLinearScale0, yrLinearScale0
-                    , width, height, chartGroup, npaths, plotconf.data_l, plotconf.name_l, plotconf.data_r, plotconf.name_r);
+
+                data_l = data_l0;
+                data_r = data_r0;
+                xScale = xScale0;
+                ylScale = ylScale0;
+                yrScale = yrScale0;
+
+                let scales = redraw_ylyr([0, 0], [width, height], isleft, isright, xAxis, ylAxis, yrAxis, xScale, ylScale, yrScale
+                    , width, height, chartGroup, npaths, data_l, plotconf.name_l, data_r, plotconf.name_r);
+
+                xScale = scales.xScale;
+                ylScale = scales.ylScale;
+                yrScale = scales.yrScale;
+
+                xy1 = null;
+                xy2 = null;
 
                 if (isleft) label_yl.text("Closing Value of Left Tickers");
                 if (isright) label_yr.text("Closing Value of Right Tickers");
 
-                xy1 = null;
-                xy2 = null;
-                xTimeScale = scales.xScale;
-                ylLinearScale = scales.ylScale;
-                yrLinearScale = scales.yrScale;
             });
 
             svg.on("click", () => { //"click"
@@ -218,14 +222,14 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                             .html("Zoom in selected region");
 
                         d3.select("#zoomin").on("click", () => {
-                            let scales = redraw_ylyr(xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale, ylLinearScale, yrLinearScale
-                                , width, height, chartGroup, npaths, plotconf.data_l, plotconf.name_l, plotconf.data_r, plotconf.name_r);
+                            let scales = redraw_ylyr(xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xScale, ylScale, yrScale
+                                , width, height, chartGroup, npaths, data_l, plotconf.name_l, data_r, plotconf.name_r);
 
+                            xScale = scales.xScale;
+                            ylScale = scales.ylScale;
+                            yrScale = scales.yrScale;
                             xy1 = null;
                             xy2 = null;
-                            xTimeScale = scales.xScale;
-                            ylLinearScale = scales.ylScale;
-                            yrLinearScale = scales.yrScale;
                         });
                     }
                     else if ((xy1 != null) || (xy2 != null)) {
@@ -246,40 +250,72 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
 
                             let selecteddate = chartXY_to_XY(selectedxy, xTimeScale, yScale)[0];
 
-                            normalized = normalizeData(selecteddate, isleft, plotconf.data_l, isright, plotconf.data_r);
+                            normalized = normalizeData(selecteddate, isleft, data_l, isright, data_r, width, height);
 
-                            normalized.xScale = getTimeScale("x", normalized.xminmax, width);
-                            normalized.ylScale = getLinearScale("y", normalized.yminmax, height);
-                            normalized.yrScale = normalized.ylScale;
+                            data_l = normalized.data_l;
+                            data_r = normalized.data_r;
+                            xScale = normalized.xScale;
+                            ylScale = normalized.ylScale;
+                            yrScale = normalized.yrScale;
 
-                            let startxy = [normalized.xScale(normalized.xminmax[0]), 0];
-                            let endxy = [normalized.xScale(normalized.xminmax[1]), height];
+                            let startxy = [xScale(normalized.xminmax[0]), 0];
+                            let endxy = [xScale(normalized.xminmax[1]), height];
 
                             let scales = redraw_ylyr(startxy, endxy, isleft, isright, xAxis, ylAxis, yrAxis
-                                , normalized.xScale, normalized.ylScale, normalized.yrScale, width, height
-                                , chartGroup, npaths, normalized.data_l, plotconf.name_l, normalized.data_r, plotconf.name_r);
+                                , xScale, ylScale, yrScale, width, height
+                                , chartGroup, npaths, data_l, plotconf.name_l, data_r, plotconf.name_r);
+
+                            xScale = scales.xScale;
+                            ylScale = scales.ylScale;
+                            yrScale = scales.yrScale;
+                            xy1 = null;
+                            xy2 = null;
 
                             if (isleft) label_yl.text("Change in value (%)");
                             if (isright) label_yr.text("Change in value (%)");
 
-                            xy1 = null;
-                            xy2 = null;
-                            xTimeScale = scales.xScale;
-                            ylLinearScale = scales.ylScale;
-                            yrLinearScale = scales.yrScale;
-
-                            selectedxy = [normalized.xScale(selecteddate), normalized.ylScale(0)];
+                            selectedxy = [xScale(selecteddate), ylScale(0)];
                             addLine("selecteddateX", chartGroup, { x: selectedxy[0], y: 0 }, { x: selectedxy[0], y: height }, "gray", "1px");
                             addLine("selecteddateY", chartGroup, { x: 0, y: selectedxy[1] }, { x: width, y: selectedxy[1] }, "gray", "1px");
 
                             d3.select(wheretoplot).append('div')
                                 .attr("id", "analysismessage")
-                                .html("Click mouse on plot area to start / pause / resume analysis<br>Analysis will be done only on <b>Left top ticker</b>");
+                                .html("Click mouse on plot area to start / pause / resume analysis<br>Analysis will be done only on <b>top ticker</b> of left tickers");
                         });
                     }
                 }
                 else {
                     d3.select("#analysismessage").remove();
+
+                    // data_l = normalized.data_l;
+                    // data_r = normalized.data_r;
+                    // xScale = normalized.xScale;
+                    // ylScale = normalized.ylScale;
+                    // yrScale = normalized.yrScale;
+
+                    // let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
+                    // if (isinside(xytmp, [0, 0], [width, height])) {
+                    //     let tooltipinputs = [];
+                    //     if (isleft) {
+                    //         data_l.forEach((one_plotconf_data, i) => {
+                    //             let xy_cxy = getOne_XY_CXY(one_plotconf_data, xScale, ylScale, xytmp);
+                    //             tooltipinputs.push({ xy: xy_cxy.onexy, cxy: xy_cxy.onecxy, name: plotconf.name_l[i] });
+                    //         });
+                    //     }
+
+                    //     if (isright) {
+                    //         data_r.forEach((one_plotconf_data, i) => {
+                    //             let xy_cxy = getOne_XY_CXY(one_plotconf_data, xScale, yrScale, xytmp);
+                    //             tooltipinputs.push({ xy: xy_cxy.onexy, cxy: xy_cxy.onecxy, name: plotconf.name_r[i] });
+                    //         });
+                    //     }
+
+                    //     updateTooltips(chartGroup, tooltipinputs, normalized);
+                    // }
+                    // else {
+                    //     chartGroup.selectAll("circle").remove();
+                    // }
+
 
                     // let analysisPlot = () => {
                     //     d3.select("#analysisPlot").remove();

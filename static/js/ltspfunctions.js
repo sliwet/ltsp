@@ -425,7 +425,7 @@ let redraw_ylyr = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale,
     return { xScale: xTimeScale, ylScale: ylLinearScale, yrScale: yrLinearScale };
 }
 
-let normalizeData = (selecteddate,isleft,plotconf_data_l,isright,plotconf_data_r) => {
+let normalizeData = (selecteddate,isleft,plotconf_data_l,isright,plotconf_data_r,width,height) => {
     let startdate = new Date(selecteddate);
     startdate.setFullYear(startdate.getFullYear() - 1);
     // selecteddate.setDate(selecteddate.getDate() - 365);
@@ -452,6 +452,10 @@ let normalizeData = (selecteddate,isleft,plotconf_data_l,isright,plotconf_data_r
         });
     }
 
+    xScale = getTimeScale("x", xminmax, width);
+    ylScale = getLinearScale("y", yminmax, height);
+    yrScale = ylScale;
+
     return {
         startdate:startdate,
         selecteddate:selecteddate,
@@ -459,8 +463,8 @@ let normalizeData = (selecteddate,isleft,plotconf_data_l,isright,plotconf_data_r
         yminmax:yminmax,
         data_l:data_l,
         data_r:data_r,
-        xScale:null,
-        ylScale:null,
-        yrScale:null
+        xScale:xScale,
+        ylScale:ylScale,
+        yrScale:yrScale
     };
 }
