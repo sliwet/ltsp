@@ -78,7 +78,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("x", -height * 0.5) // vertical position
                     .attr("value", "yl")
                     .attr("text-anchor", "middle")
-                    .style("stroke","red")
+                    .style("stroke", "red")
                     .text("Closing Value of Left Tickers");
 
                 plotPaths(plotconf.data_l, plotconf.name_l, chartGroup, null, [xTimeScale, ylLinearScale], npaths, 0);
@@ -101,7 +101,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     .attr("x", height * 0.5) // vertical position
                     .attr("value", "yr")
                     .attr("text-anchor", "middle")
-                    .style("stroke","blue")
+                    .style("stroke", "blue")
                     .text("Closing Value of Right Tickers");
                 plotPaths(plotconf.data_r, plotconf.name_r, chartGroup, null, [xTimeScale, yrLinearScale], npaths, plotconf.data_l.length);
                 addTickerSelections("yr", chartGroup, width, plotconf.name_r, npaths, plotconf.data_l.length);
