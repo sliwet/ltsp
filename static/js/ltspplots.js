@@ -121,7 +121,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
 
             let xy1 = null, xy2 = null;
 
-
             svg.on("mousewheel", () => {
                 let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
                 if (isinside(xytmp, [0, 0], [width, height])) {
@@ -169,7 +168,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
 
                 if (isleft) label_yl.text("Closing Value of Left Tickers");
                 if (isright) label_yr.text("Closing Value of Right Tickers");
-
             });
 
             svg.on("click", () => { //"click"
@@ -280,7 +278,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
 
                             d3.select(wheretoplot).append('div')
                                 .attr("id", "analysismessage")
-                                .html("Click mouse on plot area to start / pause / resume analysis<br>Analysis will be done only on <b>top ticker</b> of left tickers");
+                                .html("Click mouse on plot area to start / pause / resume analysis<br>Analysis will be done only on <b>top tickers</b> of both sides");
                         });
                     }
                 }

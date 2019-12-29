@@ -90,9 +90,12 @@ let getOne_XY_CXY = (one_plotconf_data, xScale, yScale, chartxy) => {
 }
 
 let normalize_one_plotconf_data = (one_plotconf_data,x0,xstart,xend) => {
+    let istartend = null;
     let xydata = [];
     one_plotconf_data.x.forEach((date, i) => {
         if((date >= xstart) && (date <= xend)){
+            if(istartend == null) istartend = [i,0];
+            else istartend[1] = i;
             xydata.push({ x: date, y: one_plotconf_data.y[i] });
         }
     });
@@ -115,7 +118,7 @@ let normalize_one_plotconf_data = (one_plotconf_data,x0,xstart,xend) => {
         y.push(ytmp);
     });
 
-    return {onedata:{x:x,y:y},xminmax:[x[0],x[x.length-1]],yminmax:[ymin,ymax]};
+    return {data:{x:x,y:y},xminmax:[x[0],x[x.length-1]],yminmax:[ymin,ymax],istartend:istartend};
 }
 
 // addLine("test",chartGroup,{x:chartXY[0],y:0},{x:chartXY[0],y:height},"gray","1px","stroke-dasharray","3, 3");
@@ -433,11 +436,12 @@ let normalizeData = (selecteddate,isleft,plotconf_data_l,isright,plotconf_data_r
     let enddate = new Date(selecteddate);
     enddate.setFullYear(enddate.getFullYear() + 5);
 
-    let data_l = [],data_r = [],xminmax = null,yminmax = null;
+    let data_l = [],data_r = [],xminmax = null,yminmax = null,istartend_l = [],istartend_r = [];
     if(isleft){
         plotconf_data_l.forEach((one_plotconf_data,i) => {
             let normalized = normalize_one_plotconf_data(one_plotconf_data,selecteddate,startdate,enddate);
-            data_l.push(normalized.onedata);
+            data_l.push(normalized.data);
+            istartend_l.push(normalized.istartend);
             xminmax = newMinmax(normalized.xminmax,xminmax);
             yminmax = newMinmax(normalized.yminmax,yminmax);
         });
@@ -446,7 +450,8 @@ let normalizeData = (selecteddate,isleft,plotconf_data_l,isright,plotconf_data_r
     if(isright){
         plotconf_data_r.forEach((one_plotconf_data,i) => {
             let normalized = normalize_one_plotconf_data(one_plotconf_data,selecteddate,startdate,enddate);
-            data_r.push(normalized.onedata);
+            data_r.push(normalized.data);
+            istartend_r.push(normalized.istartend);
             xminmax = newMinmax(normalized.xminmax,xminmax);
             yminmax = newMinmax(normalized.yminmax,yminmax);
         });
@@ -461,6 +466,8 @@ let normalizeData = (selecteddate,isleft,plotconf_data_l,isright,plotconf_data_r
         selecteddate:selecteddate,
         xminmax:xminmax,
         yminmax:yminmax,
+        istartend_l:istartend_l,
+        istartend_r:istartend_r,
         data_l:data_l,
         data_r:data_r,
         xScale:xScale,
