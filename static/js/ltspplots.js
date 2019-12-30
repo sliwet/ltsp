@@ -1,10 +1,8 @@
 
-let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margin) => {
+let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) => {
     return {
         init: () => {
             let normalized = null;
-            let svgWidth = widthInput;
-            let svgHeight = heightInput;
 
             if (typeof margin === 'undefined' || margin == null) {
                 margin = { top: 20, right: 100, bottom: 60, left: 100 };
@@ -286,17 +284,29 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, widthInput, heightInput, margi
                     d3.select("#analysismessage").remove();
 
 
+                    let test = new easyplotSVG(wheretoplot, normalized, "fitPlot", svgWidth, svgHeight);
+                    test.test("print this");
 
-                    // let fitPlot = () => {
-                    //     d3.select("#fitPlot").remove();
-                    //     let fitplotRunner = fitplotLSVG(wheretoplot, normalized, "fitPlot", window.innerWidth * 0.7, window.innerHeight * 0.5);
-                    //     fitplotRunner.init();
-                    // }
-
-                    // window.addEventListener('resize', fitPlot);
-                    // fitPlot();
                 }
             }); // end of on click
         } // end of init
     };
 };
+
+
+
+class easyplotSVG {
+    constructor(wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) {
+        this.wheretoplot = wheretoplot;
+        this.plotconf = plotconf;
+        this.uniqueId = uniqueId;
+        this.svgWidth = svgWidth;
+        this.svgHeight = svgHeight;
+        this.margin = margin;
+    }
+
+    test(strtest) {
+        d3.select(this.wheretoplot).append("div").attr("id", this.uniqueId).html(`${this.wheretoplot} : ${strtest}`);
+    }
+
+}
