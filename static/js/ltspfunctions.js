@@ -6,17 +6,6 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2
 });
 
-let bisectX = d3.bisector(d => d.x).left;
-
-let getBisectIdx = (data, x0) => {
-    let i = bisectX(data, x0, 1), d0 = data[i - 1], d1 = d0;
-    try {
-        d1 = data[i];
-        return (x0 - d0.x > d1.x - x0 ? i : i - 1);
-    }
-    catch (error) { return i - 1; }
-}
-
 let rgb = (n, i, a) => {
     if (typeof a === 'undefined') a = 1.0;
 
@@ -69,37 +58,25 @@ let getCirclesGroup = (chartGroup, tooltipinputs, toolTip) => {
     return circlesGroup;
 }
 
-// let updateTooltips = (chartGroup, tooltipinputs, normalized) => {
-//     chartGroup.selectAll("circle").remove();
+let bisectX = d3.bisector(d => d.x).left;
 
-//     let n = tooltipinputs.length;
+let getBisectIdx = (data, x0) => {
+    let i = bisectX(data, x0, 1), d0 = data[i - 1], d1 = d0;
+    try {
+        d1 = data[i];
+        return (x0 - d0.x > d1.x - x0 ? i : i - 1);
+    }
+    catch (error) { return i - 1; }
+}
 
-//     let circlesGroup = chartGroup.selectAll("circle")
-//         .data(tooltipinputs)
-//         .enter()
-//         .append("circle")
-//         .attr("cx", d => d.cxy.x)
-//         .attr("cy", d => d.cxy.y)
-//         .attr("r", 7)
-//         .attr("stroke", (d, i) => rgb(n, i))
-//         .attr("stroke-width", "1px")
-//         .attr("fill", (d, i) => rgb(n, i, 0.2))
-//         .attr("opacity", "1.0");
+let getBisectIdxFromPlotconfdata = (one_plotconf_data,x0) => {
+    let xydata = [];
+    one_plotconf_data.x.forEach((date, i) => {
+        xydata.push({ x: date, y: one_plotconf_data.y[i] });
+    });
 
-//     let toolTip = d3.tip()
-//         .attr("class", "d3-tip")
-//         .offset([0, 0])
-//         .html(d => `${d.name}<br>${dateFormatter(d.xy.x)}<br>${normalized == null ? currencyFormatter.format(d.xy.y) : parseInt(d.xy.y)} ${normalized == null ? "" : " %"}`);
-
-//     circlesGroup.call(toolTip);
-
-//     circlesGroup
-//         .on("mouseover", (data, i) => {
-//             toolTip.style("color", rgb(n, i))
-//             toolTip.show(data)
-//         })
-//         .on("mouseout", data => toolTip.hide(data));
-// }
+    return getBisectIdx(xydata, x0);
+}
 
 let getOne_XY_CXY = (one_plotconf_data, xScale, yScale, chartxy) => {
     let xydata = [];
