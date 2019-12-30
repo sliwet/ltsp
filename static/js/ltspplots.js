@@ -41,7 +41,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                 yrminmax = xyminmax[1];
             }
 
-
             let xTimeScale = getTimeScale("x", xminmax, width);
             let xAxis = chartGroup.append("g")
                 .classed("x-axis", true)
@@ -57,9 +56,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                 .attr("text-anchor", "middle")
                 .text("Date");
 
-            let ylLinearScale = null, yrLinearScale = null, ylAxis = null, yrAxis = null, label_yl = null, label_yr = null;
-
-            let padding;
+            let ylLinearScale = null, yrLinearScale = null, ylAxis = null, yrAxis = null, label_yl = null, label_yr = null, padding = 0;
 
             if (isleft) {
                 padding = (ylminmax[1] - ylminmax[0]) * 0.1;
@@ -164,11 +161,8 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 
                 data_l = data_l0;
                 data_r = data_r0;
-                xScale = xScale0;
-                ylScale = ylScale0;
-                yrScale = yrScale0;
 
-                let scales = redraw_ylyr([0, 0], [width, height], isleft, isright, xAxis, ylAxis, yrAxis, xScale, ylScale, yrScale
+                let scales = redraw_ylyr([0, 0], [width, height], isleft, isright, xAxis, ylAxis, yrAxis, xScale0, ylScale0, yrScale0
                     , width, height, chartGroup, npaths, data_l, plotconf.name_l, data_r, plotconf.name_r);
 
                 xScale = scales.xScale;
@@ -264,12 +258,9 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 
                             data_l = normalized.data_l;
                             data_r = normalized.data_r;
-                            xScale = normalized.xScale;
-                            ylScale = normalized.ylScale;
-                            yrScale = normalized.yrScale;
 
                             let scales = redraw_ylyr([0, 0], [width, height], isleft, isright, xAxis, ylAxis, yrAxis
-                                , xScale, ylScale, yrScale, width, height
+                                , normalized.xScale, normalized.ylScale, normalized.yrScale, width, height
                                 , chartGroup, npaths, data_l, plotconf.name_l, data_r, plotconf.name_r);
 
                             xScale = scales.xScale;
