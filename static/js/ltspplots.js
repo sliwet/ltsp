@@ -119,9 +119,22 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 
             let xy1 = null, xy2 = null;
 
+            let toolTip = d3.tip()
+                .attr("class", "d3-tip")
+                .offset([0, 0])
+                .html(d => `${d.name}<br>${dateFormatter(d.xy.x)}<br>${normalized == null ? currencyFormatter.format(d.xy.y) : parseInt(d.xy.y)} ${normalized == null ? "" : " %"}`);
+
+            let circlesGroup = null;
+
             svg.on("mousewheel", () => {
                 let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
                 if (isinside(xytmp, [0, 0], [width, height])) {
+                    if (circlesGroup != null) {
+                        circlesGroup.call(data => toolTip.hide(data));
+                        circlesGroup = null;
+                        chartGroup.selectAll("circle").remove();
+                    }
+
                     let tooltipinputs = [];
                     if (isleft) {
                         data_l.forEach((one_plotconf_data, i) => {
@@ -137,7 +150,8 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                         });
                     }
 
-                    updateTooltips(chartGroup, tooltipinputs, normalized);
+                    circlesGroup = getCirclesGroup(chartGroup, tooltipinputs, toolTip);
+
                 }
                 else {
                     chartGroup.selectAll("circle").remove();
@@ -254,7 +268,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                             ylScale = normalized.ylScale;
                             yrScale = normalized.yrScale;
 
-                            let scales = redraw_ylyr([0,0],[width,height], isleft, isright, xAxis, ylAxis, yrAxis
+                            let scales = redraw_ylyr([0, 0], [width, height], isleft, isright, xAxis, ylAxis, yrAxis
                                 , xScale, ylScale, yrScale, width, height
                                 , chartGroup, npaths, data_l, plotconf.name_l, data_r, plotconf.name_r);
 
@@ -281,34 +295,34 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                     d3.select("#analysismessage").remove();
                     d3.select("#fitPlot").remove();
 
-                    let useleft = false,useright = false;
+                    let useleft = false, useright = false;
 
-                    if(isleft){
-                        if(normalized.x0idx_l[0] > 0)useleft = true;
+                    if (isleft) {
+                        if (normalized.x0idx_l[0] > 0) useleft = true;
                     }
-                    
-                    if(isright){
-                        if(normalized.x0idx_r[normalized.x0idx_r.length - 1] > 0) useright = true;
+
+                    if (isright) {
+                        if (normalized.x0idx_r[normalized.x0idx_r.length - 1] > 0) useright = true;
                     }
-                    
-                    let startidx = 0,endidx = 0;
-                    if(useleft && useright){
+
+                    let startidx = 0, endidx = 0;
+                    if (useleft && useright) {
                         endidx = normalized.x0idx_l[0];
 
-                        if(normalized.x0idx_l[0] > normalized.x0idx_r[normalized.x0idx_r.length - 1]){
+                        if (normalized.x0idx_l[0] > normalized.x0idx_r[normalized.x0idx_r.length - 1]) {
                             let temp = normalized.data_r[normalized.data_r.length - 1].x[0];
                             console.log(temp);
-                        } 
+                        }
                     }
-                    else if(useleft){
+                    else if (useleft) {
                         endidx = normalized.x0idx_l[0];
                     }
-                    else if(useright){
+                    else if (useright) {
                         endidx = normalized.x0idx_r[normalized.x0idx_r.length - 1];
                     }
                     else return;
 
-                    
+
 
 
 
@@ -323,7 +337,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                     // xScale: xScale,
                     // ylScale: ylScale,
                     // yrScale: yrScale
-            
+
 
                     // data_l = normalized.data_l;
                     // data_r = normalized.data_r;

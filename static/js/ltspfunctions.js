@@ -43,11 +43,8 @@ let rgb = (n, i, a) => {
     return ["rgba(", r, ",", g, ",", b, ",", a, ")"].join("");
 }
 
-let updateTooltips = (chartGroup, tooltipinputs, normalized) => {
-
-    chartGroup.selectAll("circle").remove();
-    let n = tooltipinputs.length;
-
+let getCirclesGroup = (chartGroup, tooltipinputs, toolTip) => {
+    n = tooltipinputs.length;
     let circlesGroup = chartGroup.selectAll("circle")
         .data(tooltipinputs)
         .enter()
@@ -60,11 +57,6 @@ let updateTooltips = (chartGroup, tooltipinputs, normalized) => {
         .attr("fill", (d, i) => rgb(n, i, 0.2))
         .attr("opacity", "1.0");
 
-    let toolTip = d3.tip()
-        .attr("class", "d3-tip")
-        .offset([0, 0])
-        .html(d => `${d.name}<br>${dateFormatter(d.xy.x)}<br>${normalized == null ? currencyFormatter.format(d.xy.y) : parseInt(d.xy.y)} ${normalized == null ? "" : " %"}`);
-
     circlesGroup.call(toolTip);
 
     circlesGroup
@@ -73,7 +65,41 @@ let updateTooltips = (chartGroup, tooltipinputs, normalized) => {
             toolTip.show(data)
         })
         .on("mouseout", data => toolTip.hide(data));
+
+    return circlesGroup;
 }
+
+// let updateTooltips = (chartGroup, tooltipinputs, normalized) => {
+//     chartGroup.selectAll("circle").remove();
+
+//     let n = tooltipinputs.length;
+
+//     let circlesGroup = chartGroup.selectAll("circle")
+//         .data(tooltipinputs)
+//         .enter()
+//         .append("circle")
+//         .attr("cx", d => d.cxy.x)
+//         .attr("cy", d => d.cxy.y)
+//         .attr("r", 7)
+//         .attr("stroke", (d, i) => rgb(n, i))
+//         .attr("stroke-width", "1px")
+//         .attr("fill", (d, i) => rgb(n, i, 0.2))
+//         .attr("opacity", "1.0");
+
+//     let toolTip = d3.tip()
+//         .attr("class", "d3-tip")
+//         .offset([0, 0])
+//         .html(d => `${d.name}<br>${dateFormatter(d.xy.x)}<br>${normalized == null ? currencyFormatter.format(d.xy.y) : parseInt(d.xy.y)} ${normalized == null ? "" : " %"}`);
+
+//     circlesGroup.call(toolTip);
+
+//     circlesGroup
+//         .on("mouseover", (data, i) => {
+//             toolTip.style("color", rgb(n, i))
+//             toolTip.show(data)
+//         })
+//         .on("mouseout", data => toolTip.hide(data));
+// }
 
 let getOne_XY_CXY = (one_plotconf_data, xScale, yScale, chartxy) => {
     let xydata = [];
@@ -97,7 +123,7 @@ let normalize_one_plotconf_data = (one_plotconf_data, x0, xstart, xend) => {
         }
     });
 
-    if (xydata.length == 0) return {data: { x: [], y: [] },x0idx:-1};
+    if (xydata.length == 0) return { data: { x: [], y: [] }, x0idx: -1 };
 
     let idx = getBisectIdx(xydata, x0);
     let y0 = xydata[idx].y;
@@ -117,7 +143,7 @@ let normalize_one_plotconf_data = (one_plotconf_data, x0, xstart, xend) => {
         y.push(ytmp);
     });
 
-    return { data: { x: x, y: y }, xminmax: [x[0], x[x.length - 1]], yminmax: [ymin, ymax],x0idx:idx };
+    return { data: { x: x, y: y }, xminmax: [x[0], x[x.length - 1]], yminmax: [ymin, ymax], x0idx: idx };
 }
 
 // addLine("test",chartGroup,{x:chartXY[0],y:0},{x:chartXY[0],y:height},"gray","1px","stroke-dasharray","3, 3");
@@ -435,7 +461,7 @@ let normalizeData = (selecteddate, isleft, plotconf_data_l, isright, plotconf_da
     let enddate = new Date(selecteddate);
     enddate.setFullYear(enddate.getFullYear() + 5);
 
-    let data_l = [], data_r = [], xminmax = null, yminmax = null,x0idx_l = [],x0idx_r = [];
+    let data_l = [], data_r = [], xminmax = null, yminmax = null, x0idx_l = [], x0idx_r = [];
     if (isleft) {
         plotconf_data_l.forEach((one_plotconf_data, i) => {
             let normalized = normalize_one_plotconf_data(one_plotconf_data, selecteddate, startdate, enddate);
@@ -465,8 +491,8 @@ let normalizeData = (selecteddate, isleft, plotconf_data_l, isright, plotconf_da
     yrScale = ylScale;
 
     return {
-        x0idx_l:x0idx_l,
-        x0idx_r:x0idx_r,
+        x0idx_l: x0idx_l,
+        x0idx_r: x0idx_r,
         data_l: data_l,
         data_r: data_r,
         xScale: xScale,
