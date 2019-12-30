@@ -465,8 +465,6 @@ let normalizeData = (selecteddate, isleft, plotconf_data_l, isright, plotconf_da
     return {
         startdate: startdate,
         selecteddate: selecteddate,
-        xy1: [xScale(xminmax[0]), 0],
-        xy2: [xScale(xminmax[1]), height],
         data_l: data_l,
         data_r: data_r,
         xScale: xScale,
