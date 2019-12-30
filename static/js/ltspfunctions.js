@@ -43,7 +43,7 @@ let rgb = (n, i, a) => {
     return ["rgba(", r, ",", g, ",", b, ",", a, ")"].join("");
 }
 
-let updateTooltips = (chartGroup, tooltipinputs,normalized) => {
+let updateTooltips = (chartGroup, tooltipinputs, normalized) => {
 
     chartGroup.selectAll("circle").remove();
     let n = tooltipinputs.length;
@@ -55,21 +55,21 @@ let updateTooltips = (chartGroup, tooltipinputs,normalized) => {
         .attr("cx", d => d.cxy.x)
         .attr("cy", d => d.cxy.y)
         .attr("r", 7)
-        .attr("stroke", (d,i) => rgb(n, i))
+        .attr("stroke", (d, i) => rgb(n, i))
         .attr("stroke-width", "1px")
-        .attr("fill", (d,i) => rgb(n, i, 0.2))
+        .attr("fill", (d, i) => rgb(n, i, 0.2))
         .attr("opacity", "1.0");
 
     let toolTip = d3.tip()
         .attr("class", "d3-tip")
         .offset([0, 0])
-        .html(d => `${d.name}<br>${dateFormatter(d.xy.x)}<br>${normalized == null ?currencyFormatter.format(d.xy.y):parseInt(d.xy.y)} ${normalized ==null?"":" %"}`);
+        .html(d => `${d.name}<br>${dateFormatter(d.xy.x)}<br>${normalized == null ? currencyFormatter.format(d.xy.y) : parseInt(d.xy.y)} ${normalized == null ? "" : " %"}`);
 
     circlesGroup.call(toolTip);
 
     circlesGroup
-        .on("mouseover", (data,i) => {
-            toolTip.style("color",rgb(n,i))
+        .on("mouseover", (data, i) => {
+            toolTip.style("color", rgb(n, i))
             toolTip.show(data)
         })
         .on("mouseout", data => toolTip.hide(data));
@@ -89,13 +89,15 @@ let getOne_XY_CXY = (one_plotconf_data, xScale, yScale, chartxy) => {
     return { onexy: onexy, onecxy: onecxy };
 }
 
-let normalize_one_plotconf_data = (one_plotconf_data,x0,xstart,xend) => {
+let normalize_one_plotconf_data = (one_plotconf_data, x0, xstart, xend) => {
     let xydata = [];
     one_plotconf_data.x.forEach((date, i) => {
-        if((date >= xstart) && (date <= xend)){
+        if ((date >= xstart) && (date <= xend)) {
             xydata.push({ x: date, y: one_plotconf_data.y[i] });
         }
     });
+
+    if (xydata.length == 0) return {data: { x: [], y: [] }};
 
     let idx = getBisectIdx(xydata, x0);
     let y0 = xydata[idx].y;
@@ -103,19 +105,19 @@ let normalize_one_plotconf_data = (one_plotconf_data,x0,xstart,xend) => {
     let x = [];
     let y = [];
 
-    let ymin = 0.0,ymax = 0.0,ytmp;
+    let ymin = 0.0, ymax = 0.0, ytmp;
 
-    xydata.forEach( xy => {
+    xydata.forEach(xy => {
         x.push(xy.x);
         ytmp = (xy.y - y0) * 100.0 / y0;
-        
-        if(ytmp < ymin) ymin = ytmp;
-        else if(ytmp > ymax) ymax = ytmp;
+
+        if (ytmp < ymin) ymin = ytmp;
+        else if (ytmp > ymax) ymax = ytmp;
 
         y.push(ytmp);
     });
 
-    return {data:{x:x,y:y},xminmax:[x[0],x[x.length-1]],yminmax:[ymin,ymax]};
+    return { data: { x: x, y: y }, xminmax: [x[0], x[x.length - 1]], yminmax: [ymin, ymax] };
 }
 
 // addLine("test",chartGroup,{x:chartXY[0],y:0},{x:chartXY[0],y:height},"gray","1px","stroke-dasharray","3, 3");
@@ -284,11 +286,11 @@ let getXYminmax = (dataset, xyminmax) => {
     return xyminmax;
 }
 
-let newMinmax = (newitem,old) => {
-    if(old == null) return newitem;
-    if(newitem[0] > old[0]) newitem[0] = old[0];
-    if(newitem[1] < old[1]) newitem[1] = old[1];
-    return newitem; 
+let newMinmax = (newitem, old) => {
+    if (old == null) return newitem;
+    if (newitem[0] > old[0]) newitem[0] = old[0];
+    if (newitem[1] < old[1]) newitem[1] = old[1];
+    return newitem;
 }
 
 let XY_to_ChartXY = (xy, xScale, yScale) => {
@@ -425,7 +427,7 @@ let redraw_ylyr = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale,
     return { xScale: xTimeScale, ylScale: ylLinearScale, yrScale: yrLinearScale };
 }
 
-let normalizeData = (selecteddate,isleft,plotconf_data_l,isright,plotconf_data_r,width,height) => {
+let normalizeData = (selecteddate, isleft, plotconf_data_l, isright, plotconf_data_r, width, height) => {
     let startdate = new Date(selecteddate);
     startdate.setFullYear(startdate.getFullYear() - 1);
     // selecteddate.setDate(selecteddate.getDate() - 365);
@@ -433,22 +435,26 @@ let normalizeData = (selecteddate,isleft,plotconf_data_l,isright,plotconf_data_r
     let enddate = new Date(selecteddate);
     enddate.setFullYear(enddate.getFullYear() + 5);
 
-    let data_l = [],data_r = [],xminmax = null,yminmax = null;
-    if(isleft){
-        plotconf_data_l.forEach((one_plotconf_data,i) => {
-            let normalized = normalize_one_plotconf_data(one_plotconf_data,selecteddate,startdate,enddate);
+    let data_l = [], data_r = [], xminmax = null, yminmax = null;
+    if (isleft) {
+        plotconf_data_l.forEach((one_plotconf_data, i) => {
+            let normalized = normalize_one_plotconf_data(one_plotconf_data, selecteddate, startdate, enddate);
             data_l.push(normalized.data);
-            xminmax = newMinmax(normalized.xminmax,xminmax);
-            yminmax = newMinmax(normalized.yminmax,yminmax);
+            if (normalized.data.x.length > 0) {
+                xminmax = newMinmax(normalized.xminmax, xminmax);
+                yminmax = newMinmax(normalized.yminmax, yminmax);
+            }
         });
     }
 
-    if(isright){
-        plotconf_data_r.forEach((one_plotconf_data,i) => {
-            let normalized = normalize_one_plotconf_data(one_plotconf_data,selecteddate,startdate,enddate);
+    if (isright) {
+        plotconf_data_r.forEach((one_plotconf_data, i) => {
+            let normalized = normalize_one_plotconf_data(one_plotconf_data, selecteddate, startdate, enddate);
             data_r.push(normalized.data);
-            xminmax = newMinmax(normalized.xminmax,xminmax);
-            yminmax = newMinmax(normalized.yminmax,yminmax);
+            if (normalized.data.x.length > 0) {
+                xminmax = newMinmax(normalized.xminmax, xminmax);
+                yminmax = newMinmax(normalized.yminmax, yminmax);
+            }
         });
     }
 
@@ -457,14 +463,14 @@ let normalizeData = (selecteddate,isleft,plotconf_data_l,isright,plotconf_data_r
     yrScale = ylScale;
 
     return {
-        startdate:startdate,
-        selecteddate:selecteddate,
-        xminmax:xminmax,
-        yminmax:yminmax,
-        data_l:data_l,
-        data_r:data_r,
-        xScale:xScale,
-        ylScale:ylScale,
-        yrScale:yrScale
+        startdate: startdate,
+        selecteddate: selecteddate,
+        xy1: [xScale(xminmax[0]), 0],
+        xy2: [xScale(xminmax[1]), height],
+        data_l: data_l,
+        data_r: data_r,
+        xScale: xScale,
+        ylScale: ylScale,
+        yrScale: yrScale
     };
 }

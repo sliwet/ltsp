@@ -254,10 +254,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                             ylScale = normalized.ylScale;
                             yrScale = normalized.yrScale;
 
-                            let startxy = [xScale(normalized.xminmax[0]), 0];
-                            let endxy = [xScale(normalized.xminmax[1]), height];
-
-                            let scales = redraw_ylyr(startxy, endxy, isleft, isright, xAxis, ylAxis, yrAxis
+                            let scales = redraw_ylyr(normalized.xy1, normalized.xy2, isleft, isright, xAxis, ylAxis, yrAxis
                                 , xScale, ylScale, yrScale, width, height
                                 , chartGroup, npaths, data_l, plotconf.name_l, data_r, plotconf.name_r);
 
