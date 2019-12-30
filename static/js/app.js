@@ -39,10 +39,10 @@ let buildPlot = (lt, rt) => {
 
             // Start of plotting routine
             let plotconf = {
-                b_left: isleft,
+                isleft: isleft,
                 name_l: lt,
                 data_l: ld,
-                b_right: isright,
+                isright: isright,
                 name_r: rt,
                 data_r: rd
             }

@@ -24,8 +24,8 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
             d3.select("#onefive").remove();
             d3.select("#zoomin").remove();
 
-            let isleft = plotconf.b_left;
-            let isright = plotconf.b_right;
+            let isleft = plotconf.isleft;
+            let isright = plotconf.isright;
             let xminmax = null, ylminmax = null, yrminmax = null;
             let npaths = plotconf.data_l.length + plotconf.data_r.length;
 
@@ -279,6 +279,10 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                 }
                 else {
                     d3.select("#analysismessage").remove();
+                    d3.select("#fitPlot").remove();
+
+
+
 
 
                     let test = new easyplotSVG(wheretoplot, normalized, "fitPlot", svgWidth, svgHeight);
@@ -291,6 +295,14 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 };
 
 
+// let plotconf = {
+//     isleft: isleft,
+//     name_l: lt,
+//     data_l: ld,
+//     isright: isright,
+//     name_r: rt,
+//     data_r: rd
+// }
 
 class easyplotSVG {
     constructor(wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) {
