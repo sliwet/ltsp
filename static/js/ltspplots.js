@@ -241,10 +241,10 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                             let selectedxy = xy1;
                             if (xy1 == null) selectedxy = xy2;
 
-                            let yScale = yrLinearScale;
-                            if (isleft) yScale = ylLinearScale;
+                            let yScale = yrScale;
+                            if (isleft) yScale = ylScale;
 
-                            let selecteddate = chartXY_to_XY(selectedxy, xTimeScale, yScale)[0];
+                            let selecteddate = chartXY_to_XY(selectedxy, xScale, yScale)[0];
 
                             normalized = normalizeData(selecteddate, isleft, data_l, isright, data_r, width, height);
 
@@ -280,6 +280,58 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                 else {
                     d3.select("#analysismessage").remove();
                     d3.select("#fitPlot").remove();
+
+                    let useleft = false,useright = false;
+
+                    if(isleft){
+                        if(normalized.x0idx_l[0] > 0)useleft = true;
+                    }
+                    
+                    if(isright){
+                        if(normalized.x0idx_r[normalized.x0idx_r.length - 1] > 0) useright = true;
+                    }
+                    
+                    let startidx = 0,endidx = 0;
+                    if(useleft && useright){
+                        endidx = normalized.x0idx_l[0];
+
+                        if(normalized.x0idx_l[0] > normalized.x0idx_r[normalized.x0idx_r.length - 1]){
+                            let temp = normalized.data_r[normalized.data_r.length - 1].x[0];
+                            console.log(temp);
+                        } 
+                    }
+                    else if(useleft){
+                        endidx = normalized.x0idx_l[0];
+                    }
+                    else if(useright){
+                        endidx = normalized.x0idx_r[normalized.x0idx_r.length - 1];
+                    }
+                    else return;
+
+                    
+
+
+
+
+
+
+
+                    // x0idx_l:x0idx_l,
+                    // x0idx_r:x0idx_r,
+                    // data_l: data_l,
+                    // data_r: data_r,
+                    // xScale: xScale,
+                    // ylScale: ylScale,
+                    // yrScale: yrScale
+            
+
+                    // data_l = normalized.data_l;
+                    // data_r = normalized.data_r;
+                    // xScale = normalized.xScale;
+                    // ylScale = normalized.ylScale;
+                    // yrScale = normalized.yrScale;
+
+
 
 
 

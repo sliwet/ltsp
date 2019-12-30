@@ -97,7 +97,7 @@ let normalize_one_plotconf_data = (one_plotconf_data, x0, xstart, xend) => {
         }
     });
 
-    if (xydata.length == 0) return {data: { x: [], y: [] }};
+    if (xydata.length == 0) return {data: { x: [], y: [] },x0idx:-1};
 
     let idx = getBisectIdx(xydata, x0);
     let y0 = xydata[idx].y;
@@ -117,7 +117,7 @@ let normalize_one_plotconf_data = (one_plotconf_data, x0, xstart, xend) => {
         y.push(ytmp);
     });
 
-    return { data: { x: x, y: y }, xminmax: [x[0], x[x.length - 1]], yminmax: [ymin, ymax] };
+    return { data: { x: x, y: y }, xminmax: [x[0], x[x.length - 1]], yminmax: [ymin, ymax],x0idx:idx };
 }
 
 // addLine("test",chartGroup,{x:chartXY[0],y:0},{x:chartXY[0],y:height},"gray","1px","stroke-dasharray","3, 3");
@@ -435,11 +435,12 @@ let normalizeData = (selecteddate, isleft, plotconf_data_l, isright, plotconf_da
     let enddate = new Date(selecteddate);
     enddate.setFullYear(enddate.getFullYear() + 5);
 
-    let data_l = [], data_r = [], xminmax = null, yminmax = null;
+    let data_l = [], data_r = [], xminmax = null, yminmax = null,x0idx_l = [],x0idx_r = [];
     if (isleft) {
         plotconf_data_l.forEach((one_plotconf_data, i) => {
             let normalized = normalize_one_plotconf_data(one_plotconf_data, selecteddate, startdate, enddate);
             data_l.push(normalized.data);
+            x0idx_l.push(normalized.x0idx);
             if (normalized.data.x.length > 0) {
                 xminmax = newMinmax(normalized.xminmax, xminmax);
                 yminmax = newMinmax(normalized.yminmax, yminmax);
@@ -451,6 +452,7 @@ let normalizeData = (selecteddate, isleft, plotconf_data_l, isright, plotconf_da
         plotconf_data_r.forEach((one_plotconf_data, i) => {
             let normalized = normalize_one_plotconf_data(one_plotconf_data, selecteddate, startdate, enddate);
             data_r.push(normalized.data);
+            x0idx_r.push(normalized.x0idx);
             if (normalized.data.x.length > 0) {
                 xminmax = newMinmax(normalized.xminmax, xminmax);
                 yminmax = newMinmax(normalized.yminmax, yminmax);
@@ -463,8 +465,8 @@ let normalizeData = (selecteddate, isleft, plotconf_data_l, isright, plotconf_da
     yrScale = ylScale;
 
     return {
-        startdate: startdate,
-        selecteddate: selecteddate,
+        x0idx_l:x0idx_l,
+        x0idx_r:x0idx_r,
         data_l: data_l,
         data_r: data_r,
         xScale: xScale,
