@@ -296,12 +296,12 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 
 
 // let plotconf = {
-//     isleft: isleft,
-//     name_l: lt,
-//     data_l: ld,
-//     isright: isright,
-//     name_r: rt,
-//     data_r: rd
+//     isleft: isleft, boolean
+//     name_l: lt, ["name1","name2",...]
+//     data_l: ld, [{x:[],y:[]},{x:[],y:[]},...]
+//     isright: isright, boolean
+//     name_r: rt, ["name1","name2",...]
+//     data_r: rd, [{x:[],y:[]},{x:[],y:[]},...]
 // }
 
 class easyplotSVG {
