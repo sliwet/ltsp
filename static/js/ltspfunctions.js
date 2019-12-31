@@ -49,7 +49,7 @@ let renderCircles = (circlesGroup, cxy) => {
     return circlesGroup;
 }
 
-let drawTraceCircles = (chartGroup, cxy,ms) => { // cxy [{x: value,y:value},{x: value,y:value}]
+let drawTraceCircles = (chartGroup, cxy, ms) => { // cxy [{x: value,y:value},{x: value,y:value}]
     let n = cxy.length;
     chartGroup.selectAll("circle").remove();
     let circlesGroup = chartGroup.selectAll("circle")
@@ -516,3 +516,30 @@ let normalizeData = (selecteddate, isleft, plotconf_data_l, isright, plotconf_da
         yrScale: yrScale
     };
 }
+
+let getTooltipCirclesGroup = (chartGroup, circlesGroup, isleft, isright, data_l, data_r
+    , xScale, ylScale, yrScale, xytmp, plotconf_name_l, plotconf_name_r, toolTip) => {
+    if (circlesGroup != null) {
+        circlesGroup.call(data => toolTip.hide(data));
+        circlesGroup = null;
+        chartGroup.selectAll("circle").remove();
+    }
+
+    let tooltipinputs = [];
+    if (isleft) {
+        data_l.forEach((one_plotconf_data, i) => {
+            let xy_cxy = getOne_XY_CXY(one_plotconf_data, xScale, ylScale, xytmp);
+            tooltipinputs.push({ xy: xy_cxy.onexy, cxy: xy_cxy.onecxy, name: plotconf_name_l[i] });
+        });
+    }
+
+    if (isright) {
+        data_r.forEach((one_plotconf_data, i) => {
+            let xy_cxy = getOne_XY_CXY(one_plotconf_data, xScale, yrScale, xytmp);
+            tooltipinputs.push({ xy: xy_cxy.onexy, cxy: xy_cxy.onecxy, name: plotconf_name_r[i] });
+        });
+    }
+
+    return getCirclesGroup(chartGroup, tooltipinputs, toolTip);
+}
+

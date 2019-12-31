@@ -121,34 +121,16 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                 .offset([0, 0])
                 .html(d => `${d.name}<br>${dateFormatter(d.xy.x)}<br>${normalized == null ? currencyFormatter.format(d.xy.y) : parseInt(d.xy.y)} ${normalized == null ? "" : " %"}`);
 
-            let circlesGroup = null;
+            let circlesGroup = getTooltipCirclesGroup(chartGroup, null, isleft, isright, data_l, data_r
+                , xScale, ylScale, yrScale, [0, 0], plotconf.name_l, plotconf.name_r, toolTip);
+            circlesGroup.call(data => toolTip.hide(data));
+            chartGroup.selectAll("circle").remove();
 
             svg.on("mousewheel", () => {
                 let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
                 if (isinside(xytmp, [0, 0], [width, height])) {
-                    if (circlesGroup != null) {
-                        circlesGroup.call(data => toolTip.hide(data));
-                        circlesGroup = null;
-                        chartGroup.selectAll("circle").remove();
-                    }
-
-                    let tooltipinputs = [];
-                    if (isleft) {
-                        data_l.forEach((one_plotconf_data, i) => {
-                            let xy_cxy = getOne_XY_CXY(one_plotconf_data, xScale, ylScale, xytmp);
-                            tooltipinputs.push({ xy: xy_cxy.onexy, cxy: xy_cxy.onecxy, name: plotconf.name_l[i] });
-                        });
-                    }
-
-                    if (isright) {
-                        data_r.forEach((one_plotconf_data, i) => {
-                            let xy_cxy = getOne_XY_CXY(one_plotconf_data, xScale, yrScale, xytmp);
-                            tooltipinputs.push({ xy: xy_cxy.onexy, cxy: xy_cxy.onecxy, name: plotconf.name_r[i] });
-                        });
-                    }
-
-                    circlesGroup = getCirclesGroup(chartGroup, tooltipinputs, toolTip);
-
+                    circlesGroup = getTooltipCirclesGroup(chartGroup, circlesGroup, isleft, isright, data_l, data_r
+                        , xScale, ylScale, yrScale, xytmp, plotconf.name_l, plotconf.name_r, toolTip);
                 }
                 else {
                     chartGroup.selectAll("circle").remove();
