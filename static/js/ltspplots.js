@@ -166,7 +166,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                         cancelAnimationFrame(requestID);
                         requestID = null;
                     } 
-                    
+
                     normalized = null;
                     animationidx = -1;
                     paused = false;
