@@ -316,14 +316,42 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                     }
                     else return;
 
-                    // for(let i = startidx;i <= endidx; i++){
+                    for(let i = startidx;i <= endidx; i++){
+                        let cxy = [];
+                        if(useleft){
+                            cxy.push({x:xScale(ndata_l.x[i]),y:ylScale(ndata_l.y[i])});
+                        } 
+                        else{
+                            cxy.push({x:xScale(ndata_r.x[i]),y:yrScale(ndata_r.y[i])});
+                        }
 
-                    // }
+                        var timeID = window.setTimeout(drawTraceCircles(chartGroup, cxy),50);
+                    }
 
 
 
-                    if(useleft) console.log(ndata_l.x[startidx]);
-                    else console.log(ndata_r.x[startidx]);
+// setTimeout( (booksReadThisYear2) => {
+//     console.log(rects_new);
+//     let r = rects_new.data(booksReadThisYear2);
+//     r.exit().remove();
+    
+//     r.data(booksReadThisYear2)
+//     .transition()
+//     .duration(5000)
+//     .attr("x", (d, i) => i * 110)
+//     .attr("y", (d, i) => 600 - (d * 15))
+//     .attr("width", 100)
+//     .attr("height", d => d * 15)
+//     .attr("fill", "blue");
+// }, booksReadThisYear2);
+
+//                             ;
+                        // drawTraceCircles(chartGroup,cxy); // => { // cxy [{x: value,y:value},{x: value,y:value}]
+
+
+
+                    // if(useleft) console.log(ndata_l.x[startidx]);
+                    // else console.log(ndata_r.x[startidx]);
 
 
 

@@ -1,3 +1,11 @@
+let wait = ms => {
+    let d = new Date();
+    let d2 = null;
+    do { d2 = new Date(); }
+    while (d2 - d < ms);
+    return true;
+}
+
 let dateFormatter = d3.timeFormat("%m/%d/%Y");
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
@@ -30,6 +38,34 @@ let rgb = (n, i, a) => {
     g = Math.floor(g);
     b = Math.floor(b);
     return ["rgba(", r, ",", g, ",", b, ",", a, ")"].join("");
+}
+
+let renderCircles = (circlesGroup, cxy) => {
+    circlesGroup
+        .transition()
+        .duration(500)
+        .attr("cx", (d, i) => d.x)
+        .attr("cy", (d, i) => d.y);
+    return circlesGroup;
+}
+
+let drawTraceCircles = (chartGroup, cxy) => { // cxy [{x: value,y:value},{x: value,y:value}]
+    let n = cxy.length;
+    chartGroup.selectAll("circle").remove();
+    let circlesGroup = chartGroup.selectAll("circle")
+        .data(cxy)
+        .enter()
+        .append("circle")
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y)
+        .attr("r", 7)
+        .attr("stroke", (d, i) => rgb(n, i))
+        .attr("stroke-width", "1px")
+        .attr("fill", (d, i) => rgb(n, i, 0.2))
+        .attr("opacity", "1.0");
+
+    const test = wait(50);
+    return test;
 }
 
 let getCirclesGroup = (chartGroup, tooltipinputs, toolTip) => {
@@ -78,7 +114,7 @@ let getXYdataFromPlotConf = (one_plotconf_data) => {
     return xydata;
 }
 
-let getBisectIdxFromPlotconfdata = (one_plotconf_data,x0) => {
+let getBisectIdxFromPlotconfdata = (one_plotconf_data, x0) => {
     return getBisectIdx(getXYdataFromPlotConf(one_plotconf_data), x0);
 }
 
