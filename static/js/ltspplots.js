@@ -73,7 +73,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                     .attr("x", -height * 0.5) // vertical position
                     .attr("value", "yl")
                     .attr("text-anchor", "middle")
-                    .style("stroke", "red")
+                    .style("stroke", "black")
                     .text("Closing Value of Left Tickers");
 
                 plotPaths(plotconf.data_l, plotconf.name_l, chartGroup, null, [xTimeScale, ylLinearScale], npaths, 0);
@@ -96,7 +96,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                     .attr("x", height * 0.5) // vertical position
                     .attr("value", "yr")
                     .attr("text-anchor", "middle")
-                    .style("stroke", "blue")
+                    .style("stroke", "black")
                     .text("Closing Value of Right Tickers");
                 plotPaths(plotconf.data_r, plotconf.name_r, chartGroup, null, [xTimeScale, yrLinearScale], npaths, plotconf.data_l.length);
                 addTickerSelections("yr", chartGroup, width, plotconf.name_r, npaths, plotconf.data_l.length);
@@ -299,12 +299,10 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                             d3.select(wheretoplot).append('div').attr("id", "analysismessage")
                                 .html("Click mouse on plot area to start / pause / resume analysis<br>Analysis will be done only on <b>left top ticker and right bottom ticker</b>");
 
-
                             //     <div class="form-group">
                             //     <label for="example-form">Enter some text</label>
                             //     <input class="form-control" id="example-form-input" name="example-form" type="text">
                             //   </div>
-
                         });
                     }
                 }
@@ -400,12 +398,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                     // xScale = normalized.xScale;
                     // ylScale = normalized.ylScale;
                     // yrScale = normalized.yrScale;
-
-
-
-
-
-
 
                     let test = new easyplotSVG("#fitPlotPlace", normalized, "fitPlot", svgWidth, svgHeight);
                     test.test("print this");
