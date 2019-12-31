@@ -343,15 +343,22 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 
                         if (animationidx <= endidx) {
                             let cxy = [];
+                            let ridx = animationidx;
+
                             if (useleft) {
                                 cxy.push({ x: xScale(ndata_l.x[animationidx]), y: ylScale(ndata_l.y[animationidx]) });
-                                if (useright) {
-                                    let ridx = getBisectIdxFromPlotconfdata(ndata_r, ndata_l.x[animationidx]);
-                                    cxy.push({ x: xScale(ndata_r.x[ridx]), y: yrScale(ndata_r.y[ridx]) });
-                                }
+                                if(useright) ridx = getBisectIdxFromPlotconfdata(ndata_r, ndata_l.x[animationidx]);
+
+                                // @todo
+                                // new easyplotSVG("#fitPlotPlace", fitdata, "fitPlotLeft", svgWidth, svgHeight,true);
+
                             }
-                            else {
-                                cxy.push({ x: xScale(ndata_r.x[animationidx]), y: yrScale(ndata_r.y[animationidx]) });
+
+                            if(useright) {
+                                cxy.push({ x: xScale(ndata_r.x[ridx]), y: yrScale(ndata_r.y[ridx]) });
+
+                                // @todo
+                                // new easyplotSVG("#fitPlotPlace", fitdata, "fitPlotRight", svgWidth, svgHeight,false);
                             }
 
                             drawTraceCircles(chartGroup, cxy, refreshRate); // draw circles every 100 ms
@@ -365,14 +372,29 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 
                     requestID = requestAnimationFrame(animate);
 
+                    if(isleft){
+                    }
 
-                    // x0idx_l:x0idx_l,
-                    // x0idx_r:x0idx_r,
-                    // data_l: data_l,
-                    // data_r: data_r,
-                    // xScale: xScale,
-                    // ylScale: ylScale,
-                    // yrScale: yrScale
+                    if(isright){
+                        
+                    }
+                }
+            }); // end of on click
+        } // end of init
+    };
+};
+
+
+
+
+
+                    // normalized.x0idx_l:x0idx_l,
+                    // normalized.x0idx_r:x0idx_r,
+                    // normalized.data_l: data_l,
+                    // normalized.data_r: data_r,
+                    // normalized.xScale: xScale,
+                    // normalized.ylScale: ylScale,
+                    // normalized.yrScale: yrScale
 
 
                     // data_l = normalized.data_l;
@@ -381,14 +403,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                     // ylScale = normalized.ylScale;
                     // yrScale = normalized.yrScale;
 
-                    let test = new easyplotSVG("#fitPlotPlace", normalized, "fitPlot", svgWidth, svgHeight);
-                    test.test("print this");
 
-                }
-            }); // end of on click
-        } // end of init
-    };
-};
 
 
 // let plotconf = {
@@ -400,18 +415,18 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 //     data_r: rd, [{x:[],y:[]},{x:[],y:[]},...]
 // }
 
-class easyplotSVG {
-    constructor(wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) {
-        this.wheretoplot = wheretoplot;
-        this.plotconf = plotconf;
-        this.uniqueId = uniqueId;
-        this.svgWidth = svgWidth;
-        this.svgHeight = svgHeight;
-        this.margin = margin;
-    }
+// class easyplotSVG {
+//     constructor(wheretoplot, plotconf, uniqueId, svgWidth, svgHeight,trueforleft, margin) {
+//         this.wheretoplot = wheretoplot;
+//         this.plotconf = plotconf;
+//         this.uniqueId = uniqueId;
+//         this.svgWidth = svgWidth;
+//         this.svgHeight = svgHeight;
+//         this.margin = margin;
+//     }
 
-    test(strtest) {
-        d3.select(this.wheretoplot).append("div").attr("id", this.uniqueId).html(`${this.wheretoplot} : ${strtest}`);
-    }
+//     test(strtest) {
+//         d3.select(this.wheretoplot).append("div").attr("id", this.uniqueId).html(`${this.wheretoplot} : ${strtest}`);
+//     }
 
-}
+// }
