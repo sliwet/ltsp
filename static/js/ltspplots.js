@@ -161,16 +161,16 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 
             // d3.select("#zoomout").on("click", () => {
             svg.on("dblclick", () => {
-                if(normalized != null){
-                    if(requestID != null){
+                if (normalized != null) {
+                    if (requestID != null) {
                         cancelAnimationFrame(requestID);
                         requestID = null;
-                    } 
+                    }
 
                     normalized = null;
                     animationidx = -1;
                     paused = false;
-                } 
+                }
 
                 data_l = data_l0;
                 data_r = data_r0;
@@ -289,18 +289,31 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                             addLine("selecteddateX", chartGroup, { x: selectedxy[0], y: 0 }, { x: selectedxy[0], y: height }, "gray", "1px");
                             addLine("selecteddateY", chartGroup, { x: 0, y: selectedxy[1] }, { x: width, y: selectedxy[1] }, "gray", "1px");
 
-                            d3.select(wheretoplot).append('div')
-                                .attr("id", "analysismessage")
+                            d3.select(wheretoplot).append("div").attr("id", "fitPlotPlace");
+
+                            let refreshRateDiv = d3.select(wheretoplot).append("div").attr("id", "refreshRateDiv");
+                            refreshRateDiv.append("label").attr("for", "refreshRate").text("Enter refresh rate (msec) ");
+                            refreshRateDiv.append("input").attr("id", "refreshRateInput")
+                                .attr("name", "refreshRate").attr("type", "text").attr("value", "50");
+
+                            d3.select(wheretoplot).append('div').attr("id", "analysismessage")
                                 .html("Click mouse on plot area to start / pause / resume analysis<br>Analysis will be done only on <b>left top ticker and right bottom ticker</b>");
+
+
+                            //     <div class="form-group">
+                            //     <label for="example-form">Enter some text</label>
+                            //     <input class="form-control" id="example-form-input" name="example-form" type="text">
+                            //   </div>
+
                         });
                     }
                 }
                 else {
-                    if(animationidx > 0) {
-                        if(paused){
+                    if (animationidx > 0) {
+                        if (paused) {
                             paused = false;
                         }
-                        else{
+                        else {
                             cancelAnimationFrame(requestID);
                             paused = true;
                             return;
@@ -340,16 +353,19 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                     }
                     else return;
 
+                    d3.event.preventDefault();
+                    let refreshRate = d3.select("#refreshRateInput").property("value");
+
                     function animate() {
                         requestID = requestAnimationFrame(animate);
 
-                        if(animationidx < 0) animationidx = startidx;
+                        if (animationidx < 0) animationidx = startidx;
 
                         if (animationidx <= endidx) {
                             let cxy = [];
                             if (useleft) {
                                 cxy.push({ x: xScale(ndata_l.x[animationidx]), y: ylScale(ndata_l.y[animationidx]) });
-                                if(useright){
+                                if (useright) {
                                     let ridx = getBisectIdxFromPlotconfdata(ndata_r, ndata_l.x[animationidx]);
                                     cxy.push({ x: xScale(ndata_r.x[ridx]), y: yrScale(ndata_r.y[ridx]) });
                                 }
@@ -358,59 +374,16 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                                 cxy.push({ x: xScale(ndata_r.x[animationidx]), y: yrScale(ndata_r.y[animationidx]) });
                             }
 
-                            drawTraceCircles(chartGroup, cxy);
+                            drawTraceCircles(chartGroup, cxy, refreshRate); // draw circles every 100 ms
 
                             animationidx++;
                         } else {
                             cancelAnimationFrame(requestID);
+                            animationidx = -1;
                         }
                     }
 
                     requestID = requestAnimationFrame(animate);
-
-
-                    // for (let i = startidx; i <= endidx; i++) {
-                    //     let cxy = [];
-                    //     if (useleft) {
-                    //         cxy.push({ x: xScale(ndata_l.x[i]), y: ylScale(ndata_l.y[i]) });
-                    //     }
-                    //     else {
-                    //         cxy.push({ x: xScale(ndata_r.x[i]), y: yrScale(ndata_r.y[i]) });
-                    //     }
-
-                    //     var timeID = window.setTimeout(drawTraceCircles(chartGroup, cxy), 50);
-                    // }
-
-
-
-                    // setTimeout( (booksReadThisYear2) => {
-                    //     console.log(rects_new);
-                    //     let r = rects_new.data(booksReadThisYear2);
-                    //     r.exit().remove();
-
-                    //     r.data(booksReadThisYear2)
-                    //     .transition()
-                    //     .duration(5000)
-                    //     .attr("x", (d, i) => i * 110)
-                    //     .attr("y", (d, i) => 600 - (d * 15))
-                    //     .attr("width", 100)
-                    //     .attr("height", d => d * 15)
-                    //     .attr("fill", "blue");
-                    // }, booksReadThisYear2);
-
-                    //                             ;
-                    // drawTraceCircles(chartGroup,cxy); // => { // cxy [{x: value,y:value},{x: value,y:value}]
-
-
-
-                    // if(useleft) console.log(ndata_l.x[startidx]);
-                    // else console.log(ndata_r.x[startidx]);
-
-
-
-
-
-
 
 
                     // x0idx_l:x0idx_l,
@@ -434,7 +407,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 
 
 
-                    let test = new easyplotSVG(wheretoplot, normalized, "fitPlot", svgWidth, svgHeight);
+                    let test = new easyplotSVG("#fitPlotPlace", normalized, "fitPlot", svgWidth, svgHeight);
                     test.test("print this");
 
                 }

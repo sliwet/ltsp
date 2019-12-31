@@ -49,7 +49,7 @@ let renderCircles = (circlesGroup, cxy) => {
     return circlesGroup;
 }
 
-let drawTraceCircles = (chartGroup, cxy) => { // cxy [{x: value,y:value},{x: value,y:value}]
+let drawTraceCircles = (chartGroup, cxy,ms) => { // cxy [{x: value,y:value},{x: value,y:value}]
     let n = cxy.length;
     chartGroup.selectAll("circle").remove();
     let circlesGroup = chartGroup.selectAll("circle")
@@ -63,9 +63,7 @@ let drawTraceCircles = (chartGroup, cxy) => { // cxy [{x: value,y:value},{x: val
         .attr("stroke-width", "1px")
         .attr("fill", (d, i) => rgb(n, i, 0.2))
         .attr("opacity", "1.0");
-
-    const test = wait(50);
-    return test;
+    wait(ms);
 }
 
 let getCirclesGroup = (chartGroup, tooltipinputs, toolTip) => {
@@ -463,9 +461,10 @@ let redraw_ylyr = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale,
     d3.select("#onefive").remove();
     d3.select("#selecteddateX").remove();
     d3.select("#selecteddateY").remove();
+    d3.select("#fitPlotPlace").remove();
+    d3.select("#refreshRateDiv").remove();
     d3.select("#analysismessage").remove();
     chartGroup.selectAll("circle").remove();
-    d3.select("#analysisPlot").remove();
 
     return { xScale: xTimeScale, ylScale: ylLinearScale, yrScale: yrLinearScale };
 }
