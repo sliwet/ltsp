@@ -347,17 +347,15 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 
                             if (useleft) {
                                 cxy.push({ x: xScale(ndata_l.x[animationidx]), y: ylScale(ndata_l.y[animationidx]) });
-                                if(useright) ridx = getBisectIdxFromPlotconfdata(ndata_r, ndata_l.x[animationidx]);
 
-                                // @todo
                                 // new easyplotSVG("#fitPlotPlace", fitdata, "fitPlotLeft", svgWidth, svgHeight,true);
 
+                                if(useright) ridx = getBisectIdxFromPlotconfdata(ndata_r, ndata_l.x[animationidx]);
                             }
 
                             if(useright) {
                                 cxy.push({ x: xScale(ndata_r.x[ridx]), y: yrScale(ndata_r.y[ridx]) });
 
-                                // @todo
                                 // new easyplotSVG("#fitPlotPlace", fitdata, "fitPlotRight", svgWidth, svgHeight,false);
                             }
 
@@ -415,18 +413,18 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 //     data_r: rd, [{x:[],y:[]},{x:[],y:[]},...]
 // }
 
-// class easyplotSVG {
-//     constructor(wheretoplot, plotconf, uniqueId, svgWidth, svgHeight,trueforleft, margin) {
-//         this.wheretoplot = wheretoplot;
-//         this.plotconf = plotconf;
-//         this.uniqueId = uniqueId;
-//         this.svgWidth = svgWidth;
-//         this.svgHeight = svgHeight;
-//         this.margin = margin;
-//     }
+class easyplotSVG {
+    constructor(wheretoplot, plotconf, uniqueId, svgWidth, svgHeight,trueforleft, margin) {
+        this.wheretoplot = wheretoplot;
+        this.plotconf = plotconf;
+        this.uniqueId = uniqueId;
+        this.svgWidth = svgWidth;
+        this.svgHeight = svgHeight;
+        this.margin = margin;
+    }
 
-//     test(strtest) {
-//         d3.select(this.wheretoplot).append("div").attr("id", this.uniqueId).html(`${this.wheretoplot} : ${strtest}`);
-//     }
+    test(strtest) {
+        d3.select(this.wheretoplot).append("div").attr("id", this.uniqueId).html(`${this.wheretoplot} : ${strtest}`);
+    }
 
-// }
+}
