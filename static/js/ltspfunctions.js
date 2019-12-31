@@ -60,22 +60,26 @@ let getCirclesGroup = (chartGroup, tooltipinputs, toolTip) => {
 
 let bisectX = d3.bisector(d => d.x).left;
 
-let getBisectIdx = (data, x0) => {
-    let i = bisectX(data, x0, 1), d0 = data[i - 1], d1 = d0;
+let getBisectIdx = (xydata, x0) => {
+    let i = bisectX(xydata, x0, 1), d0 = xydata[i - 1], d1 = d0;
     try {
-        d1 = data[i];
+        d1 = xydata[i];
         return (x0 - d0.x > d1.x - x0 ? i : i - 1);
     }
     catch (error) { return i - 1; }
 }
 
-let getBisectIdxFromPlotconfdata = (one_plotconf_data,x0) => {
+let getXYdataFromPlotConf = (one_plotconf_data) => {
     let xydata = [];
     one_plotconf_data.x.forEach((date, i) => {
         xydata.push({ x: date, y: one_plotconf_data.y[i] });
     });
 
-    return getBisectIdx(xydata, x0);
+    return xydata;
+}
+
+let getBisectIdxFromPlotconfdata = (one_plotconf_data,x0) => {
+    return getBisectIdx(getXYdataFromPlotConf(one_plotconf_data), x0);
 }
 
 let getOne_XY_CXY = (one_plotconf_data, xScale, yScale, chartxy) => {
