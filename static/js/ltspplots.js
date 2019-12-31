@@ -155,9 +155,22 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                 }
             });
 
+            let requestID = null;
+            let animationidx = -1;
+            let paused = false;
+
             // d3.select("#zoomout").on("click", () => {
             svg.on("dblclick", () => {
-                normalized = null;
+                if(normalized != null){
+                    if(requestID != null){
+                        cancelAnimationFrame(requestID);
+                        requestID = null;
+                    } 
+                    
+                    normalized = null;
+                    animationidx = -1;
+                    paused = false;
+                } 
 
                 data_l = data_l0;
                 data_r = data_r0;
@@ -175,10 +188,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                 if (isleft) label_yl.text("Closing Value of Left Tickers");
                 if (isright) label_yr.text("Closing Value of Right Tickers");
             });
-
-            let requestID;
-            let animationidx = -1;
-            let paused = false;
 
             svg.on("click", () => { //"click"
                 if (normalized == null) {
@@ -331,18 +340,19 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                     }
                     else return;
 
-                    // Animate.
                     function animate() {
                         requestID = requestAnimationFrame(animate);
 
                         if(animationidx < 0) animationidx = startidx;
 
-                        // If the box has not reached the end draw on the canvas.
-                        // Otherwise stop the animation.
                         if (animationidx <= endidx) {
                             let cxy = [];
                             if (useleft) {
                                 cxy.push({ x: xScale(ndata_l.x[animationidx]), y: ylScale(ndata_l.y[animationidx]) });
+                                if(useright){
+                                    let ridx = getBisectIdxFromPlotconfdata(ndata_r, ndata_l.x[animationidx]);
+                                    cxy.push({ x: xScale(ndata_r.x[ridx]), y: yrScale(ndata_r.y[ridx]) });
+                                }
                             }
                             else {
                                 cxy.push({ x: xScale(ndata_r.x[animationidx]), y: yrScale(ndata_r.y[animationidx]) });
