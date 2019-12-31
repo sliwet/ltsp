@@ -305,7 +305,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 
                         if (normalized.x0idx_l[0] > normalized.x0idx_r[normalized.x0idx_r.length - 1]) {
                             let x0 = ndata_r.x[0];
-                            startidx = getBisectIdxFromPlotconfdata(ndata_l,x0);
+                            startidx = getBisectIdxFromPlotconfdata(ndata_l, x0);
                         }
                     }
                     else if (useleft) {
@@ -316,15 +316,14 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                     }
                     else return;
 
-                    
-
                     // for(let i = startidx;i <= endidx; i++){
 
                     // }
 
 
 
-                    console.log(ndata_l.x[startidx]);
+                    if(useleft) console.log(ndata_l.x[startidx]);
+                    else console.log(ndata_r.x[startidx]);
 
 
 

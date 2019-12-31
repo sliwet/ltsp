@@ -409,9 +409,9 @@ let redraw_ylyr = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale,
     }
 
     if (isright) {
-        let dxy1 = chartXY_to_XY(xy1, xTimeScale, yrLinearScale);
-        let dxy2 = chartXY_to_XY(xy2, xTimeScale, yrLinearScale);
-        let xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yr", yrAxis, width, height);
+        dxy1 = chartXY_to_XY(xy1, xTimeScale, yrLinearScale);
+        dxy2 = chartXY_to_XY(xy2, xTimeScale, yrLinearScale);
+        xyScale = handleOnClickZoom(dxy1, dxy2, xAxis, "yr", yrAxis, width, height);
         yrLinearScale = xyScale[1];
         plotPaths(plotconf_data_r, plotconf_name_r, chartGroup, [dxy1[0], dxy2[0]], xyScale, npaths, plotconf_data_l.length);
         addTickerSelections("yr", chartGroup, width, plotconf_name_r, npaths, plotconf_data_l.length);
