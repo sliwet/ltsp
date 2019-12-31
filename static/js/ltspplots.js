@@ -176,6 +176,10 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                 if (isright) label_yr.text("Closing Value of Right Tickers");
             });
 
+            let requestID;
+            let animationidx = -1;
+            let paused = false;
+
             svg.on("click", () => { //"click"
                 if (normalized == null) {
                     let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
@@ -283,6 +287,17 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                     }
                 }
                 else {
+                    if(animationidx > 0) {
+                        if(paused){
+                            paused = false;
+                        }
+                        else{
+                            cancelAnimationFrame(requestID);
+                            paused = true;
+                            return;
+                        }
+                    }
+
                     d3.select("#analysismessage").remove();
                     d3.select("#fitPlot").remove();
 
@@ -316,37 +331,65 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                     }
                     else return;
 
-                    for(let i = startidx;i <= endidx; i++){
-                        let cxy = [];
-                        if(useleft){
-                            cxy.push({x:xScale(ndata_l.x[i]),y:ylScale(ndata_l.y[i])});
-                        } 
-                        else{
-                            cxy.push({x:xScale(ndata_r.x[i]),y:yrScale(ndata_r.y[i])});
-                        }
+                    // Animate.
+                    function animate() {
+                        requestID = requestAnimationFrame(animate);
 
-                        var timeID = window.setTimeout(drawTraceCircles(chartGroup, cxy),50);
+                        if(animationidx < 0) animationidx = startidx;
+
+                        // If the box has not reached the end draw on the canvas.
+                        // Otherwise stop the animation.
+                        if (animationidx <= endidx) {
+                            let cxy = [];
+                            if (useleft) {
+                                cxy.push({ x: xScale(ndata_l.x[animationidx]), y: ylScale(ndata_l.y[animationidx]) });
+                            }
+                            else {
+                                cxy.push({ x: xScale(ndata_r.x[animationidx]), y: yrScale(ndata_r.y[animationidx]) });
+                            }
+
+                            drawTraceCircles(chartGroup, cxy);
+
+                            animationidx++;
+                        } else {
+                            cancelAnimationFrame(requestID);
+                        }
                     }
 
+                    requestID = requestAnimationFrame(animate);
 
 
-// setTimeout( (booksReadThisYear2) => {
-//     console.log(rects_new);
-//     let r = rects_new.data(booksReadThisYear2);
-//     r.exit().remove();
-    
-//     r.data(booksReadThisYear2)
-//     .transition()
-//     .duration(5000)
-//     .attr("x", (d, i) => i * 110)
-//     .attr("y", (d, i) => 600 - (d * 15))
-//     .attr("width", 100)
-//     .attr("height", d => d * 15)
-//     .attr("fill", "blue");
-// }, booksReadThisYear2);
+                    // for (let i = startidx; i <= endidx; i++) {
+                    //     let cxy = [];
+                    //     if (useleft) {
+                    //         cxy.push({ x: xScale(ndata_l.x[i]), y: ylScale(ndata_l.y[i]) });
+                    //     }
+                    //     else {
+                    //         cxy.push({ x: xScale(ndata_r.x[i]), y: yrScale(ndata_r.y[i]) });
+                    //     }
 
-//                             ;
-                        // drawTraceCircles(chartGroup,cxy); // => { // cxy [{x: value,y:value},{x: value,y:value}]
+                    //     var timeID = window.setTimeout(drawTraceCircles(chartGroup, cxy), 50);
+                    // }
+
+
+
+                    // setTimeout( (booksReadThisYear2) => {
+                    //     console.log(rects_new);
+                    //     let r = rects_new.data(booksReadThisYear2);
+                    //     r.exit().remove();
+
+                    //     r.data(booksReadThisYear2)
+                    //     .transition()
+                    //     .duration(5000)
+                    //     .attr("x", (d, i) => i * 110)
+                    //     .attr("y", (d, i) => 600 - (d * 15))
+                    //     .attr("width", 100)
+                    //     .attr("height", d => d * 15)
+                    //     .attr("fill", "blue");
+                    // }, booksReadThisYear2);
+
+                    //                             ;
+                    // drawTraceCircles(chartGroup,cxy); // => { // cxy [{x: value,y:value},{x: value,y:value}]
 
 
 
