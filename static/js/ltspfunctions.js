@@ -1,3 +1,4 @@
+// Start requestAnimationFrame
 let lastTime = 0;
 let vendors = ['ms', 'moz', 'webkit', 'o'];
 for (let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
@@ -22,6 +23,7 @@ if (!window.cancelAnimationFrame) {
         clearTimeout(id);
     };
 }
+// End requestAnimationFrame
 
 let wait = ms => {
     let d = new Date();
@@ -519,11 +521,11 @@ let redraw_ylyr = (xy1, xy2, isleft, isright, xAxis, ylAxis, yrAxis, xTimeScale,
     d3.select("#selectionlineY").remove();
     d3.select("#selectionlineX2").remove();
     d3.select("#selectionlineY2").remove();
-    d3.select("#zoomin").remove();
-    d3.select("#onefive").remove();
     d3.select("#selecteddateX").remove();
     d3.select("#selecteddateY").remove();
-    d3.select("#fitPlotPlace").remove();
+    d3.select("#zoomin").remove();
+    d3.select("#onefive").remove();
+    d3.select("#fitplotPlace").remove();
     d3.select("#refreshRateDiv").remove();
     d3.select("#analysismessage").remove();
     chartGroup.selectAll("circle").remove();
@@ -627,7 +629,7 @@ let getFitdata = (data,animationidx) => {
     let x = [],y=[];
 
     for(let i = ii[1];i < ii[2];i++){
-        x.push(i - ii[1]);
+        x.push(i - ii[1] - ii[0]);
         y.push(data.y[i]);
     }
 

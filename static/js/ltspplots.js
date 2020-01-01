@@ -23,7 +23,10 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 
             d3.select("#onefive").remove();
             d3.select("#zoomin").remove();
-
+            d3.select("#fitplotPlace").remove();
+            d3.select("#refreshRateDiv").remove();
+            d3.select("#analysismessage").remove();
+        
             let isleft = plotconf.isleft;
             let isright = plotconf.isright;
             let xminmax = null, ylminmax = null, yrminmax = null;
@@ -271,7 +274,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                             addLine("selecteddateX", chartGroup, { x: selectedxy[0], y: 0 }, { x: selectedxy[0], y: height }, "gray", "1px");
                             addLine("selecteddateY", chartGroup, { x: 0, y: selectedxy[1] }, { x: width, y: selectedxy[1] }, "gray", "1px");
 
-                            d3.select(wheretoplot).append("div").attr("id", "fitPlotPlace");
+                            d3.select(wheretoplot).append("div").attr("id", "fitplotPlace");
 
                             let refreshRateDiv = d3.select(wheretoplot).append("div").attr("id", "refreshRateDiv");
                             refreshRateDiv.append("label").attr("for", "refreshRate").text("Enter refresh rate (msec) ");
@@ -301,7 +304,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                     }
 
                     d3.select("#analysismessage").remove();
-                    d3.select("#fitPlot").remove();
 
                     let useleft = false, useright = false;
 
@@ -348,8 +350,9 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                             let ridx = animationidx;
 
                             d3.select("#fitplot").remove();
+                            
                             let plotcolor = getFixedColor(255, 0, 0);
-                            let fitPlotSvg = d3.select("#fitPlotPlace").append("svg").attr("width", svgWidth).attr("height", svgHeight).attr("id", "fitplot");
+                            let fitPlotSvg = d3.select("#fitplotPlace").append("svg").attr("width", svgWidth).attr("height", svgHeight).attr("id", "fitplot");
 
                             if (useleft) {
                                 cxy.push({ x: xScale(ndata_l.x[animationidx]), y: ylScale(ndata_l.y[animationidx]) });
@@ -403,7 +406,7 @@ let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin
     let width = (svgWidth - margin0.left - margin0.right) / 2;
     let height = svgHeight - margin0.top - margin0.bottom;
 
-    let margin,rectid;
+    let margin, rectid;
     if (isleft) {
         margin = { top: margin0.top, right: margin0.right + width, bottom: margin0.bottom, left: margin0.left };
         rectid = "outline_l";
@@ -435,7 +438,7 @@ let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin
         .attr("text-anchor", "middle")
         .text("Days");
 
-    let yScale = null,yAxis = null, label_y = null, padding = 0;
+    let yScale = null, yAxis = null, label_y = null, padding = 0;
     padding = (yminmax[1] - yminmax[0]) * 0.1;
     yminmax = [yminmax[0] - padding, yminmax[1] + padding];
     yScale = getLinearScale("y", yminmax, height);
@@ -454,10 +457,12 @@ let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin
             .style("stroke", "black")
             .text("Data & Fit");
 
+        addPath("fitleft", chartGroup, { x: data[1].x, y: data[1].y }, xminmax, xScale, yScale, plotcolor(1.0));
+
         // plotPaths(plotconf.data_l, plotconf.name_l, chartGroup, null, [xTimeScale, ylLinearScale], npaths, 0);
         // addTickerSelections("y", chartGroup, width, plotconf.name_l, npaths, 0);
     }
-    else{
+    else {
         // padding = (yrminmax[1] - yrminmax[0]) * 0.1;
         // yrminmax = [yrminmax[0] - padding, yrminmax[1] + padding];
 
@@ -475,6 +480,8 @@ let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin
             .attr("text-anchor", "middle")
             .style("stroke", "black")
             .text("Closing Value of Right Tickers");
+
+        addPath("fitright", chartGroup, { x: data[1].x, y: data[1].y }, xminmax, xScale, yScale, plotcolor(1.0));
         // plotPaths(plotconf.data_r, plotconf.name_r, chartGroup, null, [xTimeScale, yrLinearScale], npaths, plotconf.data_l.length);
         // addTickerSelections("yr", chartGroup, width, plotconf.name_r, npaths, plotconf.data_l.length);
     }
