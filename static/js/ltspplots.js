@@ -336,7 +336,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                     d3.event.preventDefault();
                     let refreshRate = d3.select("#refreshRateInput").property("value");
 
-                    function animate() {
+                    let animate = () => {
                         requestID = requestAnimationFrame(animate);
 
                         if (animationidx < 0) animationidx = startidx;
@@ -382,13 +382,6 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                     }
 
                     requestID = requestAnimationFrame(animate);
-
-                    if (isleft) {
-                    }
-
-                    if (isright) {
-
-                    }
                 }
             }); // end of on click
         } // end of init
