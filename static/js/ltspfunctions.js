@@ -543,3 +543,31 @@ let getTooltipCirclesGroup = (chartGroup, circlesGroup, isleft, isright, data_l,
     return getCirclesGroup(chartGroup, tooltipinputs, toolTip);
 }
 
+let getFitdata = (data,animationidx) => {
+    let nhalf = 10;
+    let ii =[nhalf,0,0];
+
+    ii[1] = animationidx - nhalf;
+
+    if(ii[1] < 0){
+        ii[1] = 0;
+        ii[0] = animationidx;
+    } 
+
+    ii[2] = ii[1] + 2 * nhalf + 1;
+
+    if(ii[2] > data.x.length){
+        ii[0] = nhalf + ii[2] - data.x.length;
+        ii[2] = data.x.length;
+        ii[1] = ii[2] - 2 * nhalf - 1;
+    }
+    
+    let xy = [];
+
+    for(let i = ii[1];i < ii[2];i++){
+        xy.push([i - ii[1],data.y[i]]);
+    }
+
+    return {xy:xy,idx:ii[0]};
+}
+

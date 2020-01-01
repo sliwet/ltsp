@@ -348,7 +348,10 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                             if (useleft) {
                                 cxy.push({ x: xScale(ndata_l.x[animationidx]), y: ylScale(ndata_l.y[animationidx]) });
 
-                                // new easyplotSVG("#fitPlotPlace", fitdata, "fitPlotLeft", svgWidth, svgHeight,true);
+                                let fdata = getFitdata(ndata_l,animationidx);
+                                console.log(fdata.xy[0][1]);
+
+                                // new easyplotSVG("#fitPlotPlace", [fdata.fitdata], "fitPlotLeft", svgWidth, svgHeight,true);
 
                                 if(useright) ridx = getBisectIdxFromPlotconfdata(ndata_r, ndata_l.x[animationidx]);
                             }
@@ -407,20 +410,23 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 // let plotconf = {
 //     isleft: isleft, boolean
 //     name_l: lt, ["name1","name2",...]
-//     data_l: ld, [{x:[],y:[]},{x:[],y:[]},...]
+//     data_l: ld, 
 //     isright: isright, boolean
 //     name_r: rt, ["name1","name2",...]
 //     data_r: rd, [{x:[],y:[]},{x:[],y:[]},...]
 // }
 
 class easyplotSVG {
-    constructor(wheretoplot, plotconf, uniqueId, svgWidth, svgHeight,trueforleft, margin) {
+    constructor(wheretoplot, fitdata, uniqueId, svgWidth, svgHeight,trueforleft, margin) {
         this.wheretoplot = wheretoplot;
-        this.plotconf = plotconf;
+        this.data = fitdata; //[{x:[],y:[]},{x:[],y:[]},...]
         this.uniqueId = uniqueId;
         this.svgWidth = svgWidth;
         this.svgHeight = svgHeight;
+        this.isleft = trueforleft;
         this.margin = margin;
+
+        console.log(fitdata[0]);
     }
 
     test(strtest) {
