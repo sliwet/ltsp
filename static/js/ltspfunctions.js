@@ -224,9 +224,9 @@ let normalize_one_plotconf_data = (one_plotconf_data, x0, xstart, xend) => {
 }
 
 // addLine("test",chartGroup,{x:chartXY[0],y:0},{x:chartXY[0],y:height},"gray","1px","stroke-dasharray","3, 3");
-let addLine = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth, linestyle, styleparam) => {
-    if (uniqueID != null) {
-        d3.select(`#${uniqueID}`).remove();
+let addLine = (uniqueId, chartGroup, xy1, xy2, linecolor, strokewidth, linestyle, styleparam) => {
+    if (uniqueId != null) {
+        d3.select(`#${uniqueId}`).remove();
     }
 
     let oneline = chartGroup.append("line")
@@ -241,16 +241,16 @@ let addLine = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth, linestyle
     if (typeof linestyle !== 'undefined')
         oneline.style(linestyle, styleparam);
 
-    if (uniqueID != null) {
-        oneline.attr("id", uniqueID);
+    if (uniqueId != null) {
+        oneline.attr("id", uniqueId);
     }
 
     return oneline;
 }
 
-let addRect = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth, fillcolor) => {
-    if (uniqueID != null) {
-        d3.select(`#${uniqueID}`).remove();
+let addRect = (uniqueId, chartGroup, xy1, xy2, linecolor, strokewidth, fillcolor) => {
+    if (uniqueId != null) {
+        d3.select(`#${uniqueId}`).remove();
     }
 
     if (typeof fillcolor === 'undefined' || fillcolor == null) fillcolor = "none";
@@ -269,14 +269,14 @@ let addRect = (uniqueID, chartGroup, xy1, xy2, linecolor, strokewidth, fillcolor
         .attr("stroke", linecolor)
         .attr("stroke-width", strokewidth);
 
-    if (uniqueID != null) {
-        onerect.attr("id", uniqueID);
+    if (uniqueId != null) {
+        onerect.attr("id", uniqueId);
     }
 
     return true;
 }
 
-let addPath = (uniqueID, chartGroup, xydata, xrange, xScale, yScale, pathcolor) => {
+let addPath = (uniqueId, chartGroup, xydata, xrange, xScale, yScale, pathcolor) => {
 
     if (xrange != null) {
         if (xrange[0] > xrange[1]) {
@@ -301,8 +301,8 @@ let addPath = (uniqueID, chartGroup, xydata, xrange, xScale, yScale, pathcolor) 
         .x(d => xScale(d.x))
         .y(d => yScale(d.y));
 
-    if (uniqueID != null) {
-        d3.select(`#${uniqueID}`).remove();
+    if (uniqueId != null) {
+        d3.select(`#${uniqueId}`).remove();
     }
 
     let onepath = chartGroup.append("path")
@@ -311,8 +311,8 @@ let addPath = (uniqueID, chartGroup, xydata, xrange, xScale, yScale, pathcolor) 
         .attr("fill", "none")
         .attr("stroke", pathcolor);
 
-    if (uniqueID != null) {
-        onepath.attr("id", uniqueID);
+    if (uniqueId != null) {
+        onepath.attr("id", uniqueId);
     }
 }
 
@@ -453,8 +453,8 @@ let renderAxis = (XorY, newAxis, scale) => {
 }
 
 //weight: "bold", "normal" , location: "left", "middle", "right"
-let addText = (uniqueID, chartGroup, xy, color) => {
-    d3.select(`#ticker-${uniqueID}`).remove();
+let addText = (uniqueId, chartGroup, xy, color) => {
+    d3.select(`#ticker-${uniqueId}`).remove();
 
     chartGroup.append("text")
         .attr("x", xy.x)
@@ -465,8 +465,8 @@ let addText = (uniqueID, chartGroup, xy, color) => {
         .attr("width", "60px")
         .attr("text-anchor", "middle") // left middle right
         .attr("fill", color)
-        .text(uniqueID)
-        .attr("id", `#ticker-${uniqueID}`);
+        .text(uniqueId)
+        .attr("id", `#ticker-${uniqueId}`);
 }
 
 let addTickerSelections = (ylr, chartGroup, width, names, npaths, ipath) => {

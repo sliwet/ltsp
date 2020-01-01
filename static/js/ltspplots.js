@@ -356,7 +356,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                                 let fitted = LinearRegression(data.x, data.y);
                                 let dataNfit = { data: data, fitted: fitted };
 
-                                new easyplotSVG("#fitPlotPlace", dataNfit, "fitPlotLeft", svgWidth, svgHeight, true, plotcolor);
+                                halfplotSVG("#fitPlotPlace", dataNfit, "fitPlotLeft", svgWidth, svgHeight, true, plotcolor,margin);
                                 plotcolor = getFixedColor(0,0,255);
 
                                 if (useright) ridx = getBisectIdxFromPlotconfdata(ndata_r, ndata_l.x[animationidx]);
@@ -369,7 +369,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                                 let fitted = LinearRegression(data.x, data.y);
                                 let dataNfit = { data: data, fitted: fitted };
 
-                                new easyplotSVG("#fitPlotPlace", dataNfit, "fitPlotRight", svgWidth, svgHeight, false, plotcolor);
+                                halfplotSVG("#fitPlotPlace", dataNfit, "fitPlotRight", svgWidth, svgHeight, false, plotcolor,margin);
                             }
 
                             drawTraceCircles(chartGroup, cxy, refreshRate); // draw circles every 100 ms
@@ -419,30 +419,22 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 //     data_r: rd, [{x:[],y:[]},{x:[],y:[]},...]
 // }
 
-class easyplotSVG {
-    constructor(wheretoplot, dataNfit, uniqueId, svgWidth, svgHeight, trueforleft,plotcolor, margin) {
-        this.wheretoplot = wheretoplot;
-        this.dataNfit = dataNfit; //[{x:[],y:[]},{x:[],y:[]},...]
-        this.uniqueId = uniqueId;
-        this.svgWidth = svgWidth;
-        this.svgHeight = svgHeight;
-        this.isleft = trueforleft;
-        this.plotcolor = plotcolor;
-        this.margin = margin;
+// dataNfit 
+// console.log(plotcolor(0.5));
 
-        console.log(plotcolor(0.5));
+let halfplotSVG = (wheretoplot, dataNfit, uniqueId, svgWidth, svgHeight, isleft,plotcolor, margin0) => {
 
-
-
-
-
-
-
-
+    if (uniqueId != null) {
+        d3.select(`#${uniqueId}`).remove();
     }
 
-    test(strtest) {
-        d3.select(this.wheretoplot).append("div").attr("id", this.uniqueId).html(`${this.wheretoplot} : ${strtest}`);
+    let margin;
+    if(isleft){
+        margin = { top: margin0.top, right: 0, bottom: margin0.bottom, left: margin0.left };
+    }
+    else{
+        margin = { top: margin0.top, right: margin0.right, bottom: margin0.bottom, left: 0 };
     }
 
+    
 }
