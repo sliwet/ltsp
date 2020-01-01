@@ -348,12 +348,12 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                             if (useleft) {
                                 cxy.push({ x: xScale(ndata_l.x[animationidx]), y: ylScale(ndata_l.y[animationidx]) });
 
-                                let fdata = getFitdata(ndata_l,animationidx);
-                                console.log(fdata.xy[1]);
-                                let test = LinearRegression(fdata.xy);
-                                console.log(test.xy[1]);
+                                let data = getFitdata(ndata_l,animationidx);
+                                let fitted = LinearRegression(data.x,data.y);
 
-                                // new easyplotSVG("#fitPlotPlace", [fdata.fitdata], "fitPlotLeft", svgWidth, svgHeight,true);
+                                fitplotdata = [{x:data.x,y:data.y},{x:fitted.x,y:fitted.y}]
+
+                                new easyplotSVG("#fitPlotPlace", fitplotdata, "fitPlotLeft", svgWidth, svgHeight,true);
 
                                 if(useright) ridx = getBisectIdxFromPlotconfdata(ndata_r, ndata_l.x[animationidx]);
                             }

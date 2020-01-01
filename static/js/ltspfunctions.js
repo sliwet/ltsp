@@ -569,7 +569,7 @@ let getFitdata = (data,animationidx) => {
         y.push(data.y[i]);
     }
 
-    return {xy:[x,y],idx:ii[0]};
+    return {x:x,y:y,idx:ii[0]};
 }
 
 let Sum = x => {
@@ -596,10 +596,7 @@ let SumSq = x => {
     return sumSq;
 }
 
-let LinearRegression = xy => {
-    let xx = xy[0];
-    let yy = xy[1];
-
+let LinearRegression = (xx,yy) => {
     if(yy == null) return null;
     else if (yy.length < 2) return null;
     
@@ -617,11 +614,11 @@ let LinearRegression = xy => {
 
     let x = [],y=[];
 
-    xx.forEach(d => {
-        x.push(d);
-        y.push(b + m * d);
+    xx.forEach(xval => {
+        x.push(xval);
+        y.push(b + m * xval);
     })
     
-    return {b:b,m:m,r2:r2,xy:[x,y]};
+    return {b:b,m:m,r2:r2,x:x,y:y};
 }
 
