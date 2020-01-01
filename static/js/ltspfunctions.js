@@ -65,9 +65,42 @@ let getColor = (n, i, a) => {
     return ["rgba(", r, ",", g, ",", b, ",", a, ")"].join("");
 }
 
-let rgba = (r,g,b,a) => {
-    if (typeof a === 'undefined') a = 1.0;
-    return ["rgba(", r, ",", g, ",", b, ",", a, ")"].join("");
+//This is a lambda function
+// Usage 
+// plotcolor = rgb(255,0,0);
+// plotcolor.a(0.5) will return "rgba(255,0,0,0.5)"
+// plotcolor.rgb(0,0,255)
+// plotcolor.a(0.3) will return "rgba(0,0,255,0.3)"
+// 
+let rgb = (rr,gg,bb) => {
+    let r = rr;
+    let g = gg;
+    let b = bb;
+
+    return {
+        rgb: (rrr,ggg,bbb) => {
+            r = rrr;
+            g = ggg;
+            b = bbb;
+        },
+        a: a => {
+            return ["rgba(", r, ",", g, ",", b, ",", a, ")"].join("");
+        }
+    };
+}
+
+//This is a lambda function
+// Usage plotcolor = getFixedColor(255,0,0);
+// plotcolor(0.5) will return "rgba(255,0,0,0.5)"
+let getFixedColor = (rr,gg,bb) => {
+    let r = rr;
+    let g = gg;
+    let b = bb;
+
+    return (a) => {
+        if (typeof a === 'undefined') a = 1.0;
+        return ["rgba(", r, ",", g, ",", b, ",", a, ")"].join("");
+    };
 }
 
 let renderCircles = (circlesGroup, cxy) => {

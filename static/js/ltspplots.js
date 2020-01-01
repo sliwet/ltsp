@@ -347,7 +347,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                             let cxy = [];
                             let ridx = animationidx;
 
-                            plotcolor = "red";
+                            let plotcolor = getFixedColor(255,0,0);
 
                             if (useleft) {
                                 cxy.push({ x: xScale(ndata_l.x[animationidx]), y: ylScale(ndata_l.y[animationidx]) });
@@ -357,7 +357,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                                 let dataNfit = { data: data, fitted: fitted };
 
                                 new easyplotSVG("#fitPlotPlace", dataNfit, "fitPlotLeft", svgWidth, svgHeight, true, plotcolor);
-                                plotcolor = "blue";
+                                plotcolor = getFixedColor(0,0,255);
 
                                 if (useright) ridx = getBisectIdxFromPlotconfdata(ndata_r, ndata_l.x[animationidx]);
                             }
@@ -430,7 +430,15 @@ class easyplotSVG {
         this.plotcolor = plotcolor;
         this.margin = margin;
 
-        // console.log(fitdata[0]);
+        console.log(plotcolor(0.5));
+
+
+
+
+
+
+
+
     }
 
     test(strtest) {
