@@ -51,7 +51,6 @@ let renderCircles = (circlesGroup, cxy) => {
 
 let drawTraceCircles = (chartGroup, cxy, ms) => { // cxy [{x: value,y:value},{x: value,y:value}]
     let n = cxy.length;
-    chartGroup.selectAll("circle").remove();
     let circlesGroup = chartGroup.selectAll("circle")
         .data(cxy)
         .enter()

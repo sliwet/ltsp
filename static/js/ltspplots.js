@@ -342,26 +342,34 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                         if (animationidx < 0) animationidx = startidx;
 
                         if (animationidx <= endidx) {
+                            chartGroup.selectAll("circle").remove();
+
                             let cxy = [];
                             let ridx = animationidx;
+
+                            plotcolor = "red";
 
                             if (useleft) {
                                 cxy.push({ x: xScale(ndata_l.x[animationidx]), y: ylScale(ndata_l.y[animationidx]) });
 
-                                let data = getFitdata(ndata_l,animationidx);
-                                let fitted = LinearRegression(data.x,data.y);
+                                let data = getFitdata(ndata_l, animationidx);
+                                let fitted = LinearRegression(data.x, data.y);
+                                let dataNfit = { data: data, fitted: fitted };
 
-                                fitplotdata = [{x:data.x,y:data.y},{x:fitted.x,y:fitted.y}]
+                                new easyplotSVG("#fitPlotPlace", dataNfit, "fitPlotLeft", svgWidth, svgHeight, true, plotcolor);
+                                plotcolor = "blue";
 
-                                new easyplotSVG("#fitPlotPlace", fitplotdata, "fitPlotLeft", svgWidth, svgHeight,true);
-
-                                if(useright) ridx = getBisectIdxFromPlotconfdata(ndata_r, ndata_l.x[animationidx]);
+                                if (useright) ridx = getBisectIdxFromPlotconfdata(ndata_r, ndata_l.x[animationidx]);
                             }
 
-                            if(useright) {
+                            if (useright) {
                                 cxy.push({ x: xScale(ndata_r.x[ridx]), y: yrScale(ndata_r.y[ridx]) });
 
-                                // new easyplotSVG("#fitPlotPlace", fitdata, "fitPlotRight", svgWidth, svgHeight,false);
+                                let data = getFitdata(ndata_r, ridx);
+                                let fitted = LinearRegression(data.x, data.y);
+                                let dataNfit = { data: data, fitted: fitted };
+
+                                new easyplotSVG("#fitPlotPlace", dataNfit, "fitPlotRight", svgWidth, svgHeight, false, plotcolor);
                             }
 
                             drawTraceCircles(chartGroup, cxy, refreshRate); // draw circles every 100 ms
@@ -375,11 +383,11 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 
                     requestID = requestAnimationFrame(animate);
 
-                    if(isleft){
+                    if (isleft) {
                     }
 
-                    if(isright){
-                        
+                    if (isright) {
+
                     }
                 }
             }); // end of on click
@@ -391,20 +399,20 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 
 
 
-                    // normalized.x0idx_l:x0idx_l,
-                    // normalized.x0idx_r:x0idx_r,
-                    // normalized.data_l: data_l,
-                    // normalized.data_r: data_r,
-                    // normalized.xScale: xScale,
-                    // normalized.ylScale: ylScale,
-                    // normalized.yrScale: yrScale
+// normalized.x0idx_l:x0idx_l,
+// normalized.x0idx_r:x0idx_r,
+// normalized.data_l: data_l,
+// normalized.data_r: data_r,
+// normalized.xScale: xScale,
+// normalized.ylScale: ylScale,
+// normalized.yrScale: yrScale
 
 
-                    // data_l = normalized.data_l;
-                    // data_r = normalized.data_r;
-                    // xScale = normalized.xScale;
-                    // ylScale = normalized.ylScale;
-                    // yrScale = normalized.yrScale;
+// data_l = normalized.data_l;
+// data_r = normalized.data_r;
+// xScale = normalized.xScale;
+// ylScale = normalized.ylScale;
+// yrScale = normalized.yrScale;
 
 
 
@@ -419,16 +427,17 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 // }
 
 class easyplotSVG {
-    constructor(wheretoplot, fitdata, uniqueId, svgWidth, svgHeight,trueforleft, margin) {
+    constructor(wheretoplot, dataNfit, uniqueId, svgWidth, svgHeight, trueforleft,plotcolor, margin) {
         this.wheretoplot = wheretoplot;
-        this.data = fitdata; //[{x:[],y:[]},{x:[],y:[]},...]
+        this.dataNfit = dataNfit; //[{x:[],y:[]},{x:[],y:[]},...]
         this.uniqueId = uniqueId;
         this.svgWidth = svgWidth;
         this.svgHeight = svgHeight;
         this.isleft = trueforleft;
+        this.plotcolor = plotcolor;
         this.margin = margin;
 
-        console.log(fitdata[0]);
+        // console.log(fitdata[0]);
     }
 
     test(strtest) {
