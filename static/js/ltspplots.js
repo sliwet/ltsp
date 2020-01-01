@@ -347,17 +347,19 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                             let cxy = [];
                             let ridx = animationidx;
 
-                            let plotcolor = getFixedColor(255,0,0);
+                            d3.select("#fitplot").remove();
+                            let plotcolor = getFixedColor(255, 0, 0);
+                            let fitPlotSvg = d3.select("#fitPlotPlace").append("svg").attr("width", svgWidth).attr("height", svgHeight).attr("id", "fitplot");
 
                             if (useleft) {
                                 cxy.push({ x: xScale(ndata_l.x[animationidx]), y: ylScale(ndata_l.y[animationidx]) });
 
                                 let data = getFitdata(ndata_l, animationidx);
                                 let fitted = LinearRegression(data.x, data.y);
-                                let dataNfit = { data: data, fitted: fitted };
+                                let dataNfit = { data: data, fit: fitted };
 
-                                halfplotSVG("#fitPlotPlace", dataNfit, "fitPlotLeft", svgWidth, svgHeight, true, plotcolor,margin);
-                                plotcolor = getFixedColor(0,0,255);
+                                halfplotSVG(fitPlotSvg, dataNfit, svgWidth, svgHeight, true, plotcolor, margin);
+                                plotcolor = getFixedColor(0, 0, 255);
 
                                 if (useright) ridx = getBisectIdxFromPlotconfdata(ndata_r, ndata_l.x[animationidx]);
                             }
@@ -367,9 +369,9 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 
                                 let data = getFitdata(ndata_r, ridx);
                                 let fitted = LinearRegression(data.x, data.y);
-                                let dataNfit = { data: data, fitted: fitted };
+                                let dataNfit = { data: data, fit: fitted };
 
-                                halfplotSVG("#fitPlotPlace", dataNfit, "fitPlotRight", svgWidth, svgHeight, false, plotcolor,margin);
+                                halfplotSVG(fitPlotSvg, dataNfit, svgWidth, svgHeight, false, plotcolor, margin);
                             }
 
                             drawTraceCircles(chartGroup, cxy, refreshRate); // draw circles every 100 ms
@@ -388,53 +390,93 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
     };
 };
 
-
-
-
-
-// normalized.x0idx_l:x0idx_l,
-// normalized.x0idx_r:x0idx_r,
-// normalized.data_l: data_l,
-// normalized.data_r: data_r,
-// normalized.xScale: xScale,
-// normalized.ylScale: ylScale,
-// normalized.yrScale: yrScale
-
-
-// data_l = normalized.data_l;
-// data_r = normalized.data_r;
-// xScale = normalized.xScale;
-// ylScale = normalized.ylScale;
-// yrScale = normalized.yrScale;
-
-
-
-
-// let plotconf = {
-//     isleft: isleft, boolean
-//     name_l: lt, ["name1","name2",...]
-//     data_l: ld, 
-//     isright: isright, boolean
-//     name_r: rt, ["name1","name2",...]
-//     data_r: rd, [{x:[],y:[]},{x:[],y:[]},...]
-// }
-
 // dataNfit 
 // console.log(plotcolor(0.5));
 
-let halfplotSVG = (wheretoplot, dataNfit, uniqueId, svgWidth, svgHeight, isleft,plotcolor, margin0) => {
+let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin0) => {
 
-    if (uniqueId != null) {
-        d3.select(`#${uniqueId}`).remove();
+    let data = [
+        { x: dataNfit.data.x, y: dataNfit.data.y },
+        { x: dataNfit.fit.x, y: dataNfit.fit.y }
+    ]
+
+    let width = (svgWidth - margin0.left - margin0.right) / 2;
+    let height = svgHeight - margin0.top - margin0.bottom;
+
+    let margin,rectid;
+    if (isleft) {
+        margin = { top: margin0.top, right: margin0.right + width, bottom: margin0.bottom, left: margin0.left };
+        rectid = "outline_l";
+    }
+    else {
+        margin = { top: margin0.top, right: margin0.right, bottom: margin0.bottom, left: margin0.left + width };
+        rectid = "outline_r";
     }
 
-    let margin;
-    if(isleft){
-        margin = { top: margin0.top, right: 0, bottom: margin0.bottom, left: margin0.left };
+    let chartGroup = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`);
+    addRect(rectid, chartGroup, { x: 0, y: 0 }, { x: width, y: height }, "black", "1px");
+
+    let xyminmax = getXYminmax(data, [null, null]);
+    let xminmax = xyminmax[0];
+    let yminmax = xyminmax[1];
+
+    let xScale = getLinearScale("x", xminmax, width);
+    let xAxis = chartGroup.append("g")
+        .classed("x-axis", true)
+        .attr("transform", `translate(0, ${height})`)
+        .call(d3.axisBottom(xScale));
+
+    let label_x = chartGroup.append("g")
+        .attr("transform", `translate(${width * 0.5}, ${height + 20})`)
+        .append("text")
+        .attr("x", 0)
+        .attr("y", 20)
+        .attr("value", "x")
+        .attr("text-anchor", "middle")
+        .text("Days");
+
+    let yScale = null,yAxis = null, label_y = null, padding = 0;
+    padding = (yminmax[1] - yminmax[0]) * 0.1;
+    yminmax = [yminmax[0] - padding, yminmax[1] + padding];
+    yScale = getLinearScale("y", yminmax, height);
+
+    if (isleft) {
+        yAxis = chartGroup.append("g")
+            .classed("yl-axis", true)
+            .call(d3.axisLeft(yScale));
+        label_y = chartGroup.append("g")
+            .attr("transform", "rotate(-90)")
+            .append("text")
+            .attr("y", -margin.left * 0.7) // horizontal position
+            .attr("x", -height * 0.5) // vertical position
+            .attr("value", "y")
+            .attr("text-anchor", "middle")
+            .style("stroke", "black")
+            .text("Data & Fit");
+
+        // plotPaths(plotconf.data_l, plotconf.name_l, chartGroup, null, [xTimeScale, ylLinearScale], npaths, 0);
+        // addTickerSelections("y", chartGroup, width, plotconf.name_l, npaths, 0);
     }
     else{
-        margin = { top: margin0.top, right: margin0.right, bottom: margin0.bottom, left: 0 };
+        // padding = (yrminmax[1] - yrminmax[0]) * 0.1;
+        // yrminmax = [yrminmax[0] - padding, yrminmax[1] + padding];
+
+        // yrLinearScale = getLinearScale("yr", yrminmax, height);
+        yAxis = chartGroup.append("g")
+            .classed("yr-axis", true)
+            .attr("transform", `translate(${width}, 0)`)
+            .call(d3.axisRight(yScale));
+        label_y = chartGroup.append("g")
+            .attr("transform", "rotate(90)")
+            .append("text")
+            .attr("y", -width - margin.right * 0.7) // horizontal position
+            .attr("x", height * 0.5) // vertical position
+            .attr("value", "yr")
+            .attr("text-anchor", "middle")
+            .style("stroke", "black")
+            .text("Closing Value of Right Tickers");
+        // plotPaths(plotconf.data_r, plotconf.name_r, chartGroup, null, [xTimeScale, yrLinearScale], npaths, plotconf.data_l.length);
+        // addTickerSelections("yr", chartGroup, width, plotconf.name_r, npaths, plotconf.data_l.length);
     }
 
-    
 }
