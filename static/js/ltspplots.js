@@ -26,7 +26,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
             d3.select("#fitplotPlace").remove();
             d3.select("#refreshRateDiv").remove();
             d3.select("#analysismessage").remove();
-        
+
             let isleft = plotconf.isleft;
             let isright = plotconf.isright;
             let xminmax = null, ylminmax = null, yrminmax = null;
@@ -126,7 +126,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 
             let tooltipCircles = setTooltips(chartGroup, null, isleft, isright, data_l, data_r
                 , xScale, ylScale, yrScale, [0, 0], plotconf.name_l, plotconf.name_r, toolTip);
-                tooltipCircles.call(data => toolTip.hide(data));
+            tooltipCircles.call(data => toolTip.hide(data));
             chartGroup.selectAll("circle").remove();
 
             svg.on("mousewheel", () => {
@@ -458,16 +458,10 @@ let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin
             .style("stroke", "black")
             .text("Change in value (%)");
 
+        addFitCircles(chartGroup, { x: data[0].x, y: data[0].y }, xScale, yScale, plotcolor);
         addPath("fitleft", chartGroup, { x: data[1].x, y: data[1].y }, xminmax, xScale, yScale, plotcolor(1.0));
-
-        // plotPaths(plotconf.data_l, plotconf.name_l, chartGroup, null, [xTimeScale, ylLinearScale], npaths, 0);
-        // addTickerSelections("y", chartGroup, width, plotconf.name_l, npaths, 0);
     }
     else {
-        // padding = (yrminmax[1] - yrminmax[0]) * 0.1;
-        // yrminmax = [yrminmax[0] - padding, yrminmax[1] + padding];
-
-        // yrLinearScale = getLinearScale("yr", yrminmax, height);
         yAxis = chartGroup.append("g")
             .classed("yr-axis", true)
             .attr("transform", `translate(${width}, 0)`)
@@ -482,9 +476,8 @@ let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin
             .style("stroke", "black")
             .text("Change in value (%)");
 
+        addFitCircles(chartGroup, { x: data[0].x, y: data[0].y }, xScale, yScale, plotcolor);
         addPath("fitright", chartGroup, { x: data[1].x, y: data[1].y }, xminmax, xScale, yScale, plotcolor(1.0));
-        // plotPaths(plotconf.data_r, plotconf.name_r, chartGroup, null, [xTimeScale, yrLinearScale], npaths, plotconf.data_l.length);
-        // addTickerSelections("yr", chartGroup, width, plotconf.name_r, npaths, plotconf.data_l.length);
     }
 
 }

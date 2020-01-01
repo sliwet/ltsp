@@ -74,13 +74,13 @@ let getColor = (n, i, a) => {
 // plotcolor.rgb(0,0,255)
 // plotcolor.a(0.3) will return "rgba(0,0,255,0.3)"
 // 
-let rgb = (rr,gg,bb) => {
+let rgb = (rr, gg, bb) => {
     let r = rr;
     let g = gg;
     let b = bb;
 
     return {
-        rgb: (rrr,ggg,bbb) => {
+        rgb: (rrr, ggg, bbb) => {
             r = rrr;
             g = ggg;
             b = bbb;
@@ -94,7 +94,7 @@ let rgb = (rr,gg,bb) => {
 //This is a lambda function
 // Usage plotcolor = getFixedColor(255,0,0);
 // plotcolor(0.5) will return "rgba(255,0,0,0.5)"
-let getFixedColor = (rr,gg,bb) => {
+let getFixedColor = (rr, gg, bb) => {
     let r = rr;
     let g = gg;
     let b = bb;
@@ -128,6 +128,25 @@ let addTraceCircles = (chartGroup, cxy, ms) => { // cxy [{x: value,y:value},{x: 
         .attr("fill", (d, i) => getColor(n, i, 0.2))
         .attr("opacity", "1.0");
     wait(ms);
+}
+
+let addFitCircles = (chartGroup, xydata,xScale,yScale, plotcolor) => { // cxy [{x: value,y:value},{x: value,y:value}]
+    let xy = [];
+    xydata.x.forEach((xdata, i) => {
+        xy.push({ x: xScale(xdata), y: yScale(xydata.y[i]) });
+    });
+
+    let circlesGroup = chartGroup.selectAll("circle")
+        .data(xy)
+        .enter()
+        .append("circle")
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y)
+        .attr("r", 7)
+        .attr("stroke", plotcolor(1.0))
+        .attr("stroke-width", "1px")
+        .attr("fill", plotcolor(0.2))
+        .attr("opacity", "1.0");
 }
 
 let addTooltipCircles = (chartGroup, tooltipinputs, toolTip) => {
@@ -607,82 +626,82 @@ let setTooltips = (chartGroup, circlesGroup, isleft, isright, data_l, data_r
     return addTooltipCircles(chartGroup, tooltipinputs, toolTip);
 }
 
-let getFitdata = (data,animationidx) => {
+let getFitdata = (data, animationidx) => {
     let nhalf = 10;
-    let ii =[nhalf,0,0];
+    let ii = [nhalf, 0, 0];
 
     ii[1] = animationidx - nhalf;
 
-    if(ii[1] < 0){
+    if (ii[1] < 0) {
         ii[1] = 0;
         ii[0] = animationidx;
-    } 
+    }
 
     ii[2] = ii[1] + 2 * nhalf + 1;
 
-    if(ii[2] > data.x.length){
+    if (ii[2] > data.x.length) {
         ii[0] = nhalf + ii[2] - data.x.length;
         ii[2] = data.x.length;
         ii[1] = ii[2] - 2 * nhalf - 1;
     }
-    
-    let x = [],y=[];
 
-    for(let i = ii[1];i < ii[2];i++){
+    let x = [], y = [];
+
+    for (let i = ii[1]; i < ii[2]; i++) {
         x.push(i - ii[1] - ii[0]);
         y.push(data.y[i]);
     }
 
-    return {x:x,y:y,idx:ii[0]};
+    return { x: x, y: y, idx: ii[0] };
 }
 
 let Sum = x => {
     let sum = 0;
-    for(let i=0;i<x.length;i++) {
+    for (let i = 0; i < x.length; i++) {
         sum += x[i];
     }
     return sum;
 }
 
-let SumXY = (x,y) => {
+let SumXY = (x, y) => {
     let sumXY = 0;
-    for(let i=0;i<x.length;i++) {
-        sumXY += x[i]*y[i];
+    for (let i = 0; i < x.length; i++) {
+        sumXY += x[i] * y[i];
     }
     return sumXY;
 }
 
 let SumSq = x => {
     let sumSq = 0;
-    for(let i=0;i<x.length;i++) {
-        sumSq += x[i]*x[i];
+    for (let i = 0; i < x.length; i++) {
+        sumSq += x[i] * x[i];
     }
     return sumSq;
 }
 
-let LinearRegression = (xx,yy) => {
-    if(yy == null) return null;
+let LinearRegression = (xx, yy) => {
+    if (yy == null) return null;
     else if (yy.length < 2) return null;
-    
-    let sumx = Sum(xx), sumy = Sum(yy), sumxy = SumXY(xx,yy);
+
+    let sumx = Sum(xx), sumy = Sum(yy), sumxy = SumXY(xx, yy);
     let n = xx.length;
-    
-    
+
+
     let Sxy = sumxy - sumx * sumy / n;
-    let Sxx = SumSq(xx) - sumx*sumx/n;
-    let Syy = SumSq(yy) - sumy*sumy/n;
-    
-    let m = Sxy/Sxx;
+    let Sxx = SumSq(xx) - sumx * sumx / n;
+    let Syy = SumSq(yy) - sumy * sumy / n;
+
+    let m = Sxy / Sxx;
     let b = sumy / n - m * sumx / n;
     let r2 = Sxy * Sxy / Sxx / Syy;
 
-    let x = [],y=[];
+    let x = [], y = [];
 
     xx.forEach(xval => {
         x.push(xval);
         y.push(b + m * xval);
     })
-    
-    return {b:b,m:m,r2:r2,x:x,y:y};
+
+    return { b: b, m: m, r2: r2, x: x, y: y };
 }
 
