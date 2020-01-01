@@ -627,7 +627,7 @@ let setTooltips = (chartGroup, circlesGroup, isleft, isright, data_l, data_r
 }
 
 let getFitdata = (data, animationidx) => {
-    let nhalf = 10;
+    let nhalf = 5;
     let ii = [nhalf, 0, 0];
 
     ii[1] = animationidx - nhalf;
