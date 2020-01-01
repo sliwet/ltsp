@@ -114,7 +114,7 @@ let renderCircles = (circlesGroup, cxy) => {
     return circlesGroup;
 }
 
-let drawTraceCircles = (chartGroup, cxy, ms) => { // cxy [{x: value,y:value},{x: value,y:value}]
+let addTraceCircles = (chartGroup, cxy, ms) => { // cxy [{x: value,y:value},{x: value,y:value}]
     let n = cxy.length;
     let circlesGroup = chartGroup.selectAll("circle")
         .data(cxy)
@@ -130,7 +130,7 @@ let drawTraceCircles = (chartGroup, cxy, ms) => { // cxy [{x: value,y:value},{x:
     wait(ms);
 }
 
-let getCirclesGroup = (chartGroup, tooltipinputs, toolTip) => {
+let addTooltipCircles = (chartGroup, tooltipinputs, toolTip) => {
     n = tooltipinputs.length;
     let circlesGroup = chartGroup.selectAll("circle")
         .data(tooltipinputs)
@@ -581,7 +581,7 @@ let normalizeData = (selecteddate, isleft, plotconf_data_l, isright, plotconf_da
     };
 }
 
-let getTooltipCirclesGroup = (chartGroup, circlesGroup, isleft, isright, data_l, data_r
+let setTooltips = (chartGroup, circlesGroup, isleft, isright, data_l, data_r
     , xScale, ylScale, yrScale, xytmp, plotconf_name_l, plotconf_name_r, toolTip) => {
     if (circlesGroup != null) {
         circlesGroup.call(data => toolTip.hide(data));
@@ -604,7 +604,7 @@ let getTooltipCirclesGroup = (chartGroup, circlesGroup, isleft, isright, data_l,
         });
     }
 
-    return getCirclesGroup(chartGroup, tooltipinputs, toolTip);
+    return addTooltipCircles(chartGroup, tooltipinputs, toolTip);
 }
 
 let getFitdata = (data,animationidx) => {

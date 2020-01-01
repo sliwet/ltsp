@@ -124,15 +124,15 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                 .offset([0, 0])
                 .html(d => `${d.name}<br>${dateFormatter(d.xy.x)}<br>${normalized == null ? currencyFormatter.format(d.xy.y) : parseInt(d.xy.y)} ${normalized == null ? "" : " %"}`);
 
-            let circlesGroup = getTooltipCirclesGroup(chartGroup, null, isleft, isright, data_l, data_r
+            let tooltipCircles = setTooltips(chartGroup, null, isleft, isright, data_l, data_r
                 , xScale, ylScale, yrScale, [0, 0], plotconf.name_l, plotconf.name_r, toolTip);
-            circlesGroup.call(data => toolTip.hide(data));
+                tooltipCircles.call(data => toolTip.hide(data));
             chartGroup.selectAll("circle").remove();
 
             svg.on("mousewheel", () => {
                 let xytmp = svgXY_to_chartXY(d3.mouse(d3.event.target), margin.left, margin.top);
                 if (isinside(xytmp, [0, 0], [width, height])) {
-                    circlesGroup = getTooltipCirclesGroup(chartGroup, circlesGroup, isleft, isright, data_l, data_r
+                    tooltipCircles = setTooltips(chartGroup, tooltipCircles, isleft, isright, data_l, data_r
                         , xScale, ylScale, yrScale, xytmp, plotconf.name_l, plotconf.name_r, toolTip);
                 }
                 else {
@@ -280,6 +280,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                             refreshRateDiv.append("label").attr("for", "refreshRate").text("Enter refresh rate (msec) ");
                             refreshRateDiv.append("input").attr("id", "refreshRateInput")
                                 .attr("name", "refreshRate").attr("type", "text").attr("value", "50");
+                            refreshRateDiv.append("div").html("<br>");
 
                             d3.select(wheretoplot).append('div').attr("id", "analysismessage")
                                 .html("Click mouse on plot area to start / pause / resume analysis<br>Analysis will be done only on <b>left top ticker and right bottom ticker</b>");
@@ -350,7 +351,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                             let ridx = animationidx;
 
                             d3.select("#fitplot").remove();
-                            
+
                             let plotcolor = getFixedColor(255, 0, 0);
                             let fitPlotSvg = d3.select("#fitplotPlace").append("svg").attr("width", svgWidth).attr("height", svgHeight).attr("id", "fitplot");
 
@@ -377,7 +378,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                                 halfplotSVG(fitPlotSvg, dataNfit, svgWidth, svgHeight, false, plotcolor, margin);
                             }
 
-                            drawTraceCircles(chartGroup, cxy, refreshRate); // draw circles every 100 ms
+                            addTraceCircles(chartGroup, cxy, refreshRate); // draw circles every 100 ms
 
                             animationidx++;
                         } else {
@@ -455,7 +456,7 @@ let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin
             .attr("value", "y")
             .attr("text-anchor", "middle")
             .style("stroke", "black")
-            .text("Data & Fit");
+            .text("Change in value (%)");
 
         addPath("fitleft", chartGroup, { x: data[1].x, y: data[1].y }, xminmax, xScale, yScale, plotcolor(1.0));
 
@@ -479,7 +480,7 @@ let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin
             .attr("value", "yr")
             .attr("text-anchor", "middle")
             .style("stroke", "black")
-            .text("Closing Value of Right Tickers");
+            .text("Change in value (%)");
 
         addPath("fitright", chartGroup, { x: data[1].x, y: data[1].y }, xminmax, xScale, yScale, plotcolor(1.0));
         // plotPaths(plotconf.data_r, plotconf.name_r, chartGroup, null, [xTimeScale, yrLinearScale], npaths, plotconf.data_l.length);
