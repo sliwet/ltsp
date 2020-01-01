@@ -39,7 +39,7 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2
 });
 
-let rgb = (n, i, a) => {
+let getColor = (n, i, a) => {
     if (typeof a === 'undefined') a = 1.0;
 
     let r = 255;
@@ -65,6 +65,11 @@ let rgb = (n, i, a) => {
     return ["rgba(", r, ",", g, ",", b, ",", a, ")"].join("");
 }
 
+let rgba = (r,g,b,a) => {
+    if (typeof a === 'undefined') a = 1.0;
+    return ["rgba(", r, ",", g, ",", b, ",", a, ")"].join("");
+}
+
 let renderCircles = (circlesGroup, cxy) => {
     circlesGroup
         .transition()
@@ -83,9 +88,9 @@ let drawTraceCircles = (chartGroup, cxy, ms) => { // cxy [{x: value,y:value},{x:
         .attr("cx", d => d.x)
         .attr("cy", d => d.y)
         .attr("r", 7)
-        .attr("stroke", (d, i) => rgb(n, i))
+        .attr("stroke", (d, i) => getColor(n, i))
         .attr("stroke-width", "1px")
-        .attr("fill", (d, i) => rgb(n, i, 0.2))
+        .attr("fill", (d, i) => getColor(n, i, 0.2))
         .attr("opacity", "1.0");
     wait(ms);
 }
@@ -99,16 +104,16 @@ let getCirclesGroup = (chartGroup, tooltipinputs, toolTip) => {
         .attr("cx", d => d.cxy.x)
         .attr("cy", d => d.cxy.y)
         .attr("r", 7)
-        .attr("stroke", (d, i) => rgb(n, i))
+        .attr("stroke", (d, i) => getColor(n, i))
         .attr("stroke-width", "1px")
-        .attr("fill", (d, i) => rgb(n, i, 0.2))
+        .attr("fill", (d, i) => getColor(n, i, 0.2))
         .attr("opacity", "1.0");
 
     circlesGroup.call(toolTip);
 
     circlesGroup
         .on("mouseover", (data, i) => {
-            toolTip.style("color", rgb(n, i))
+            toolTip.style("color", getColor(n, i))
             toolTip.show(data)
         })
         .on("mouseout", data => toolTip.hide(data));
@@ -441,14 +446,14 @@ let addTickerSelections = (ylr, chartGroup, width, names, npaths, ipath) => {
 
     names.forEach((name, i) => {
         let iy = ipath + ioffset;
-        addText(name, chartGroup, { x: x, y: (iy + 1) * 20 }, rgb(npaths, ipath));
+        addText(name, chartGroup, { x: x, y: (iy + 1) * 20 }, getColor(npaths, ipath));
         ipath = ipath + 1;
     });
 }
 
 let plotPaths = (data, names, chartGroup, xrange, xyScale, npaths, ipath) => {
     data.forEach((xydata, i) => {
-        addPath(names[i], chartGroup, xydata, xrange, xyScale[0], xyScale[1], rgb(npaths, ipath));
+        addPath(names[i], chartGroup, xydata, xrange, xyScale[0], xyScale[1], getColor(npaths, ipath));
         ipath = ipath + 1;
     });
 }
