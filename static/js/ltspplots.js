@@ -349,7 +349,9 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                                 cxy.push({ x: xScale(ndata_l.x[animationidx]), y: ylScale(ndata_l.y[animationidx]) });
 
                                 let fdata = getFitdata(ndata_l,animationidx);
-                                console.log(fdata.xy[0][1]);
+                                console.log(fdata.xy[1]);
+                                let test = LinearRegression(fdata.xy);
+                                console.log(test.xy[1]);
 
                                 // new easyplotSVG("#fitPlotPlace", [fdata.fitdata], "fitPlotLeft", svgWidth, svgHeight,true);
 

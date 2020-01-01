@@ -562,12 +562,66 @@ let getFitdata = (data,animationidx) => {
         ii[1] = ii[2] - 2 * nhalf - 1;
     }
     
-    let xy = [];
+    let x = [],y=[];
 
     for(let i = ii[1];i < ii[2];i++){
-        xy.push([i - ii[1],data.y[i]]);
+        x.push(i - ii[1]);
+        y.push(data.y[i]);
     }
 
-    return {xy:xy,idx:ii[0]};
+    return {xy:[x,y],idx:ii[0]};
+}
+
+let Sum = x => {
+    let sum = 0;
+    for(let i=0;i<x.length;i++) {
+        sum += x[i];
+    }
+    return sum;
+}
+
+let SumXY = (x,y) => {
+    let sumXY = 0;
+    for(let i=0;i<x.length;i++) {
+        sumXY += x[i]*y[i];
+    }
+    return sumXY;
+}
+
+let SumSq = x => {
+    let sumSq = 0;
+    for(let i=0;i<x.length;i++) {
+        sumSq += x[i]*x[i];
+    }
+    return sumSq;
+}
+
+let LinearRegression = xy => {
+    let xx = xy[0];
+    let yy = xy[1];
+
+    if(yy == null) return null;
+    else if (yy.length < 2) return null;
+    
+    let sumx = Sum(xx), sumy = Sum(yy), sumxy = SumXY(xx,yy);
+    let n = xx.length;
+    
+    
+    let Sxy = sumxy - sumx * sumy / n;
+    let Sxx = SumSq(xx) - sumx*sumx/n;
+    let Syy = SumSq(yy) - sumy*sumy/n;
+    
+    let m = Sxy/Sxx;
+    let b = sumy / n - m * sumx / n;
+    let r2 = Sxy * Sxy / Sxx / Syy;
+
+    let x = [],y=[];
+
+    xx.forEach(d => {
+        x.push(d);
+        y.push(b + m * d);
+    })
+    
+    return {b:b,m:m,r2:r2,xy:[x,y]};
 }
 
