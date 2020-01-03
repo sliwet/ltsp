@@ -11,18 +11,16 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-# ENV = 'dev'
-ENV = 'prod'
+ENV = 'dev'
+# ENV = 'prod'
 
 if ENV == 'dev':
     app.debug = True
-    dbfile = "/db/ltsp.sqlite"
-    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite://" + dbfile
-    # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/ltsp'
+    # app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///db/ltsp.sqlite"
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/ltsp'
 else:
     app.debug = False
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '')
-    # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://mgginaipoimmvg:30d5b262fad6c9d3d6e3d182f719b8683d7acb35cbdaf8559696ef6a4631990c@ec2-107-22-239-155.compute-1.amazonaws.com:5432/ddus1nor2og7a5'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
