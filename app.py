@@ -86,7 +86,7 @@ except:
         adj_close = db.Column(db.Float)
         volume = db.Column(db.Float)
 
-        def __init__(self, ticker,openv,closev,adj_close,low,high,volume,wdate):
+        def __init__(self,wdate, openv,high,low,closev,adj_close,volume):
             self.wdate = wdate
             self.openv = openv
             self.high = high
@@ -105,7 +105,7 @@ except:
         adj_close = db.Column(db.Float)
         volume = db.Column(db.Float)
 
-        def __init__(self, ticker,openv,closev,adj_close,low,high,volume,wdate):
+        def __init__(self,wdate, openv,high,low,closev,adj_close,volume):
             self.wdate = wdate
             self.openv = openv
             self.high = high
