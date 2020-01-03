@@ -474,7 +474,7 @@ let renderAxis = (XorY, newAxis, scale) => {
 }
 
 //weight: "bold", "normal" , location: "left", "middle", "right"
-let addText = (uniqueId, chartGroup, xy, color) => {
+let addText = (uniqueId,text, chartGroup, xy, color) => {
     d3.select(`#ticker-${uniqueId}`).remove();
 
     chartGroup.append("text")
@@ -486,7 +486,7 @@ let addText = (uniqueId, chartGroup, xy, color) => {
         .attr("width", "60px")
         .attr("text-anchor", "middle") // left middle right
         .attr("fill", color)
-        .text(uniqueId)
+        .text(text)
         .attr("id", `#ticker-${uniqueId}`);
 }
 
@@ -500,7 +500,7 @@ let addTickerSelections = (ylr, chartGroup, width, names, npaths, ipath) => {
 
     names.forEach((name, i) => {
         let iy = ipath + ioffset;
-        addText(name, chartGroup, { x: x, y: (iy + 1) * 20 }, getColor(npaths, ipath));
+        addText(name,name, chartGroup, { x: x, y: (iy + 1) * 20 }, getColor(npaths, ipath));
         ipath = ipath + 1;
     });
 }

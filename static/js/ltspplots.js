@@ -443,7 +443,7 @@ let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin
     padding = (yminmax[1] - yminmax[0]) * 0.1;
     yminmax = [yminmax[0] - padding, yminmax[1] + padding];
     yScale = getLinearScale("y", yminmax, height);
-    let uniqueId;
+    let uniqueId,uniqueIdslope,uniqueIdr2;
 
     if (isleft) {
         yAxis = chartGroup.append("g")
@@ -459,8 +459,9 @@ let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin
             .style("stroke", "black")
             .text("Change in value (%)");
 
-            uniqueId = "fitleft";
-
+            uniqueId = "fit_l";
+            uniqueIdslope = "slope_l";
+            uniqueIdr2 = "r2_l";
     }
     else {
         yAxis = chartGroup.append("g")
@@ -477,9 +478,13 @@ let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin
             .style("stroke", "black")
             .text("Change in value (%)");
 
-            uniqueId = "fitright";
+            uniqueId = "fit_r";
+            uniqueIdslope = "slope_r";
+            uniqueIdr2 = "r2_r";
     }
 
     addFitCircles(chartGroup, { x: data[0].x, y: data[0].y }, xScale, yScale, plotcolor);
     addPath(uniqueId, chartGroup, { x: data[1].x, y: data[1].y }, xminmax, xScale, yScale, plotcolor(1.0));
+    addText(uniqueIdslope,`Slope: ${dataNfit.fit.m.toFixed(2)}`, chartGroup, { x: width/2, y: 20 }, plotcolor(1.0));
+    addText(uniqueIdr2,`R2: ${dataNfit.fit.r2.toFixed(2)}`, chartGroup, { x: width/2, y: 40 }, plotcolor(1.0));
 }
