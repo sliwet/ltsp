@@ -652,7 +652,8 @@ let getFitdata = (data, animationidx) => {
         y.push(data.y[i]);
     }
 
-    return { x: x, y: y, idx: ii[0] };
+    return { x: x, y: y};
+    // return { x: x, y: y, idx: ii[0] };
 }
 
 let Sum = x => {

@@ -362,7 +362,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                                 let fitted = LinearRegression(data.x, data.y);
                                 let dataNfit = { data: data, fit: fitted };
 
-                                halfplotSVG(fitPlotSvg, dataNfit, svgWidth, svgHeight, true, plotcolor, margin);
+                                halfplotSVG(fitPlotSvg,ndata_l.x[animationidx], dataNfit, svgWidth, svgHeight, true, plotcolor, margin);
                                 plotcolor = getFixedColor(0, 0, 255);
 
                                 if (useright) ridx = getBisectIdxFromPlotconfdata(ndata_r, ndata_l.x[animationidx]);
@@ -375,7 +375,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
                                 let fitted = LinearRegression(data.x, data.y);
                                 let dataNfit = { data: data, fit: fitted };
 
-                                halfplotSVG(fitPlotSvg, dataNfit, svgWidth, svgHeight, false, plotcolor, margin);
+                                halfplotSVG(fitPlotSvg,ndata_r.x[ridx], dataNfit, svgWidth, svgHeight, false, plotcolor, margin);
                             }
 
                             addTraceCircles(chartGroup, cxy, refreshRate); // draw circles every 100 ms
@@ -397,7 +397,7 @@ let lambdaSVG = (wheretoplot, plotconf, uniqueId, svgWidth, svgHeight, margin) =
 // dataNfit 
 // console.log(plotcolor(0.5));
 
-let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin0) => {
+let halfplotSVG = (svg,fitdate, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin0) => {
 
     let data = [
         { x: dataNfit.data.x, y: dataNfit.data.y },
@@ -443,7 +443,7 @@ let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin
     padding = (yminmax[1] - yminmax[0]) * 0.1;
     yminmax = [yminmax[0] - padding, yminmax[1] + padding];
     yScale = getLinearScale("y", yminmax, height);
-    let uniqueId,uniqueIdslope,uniqueIdr2;
+    let uniqueId,uniqueIdDate,uniqueIdslope,uniqueIdr2;
 
     if (isleft) {
         yAxis = chartGroup.append("g")
@@ -460,6 +460,7 @@ let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin
             .text("Change in value (%)");
 
             uniqueId = "fit_l";
+            uniqueIdDate = "date_l";
             uniqueIdslope = "slope_l";
             uniqueIdr2 = "r2_l";
     }
@@ -479,12 +480,14 @@ let halfplotSVG = (svg, dataNfit, svgWidth, svgHeight, isleft, plotcolor, margin
             .text("Change in value (%)");
 
             uniqueId = "fit_r";
+            uniqueIdDate = "date_r";
             uniqueIdslope = "slope_r";
             uniqueIdr2 = "r2_r";
     }
 
     addFitCircles(chartGroup, { x: data[0].x, y: data[0].y }, xScale, yScale, plotcolor);
     addPath(uniqueId, chartGroup, { x: data[1].x, y: data[1].y }, xminmax, xScale, yScale, plotcolor(1.0));
-    addText(uniqueIdslope,`Slope: ${dataNfit.fit.m.toFixed(2)}`, chartGroup, { x: width/2, y: 20 }, plotcolor(1.0));
-    addText(uniqueIdr2,`R2: ${dataNfit.fit.r2.toFixed(2)}`, chartGroup, { x: width/2, y: 40 }, plotcolor(1.0));
+    addText(uniqueIdDate,`Date: ${dateFormatter(fitdate)}`, chartGroup, { x: width/2, y: 20 }, plotcolor(1.0));
+    addText(uniqueIdslope,`Slope: ${dataNfit.fit.m.toFixed(2)}`, chartGroup, { x: width/2, y: 40 }, plotcolor(1.0));
+    addText(uniqueIdr2,`R2: ${dataNfit.fit.r2.toFixed(2)}`, chartGroup, { x: width/2, y: 60 }, plotcolor(1.0));
 }
