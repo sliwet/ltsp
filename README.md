@@ -1,7 +1,18 @@
 # Long-term Stock Predictor
 
-1. [Selection of Datasets](#selection-of-datasets)
-2. [Loading into PostgresSQL](#loading-into-postgressql)
+You can test this project [in this heroku site](https://ltsp.herokuapp.com/). This short video will show how to use the site: [Simple Video Manual](https://youtu.be/cGENTJmw_vM).
+
+1. [Background](#background)
+2. [Selection of Datasets](#selection-of-datasets)
+3. [Loading into PostgresSQL](#loading-into-postgressql)
+
+***
+
+## Background
+
+Develope a method to assess healthiness of a stock based upon historical data. First part of this project is developing data visualization tools to help coming up analysis idea and testing.
+
+[Back to top](#long-term-stock-predictor)
 
 ***
 
