@@ -59,41 +59,6 @@ let buildPlot = (lt, rt) => {
     });
 }
 
-// let traces = []
-
-// // let xmin = d3.min(data[0].x);
-// // let xmax = d3.max(data[0].x);
-// // console.log(`Min: ${xmin} , Max: ${xmax}`);
-// for (let i = 0; i < ld.length; i++) {
-//     let trace = {
-//         type: "scatter",
-//         mode: "lines",
-//         name: lt[i],
-//         x: ld[i].x,
-//         y: ld[i].y,
-//         line: {
-//             color: rgb(ld.length, i)
-//         }
-//     };
-
-//     traces.push(trace);
-// }
-
-// let layout = {
-//     title: `closing prices`,
-//     // xaxis: {
-//     //     range: [startDate, endDate],
-//     //     type: "date"
-//     // },
-//     // yaxis: {
-//     //     autorange: true,
-//     //     type: "linear"
-//     // }
-// };
-
-// Plotly.newPlot("infoplace", traces, layout);
-// End of plotting routine
-
 let leftTickers = []
 let rightTickers = []
 
@@ -125,7 +90,7 @@ let handleInfoChange = newInfo => {
     let url = "/showinfo/" + newInfo;
     d3.json(url).then(info => {
         infoplace = d3.select("#infoplace");
-        infoplace.html(info[0]); // infoplace.html(info[0][newInfo]);
+        infoplace.html(info[0]);
     });
 }
 
@@ -138,7 +103,8 @@ let handleClear = () => {
 }
 
 let init = () => {
-    let initialmessage = "<p>Use left selectors to explore stock data information</p>";
+    let initialmessage = "Click to view <a href=\"https://youtu.be/cGENTJmw_vM\" target=\"_blank\">short instruction video</a>";
+    // let initialmessage = "<p>Use left selectors to explore stock data information</p>";
 
     let infoNticker = [
         {
@@ -230,13 +196,6 @@ let init = () => {
         .text("Clear Selection");
 
     menuplace.append("div").html("<br>")
-
-    // menuplace.append("div")
-    //     .append("button")
-    //     .attr("id", "zoomout")
-    //     .attr("type", "submit")
-    //     .attr("class", "btn btn-default")
-    //     .text("Zoom Out");
 
     // menuplace.append("div").html("<br>")
 
